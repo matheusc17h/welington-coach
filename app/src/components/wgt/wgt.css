@@ -560,16 +560,14 @@ body {
 
 .w-header__lockup small {
   color: var(--muted);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .w-header__links {
   display: flex;
-  gap: 2px;
-  padding: 4px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: rgb(255 255 255 / 0.03);
@@ -578,9 +576,9 @@ body {
 .w-header__links a {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
+  min-height: 44px;
   padding-inline: 14px;
-  border-radius: 8px;
+  border-radius: 11px;
   color: var(--muted);
   font-size: 0.875rem;
   font-weight: 600;
@@ -610,6 +608,7 @@ body {
   align-items: center;
   justify-self: end;
   gap: 8px;
+  white-space: nowrap;
   min-height: 44px;
   padding-inline: 16px 18px;
   border-radius: 12px;
@@ -636,10 +635,68 @@ body {
   transform: scale(0.97);
 }
 
+/* Mobile menu (shown below 861px). */
+.w-header__burger {
+  display: none;
+}
+
+.w-header__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: var(--gutter);
+  left: var(--gutter);
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgb(8 10 30 / 0.96);
+  box-shadow: 0 24px 48px -20px rgb(0 0 0 / 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  pointer-events: auto;
+  animation: w-menu-in 0.35s var(--ease) both;
+}
+
+.w-header__panel[hidden] {
+  display: none;
+}
+
+.w-header__panel a {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  color: var(--white);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.w-header__panel a[aria-current="location"],
+.w-header__panel a:hover {
+  background: rgb(255 255 255 / 0.07);
+}
+
+.w-header__panel a:focus-visible,
+.w-header__burger:focus-visible {
+  outline: 2px solid var(--blue-light);
+  outline-offset: 2px;
+}
+
+@keyframes w-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .w-header,
   .w-header__pill {
     transition: none;
+  }
+
+  .w-header__panel {
+    animation: none;
   }
 }
 
@@ -1105,7 +1162,7 @@ body {
   padding: 6px 12px;
   border-radius: 999px;
   background: rgb(6 8 26 / 0.35);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1488,6 +1545,9 @@ body {
   display: grid;
   grid-auto-columns: minmax(300px, 400px);
   grid-auto-flow: column;
+  /* Each card takes its own height: short quotes no longer carry the
+     empty space of the longest one. */
+  align-items: start;
   gap: var(--s3);
   margin-inline: calc(var(--gutter) * -1);
   padding: var(--s1) var(--gutter) var(--s3);
@@ -1523,7 +1583,7 @@ body {
   border: 1px solid rgb(224 33 138 / 0.55);
   border-radius: 999px;
   background: rgb(224 33 138 / 0.18);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1936,7 +1996,7 @@ body {
   border-radius: 999px;
   background: var(--brand-h);
   box-shadow: 0 10px 24px -8px rgb(224 33 138 / 0.9);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -2007,6 +2067,22 @@ body {
   flex: none;
   width: 22px;
   height: 22px;
+}
+
+/* One line always: narrow cards drop " no WhatsApp" (the icon says it,
+   and the aria-label keeps the full text). */
+.w-plan {
+  container-type: inline-size;
+}
+
+.w-plan__cta {
+  white-space: nowrap;
+}
+
+@container (max-width: 330px) {
+  .w-plan__cta-more {
+    display: none;
+  }
 }
 
 .w-plan__cta:hover {
@@ -2380,9 +2456,50 @@ body {
   }
 
   .w-header__pill {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
     min-height: 56px;
     padding: 6px 6px 6px 10px;
+  }
+
+  .w-header[data-menu-open] .w-header__pill {
+    border-color: var(--line);
+    background: rgb(8 10 30 / 0.96);
+  }
+
+  .w-header__burger {
+    display: inline-grid;
+    place-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgb(255 255 255 / 0.04);
+    cursor: pointer;
+  }
+
+  .w-header__burger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--white);
+    transition:
+      transform 0.3s var(--ease),
+      opacity 0.2s var(--ease);
+  }
+
+  .w-header__burger[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .w-header__burger[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .w-header__burger[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   .w-header__shield {
@@ -2426,7 +2543,8 @@ body {
 
   .w-hero__chips li {
     padding: 6px 10px;
-    font-size: 0.66rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
   }
 
   .w-hero__title {
@@ -2467,14 +2585,22 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 
+  /* Fill the box and keep the face in frame at any width (it used to crop
+     to the shirt on tablets). */
   .w-about__photo {
     grid-column: 1 / -1;
     grid-row: auto;
-    min-height: 360px;
+    height: clamp(360px, 80vw, 540px);
+    min-height: 0;
   }
 
   .w-about__photo img {
-    width: 110%;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 12%;
+    transform: none;
   }
 
   .w-about__card {
@@ -2536,7 +2662,14 @@ body {
   .w-film .scroll-scrub__route {
     top: max(80px, calc(env(safe-area-inset-top) + 72px));
     bottom: auto;
-    justify-content: flex-start;
+    justify-content: center;
+    gap: 0;
+  }
+
+  /* Compact tabs so all four chapters fit, even at 320px. */
+  .w-film .scroll-scrub__route-button {
+    padding: 0.6rem 0.7rem;
+    font-size: 0.8rem;
   }
 
   /* Timeline turns vertical. */
@@ -2683,7 +2816,6 @@ body {
     justify-content: flex-start;
   }
 
-  /* Thumb CTA: the floating button becomes a labelled pill. */
   /* A compact round button: the header already carries the labelled CTA,
      and a wide pill here covers the page's own buttons. */
   .w-float {
@@ -2847,5 +2979,40 @@ body {
   .w-pro__overlay .w-pill {
     width: 100%;
     justify-content: space-between;
+  }
+}
+
+/* Tablet (600-860px): the phone layout is too stretched here. Reasons go
+   two-up and the plan rail keeps cards at a readable width. */
+@media (min-width: 600px) and (max-width: 860px) {
+  .w-reasons__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .w-reasons__head,
+  .w-reasons__card--wide {
+    grid-column: 1 / -1;
+  }
+
+  .w-reasons__card {
+    grid-column: auto;
+  }
+
+  .w-plans__grid {
+    grid-auto-columns: min(84%, 400px);
+  }
+}
+
+/* Small phones: the shield alone identifies the brand, so the name steps
+   aside for the CTA and the menu button. */
+@media (max-width: 480px) {
+  .w-header__lockup {
+    display: none;
+  }
+
+  .w-header__brand {
+    justify-content: center;
+    min-width: 44px;
   }
 }

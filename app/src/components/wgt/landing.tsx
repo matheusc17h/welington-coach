@@ -47,6 +47,41 @@ function Header() {
   const [active, setActive] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Mobile menu: closes on Escape, on an outside tap and when the layout
+  // switches to desktop. It never locks page scroll.
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    const onPointer = (event: globalThis.PointerEvent) => {
+      if (!(event.target as Element).closest(".w-header")) {
+        setMenuOpen(false);
+      }
+    };
+    const desktop = window.matchMedia("(min-width: 861px)");
+    const onDesktop = () => {
+      if (desktop.matches) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    desktop.addEventListener("change", onDesktop);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+      desktop.removeEventListener("change", onDesktop);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -100,7 +135,8 @@ function Header() {
   return (
     <header
       className="w-header"
-      data-hidden={hidden || undefined}
+      data-hidden={(hidden && !menuOpen) || undefined}
+      data-menu-open={menuOpen || undefined}
       data-scrolled={scrolled || undefined}
     >
       <nav aria-label="Principal" className="w-header__pill">
@@ -131,7 +167,35 @@ function Header() {
           <WhatsAppIcon className="w-header__cta-icon" />
           Agendar aula
         </a>
+        <button
+          aria-controls="menu-mobile"
+          aria-expanded={menuOpen}
+          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+          className="w-header__burger"
+          onClick={() => setMenuOpen((open) => !open)}
+          ref={menuButtonRef}
+          type="button"
+        >
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+        </button>
       </nav>
+      <div className="w-header__panel" hidden={!menuOpen} id="menu-mobile">
+        <ul>
+          {navLinks.map((link) => (
+            <li key={link.href}>
+              <a
+                aria-current={active === link.href ? "location" : undefined}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </header>
   );
 }
@@ -548,7 +612,9 @@ function Plans() {
                 {...external}
               >
                 <WhatsAppIcon />
-                <span>Consultar valores no WhatsApp</span>
+                <span>
+                  Consultar valores<span className="w-plan__cta-more"> no WhatsApp</span>
+                </span>
               </a>
             </li>
           ))}
@@ -659,9 +725,65 @@ function Footer() {
   );
 }
 
-/** Only shows once the hero (which has its own CTAs) is off screen. */
+/** Things the floating button must never sit on top of. */
+const FLOAT_AVOID = "main a[href], main button, .w-about__photo, .w-footer";
+
+/**
+ * Only shows once the hero (which has its own CTAs) is off screen, and steps
+ * aside while a button, link, the about photo or the footer passes under it.
+ */
 function FloatingWhatsApp() {
   const [visible, setVisible] = useState(false);
+  const [covering, setCovering] = useState(false);
+  const floatRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    const float = floatRef.current;
+    if (!float) {
+      return;
+    }
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      // Measure the resting spot (the hidden state is only a small offset).
+      const zone = float.getBoundingClientRect();
+      const pad = 8;
+      let hit = false;
+      for (const el of document.querySelectorAll(FLOAT_AVOID)) {
+        if (el === float || el.closest("dialog")) {
+          continue;
+        }
+        const r = el.getBoundingClientRect();
+        if (
+          r.width > 0 &&
+          r.left < zone.right + pad &&
+          r.right > zone.left - pad &&
+          r.top < zone.bottom + pad &&
+          r.bottom > zone.top - pad
+        ) {
+          hit = true;
+          break;
+        }
+      }
+      setCovering(hit);
+    };
+    const schedule = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(check);
+      }
+    };
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    // Horizontal rails (plans, videos) move buttons without a page scroll.
+    document.addEventListener("scroll", schedule, { capture: true, passive: true });
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      document.removeEventListener("scroll", schedule, { capture: true });
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   useEffect(() => {
     const hero = document.getElementById("topo");
@@ -676,14 +798,17 @@ function FloatingWhatsApp() {
     return () => observer.disconnect();
   }, []);
 
+  const shown = visible && !covering;
+
   return (
     <a
-      aria-hidden={visible ? undefined : true}
+      aria-hidden={shown ? undefined : true}
       aria-label="Chamar o Welington no WhatsApp"
       className="w-float"
-      data-visible={visible || undefined}
+      data-visible={shown || undefined}
       href={whatsapp.geral}
-      tabIndex={visible ? undefined : -1}
+      ref={floatRef}
+      tabIndex={shown ? undefined : -1}
       {...external}
     >
       <WhatsAppIcon />
