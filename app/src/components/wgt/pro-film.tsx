@@ -12,7 +12,7 @@ const FILM = {
 };
 
 /** Seconds before the end where the last take starts and the line appears. */
-const FINAL_TAKE = 2.2;
+const FINAL_TAKE = 1.7;
 
 function SoundOnIcon() {
   return (

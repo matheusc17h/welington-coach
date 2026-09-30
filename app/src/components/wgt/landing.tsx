@@ -45,6 +45,34 @@ function Shield({ className, eager }: { className?: string; eager?: boolean }) {
 
 function Header() {
   const [active, setActive] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      // Hide while reading down, bring back as soon as the visitor scrolls up.
+      if (Math.abs(y - lastY) > 6) {
+        setHidden(y > lastY && y > 240);
+        lastY = y;
+      }
+    };
+    const onScroll = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(update);
+      }
+    };
+    frame = requestAnimationFrame(update);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   useEffect(() => {
     const targets = navLinks
@@ -70,12 +98,21 @@ function Header() {
   }, []);
 
   return (
-    <header className="w-header">
+    <header
+      className="w-header"
+      data-hidden={hidden || undefined}
+      data-scrolled={scrolled || undefined}
+    >
       <nav aria-label="Principal" className="w-header__pill">
-        <a aria-label="WGT eSports, voltar ao topo" className="w-header__brand" href="#topo">
+        <a
+          aria-label="Welington Rodrigues, WGT eSports. Voltar ao topo"
+          className="w-header__brand"
+          href="#topo"
+        >
           <Shield className="w-header__shield" eager />
-          <span aria-hidden="true">
-            WGT <em>eSports</em>
+          <span aria-hidden="true" className="w-header__lockup">
+            <strong>Welington Rodrigues</strong>
+            <small>Coach EA FC · WGT</small>
           </span>
         </a>
         <ul className="w-header__links">
@@ -91,6 +128,7 @@ function Header() {
           ))}
         </ul>
         <a className="w-header__cta" href={whatsapp.geral} {...external}>
+          <WhatsAppIcon className="w-header__cta-icon" />
           Agendar aula
         </a>
       </nav>
@@ -536,12 +574,31 @@ function Footer() {
   );
 }
 
+/** Only shows once the hero (which has its own CTAs) is off screen. */
 function FloatingWhatsApp() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const hero = document.getElementById("topo");
+    if (!hero || !("IntersectionObserver" in window)) {
+      const frame = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(frame);
+    }
+    const observer = new IntersectionObserver(([entry]) => setVisible(!entry.isIntersecting), {
+      rootMargin: "0px 0px -35% 0px",
+    });
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <a
+      aria-hidden={visible ? undefined : true}
       aria-label="Chamar o Welington no WhatsApp"
       className="w-float"
+      data-visible={visible || undefined}
       href={whatsapp.geral}
+      tabIndex={visible ? undefined : -1}
       {...external}
     >
       <WhatsAppIcon />

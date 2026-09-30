@@ -6,6 +6,7 @@ import {
   higgsfieldDesignSourceBabelPlugin,
 } from "./src/module/design-inspector/vite";
 import svgr from "vite-plugin-svgr";
+import { nitro } from "nitro/vite";
 import { defaultServerConditions, defineConfig } from "vite";
 import { fileURLToPath } from "node:url";
 
@@ -20,6 +21,12 @@ const QUANTA_ICONS_SHIM = fileURLToPath(
 
 export default defineConfig(({ command, mode }) => {
   const designInspectorEnabled = process.env.HF_DESIGN_INSPECTOR === "1" || mode === "design";
+  // Vercel sets VERCEL=1 during its build. There the SSR bundle runs on Node
+  // through Nitro (preset auto-detected), so the Cloudflare Worker build
+  // settings below must stay off. NITRO_PRESET forces the same path locally
+  // (e.g. NITRO_PRESET=node-server to test a Node build).
+  const nitroBuild = process.env.VERCEL === "1" || Boolean(process.env.NITRO_PRESET);
+  const workerBuild = command === "build" && !nitroBuild;
 
   return {
     // fsevents can miss edits under some setups (bun-launched dev, synced/virtual
@@ -47,7 +54,7 @@ export default defineConfig(({ command, mode }) => {
       // both variants bundle their edge build (react-dom's web-streams server,
       // etc.) instead of the Node variant leaning on nodejs_compat shims.
       // `vite dev` SSR runs in Node, where default node resolution is correct.
-      ...(command === "build"
+      ...(workerBuild
         ? {
             target: "webworker" as const,
             resolve: {
@@ -60,7 +67,7 @@ export default defineConfig(({ command, mode }) => {
             },
           }
         : {}),
-      noExternal: command === "build" ? true : undefined,
+      noExternal: workerBuild ? true : undefined,
       // `cloudflare:workers` is a workerd runtime built-in that exposes the Worker
       // env / bindings (D1 `DB`, R2 `STORAGE`). Like node: builtins it must NOT be
       // bundled; the runtime provides it. (`ssr.external` is typed string[].)
@@ -100,6 +107,7 @@ export default defineConfig(({ command, mode }) => {
       tanstackStart({
         server: { entry: "server" },
       }),
+      ...(nitroBuild ? [nitro()] : []),
       higgsfieldDesignInspectorVitePlugin(designInspectorEnabled),
       react({
         babel: {
