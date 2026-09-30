@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import type { CSSProperties, PointerEvent } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { CSSProperties, PointerEvent, RefObject } from "react";
 
 import { ScrollScrub } from "@/components/scroll-scrub/scroll-scrub";
 import { scrollScrubScenes, scrollScrubTheme } from "@/scroll-scrub-scenes";
@@ -284,31 +284,116 @@ function About() {
   );
 }
 
+/**
+ * Title rises line by line out of a mask, then the lead, then the six cards
+ * one at a time. Text is server-rendered and only hidden once GSAP runs, so
+ * without JS or with reduced motion everything is simply visible.
+ */
+function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) {
+      return;
+    }
+    let cleanup = () => {};
+    let cancelled = false;
+
+    // Lines must be measured with the display font loaded, or they break wrong.
+    void Promise.all([
+      import("gsap"),
+      import("gsap/ScrollTrigger"),
+      import("gsap/SplitText"),
+      document.fonts.ready,
+    ]).then(([{ gsap }, { ScrollTrigger }, { SplitText }]) => {
+      if (cancelled) {
+        return;
+      }
+      gsap.registerPlugin(ScrollTrigger, SplitText);
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const title = section.querySelector<HTMLElement>(".w-stuck__head .w-h2");
+        const lead = section.querySelector(".w-stuck__head .w-lead");
+        const cards = section.querySelectorAll(".w-stuck__card");
+        if (!title) {
+          return;
+        }
+        const split = SplitText.create(title, {
+          type: "lines",
+          mask: "lines",
+          linesClass: "w-split-line",
+        });
+
+        gsap
+          .timeline({
+            defaults: { ease: "expo.out" },
+            scrollTrigger: { trigger: section, start: "top 72%", once: true },
+            // Restore the plain heading so later resizes re-wrap naturally.
+            onComplete: () => split.revert(),
+          })
+          .from(split.lines, { yPercent: 110, duration: 1.1, stagger: 0.12 })
+          .from(lead, { autoAlpha: 0, y: 28, duration: 0.9, ease: "power3.out" }, "-=0.6")
+          .from(
+            cards,
+            {
+              autoAlpha: 0,
+              y: "+=64",
+              scale: 0.95,
+              duration: 1,
+              stagger: 0.16,
+              clearProps: "opacity,visibility,scale",
+            },
+            "-=0.45"
+          );
+
+        return () => split.revert();
+      });
+      cleanup = () => mm.revert();
+    });
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, [sectionRef]);
+}
+
 function Stuck() {
+  const sectionRef = useRef<HTMLElement>(null);
+  useStuckReveal(sectionRef);
+
   return (
-    <section aria-labelledby="travando-title" className="w-stuck w-section" id="travando">
+    <section
+      aria-labelledby="travando-title"
+      className="w-stuck w-section"
+      id="travando"
+      ref={sectionRef}
+    >
       <div aria-hidden="true" className="w-aurora w-aurora--mid" />
-      <div className="w-wrap w-stuck__grid">
-        <div className="w-stuck__head">
-          <h2 className="w-h2" id="travando-title">
-            Onde você está <span className="w-grad-text">travando</span>
-          </h2>
-          <p className="w-lead">
-            Seis sinais que aparecem em quase toda call de diagnóstico. Conta
-            quantos são seus.
-          </p>
+      <div className="w-wrap">
+        {/* The sticky heading lives in its own grid with the cards, so it
+            releases before the closing line instead of sliding over it. */}
+        <div className="w-stuck__grid">
+          <div className="w-stuck__head">
+            <h2 className="w-h2" id="travando-title">
+              Onde você está <span className="w-grad-text">travando</span>
+            </h2>
+            <p className="w-lead">
+              Seis sinais que aparecem em quase toda call de diagnóstico. Conta
+              quantos são seus.
+            </p>
+          </div>
+          <ol className="w-stuck__list">
+            {stuckPoints.map((point, index) => (
+              <li className="w-glass w-stuck__card" key={point.title}>
+                <span aria-hidden="true" className="w-stuck__num">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h3>{point.title}</h3>
+                <p>{point.body}</p>
+              </li>
+            ))}
+          </ol>
         </div>
-        <ol className="w-stuck__list">
-          {stuckPoints.map((point, index) => (
-            <li className="w-glass w-stuck__card w-rise" key={point.title}>
-              <span aria-hidden="true" className="w-stuck__num">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <h3>{point.title}</h3>
-              <p>{point.body}</p>
-            </li>
-          ))}
-        </ol>
         <div className="w-stuck__close">
           <p>
             Se você se reconheceu em três ou mais, falta{" "}

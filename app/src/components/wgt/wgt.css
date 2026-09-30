@@ -848,6 +848,41 @@ body {
   font-weight: 600;
 }
 
+/* Desktop: the hero is exactly one screen. Type, spacing and the photo scale
+   with the viewport HEIGHT as well as the width, so short laptop screens
+   (1280x720, 1366x768) get the whole hero, CTA included, above the fold. */
+@media (min-width: 861px) {
+  .w-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    padding-top: clamp(84px, 11svh, 128px);
+    padding-bottom: clamp(24px, 5svh, 64px);
+  }
+
+  .w-hero__title {
+    font-size: clamp(3rem, min(8.4vw, 10.6svh), 8.4rem);
+  }
+
+  .w-hero__chips {
+    margin-bottom: clamp(12px, 2.4svh, 24px);
+  }
+
+  .w-hero__lead {
+    margin-top: clamp(12px, 2.4svh, 24px);
+  }
+
+  .w-hero__ctas {
+    margin-top: clamp(16px, 3.6svh, 40px);
+  }
+
+  .w-hero__visual {
+    justify-self: end;
+    width: min(100%, calc((100svh - 180px) * 0.8));
+  }
+}
+
 /* Hero entrance: chips, title line by line, photo with halo, CTA. */
 .w-in {
   animation: w-rise-in 0.8s var(--ease) calc(0.1s + var(--i, 0) * 0.08s) both;
@@ -1090,6 +1125,14 @@ body {
   top: 120px;
 }
 
+/* SplitText line masks: with the tight display line-height the mask would
+   clip accents (VOCÊ, ESTÁ). Extra room above/below, cancelled by negative
+   margins so the layout doesn't move. */
+.w-split-line-mask {
+  margin-block: -0.16em -0.06em;
+  padding-block: 0.16em 0.06em;
+}
+
 .w-stuck__head .w-lead {
   margin-top: var(--s3);
 }
@@ -1138,12 +1181,13 @@ body {
 }
 
 .w-stuck__close {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--s3);
-  grid-column: 1 / -1;
   margin-top: var(--s12);
   padding: var(--s4);
   border-top: 1px solid var(--line);
@@ -1578,10 +1622,39 @@ body {
   font-size: 0.9rem;
 }
 
+/* 9 videos as a bento: one featured video (2x2) + 8 in a 4x2 block, so the
+   grid always closes as a clean rectangle instead of leaving orphans. */
 .w-videos__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: var(--s2);
+}
+
+.w-videos__grid li:first-child {
+  grid-row: span 2;
+  grid-column: span 2;
+}
+
+.w-videos__grid li:first-child .w-video {
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 24px;
+}
+
+.w-videos__grid li:first-child .w-video__play {
+  width: 84px;
+  height: 84px;
+}
+
+.w-videos__grid li:first-child .w-video__play svg {
+  width: 32px;
+  height: 32px;
+}
+
+.w-videos__grid li:first-child .w-video__n {
+  bottom: 18px;
+  left: 22px;
+  font-size: 3rem;
 }
 
 .w-video {
@@ -1657,9 +1730,15 @@ body {
   font-size: 1.6rem;
 }
 
+/* The CSS reset zeroes <dialog> margins; margin:auto + inset:0 is what
+   centres a modal dialog in the viewport. */
 .w-lightbox {
+  position: fixed;
+  inset: 0;
   width: min(92vw, 440px);
+  height: fit-content;
   max-height: 94dvh;
+  margin: auto;
   padding: 0;
   overflow: visible;
   border: 0;
@@ -1682,8 +1761,11 @@ body {
 }
 
 .w-lightbox__video {
-  width: 100%;
-  max-height: 78dvh;
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: min(78dvh, calc(min(92vw, 440px) * 16 / 9));
+  margin-inline: auto;
   aspect-ratio: 9 / 16;
   border: 1px solid var(--line-top);
   border-radius: 20px;
@@ -2516,6 +2598,34 @@ body {
     scroll-snap-align: start;
   }
 
+  /* Mobile is a swipe rail: no featured tile. */
+  .w-videos__grid li:first-child {
+    grid-row: auto;
+    grid-column: auto;
+  }
+
+  .w-videos__grid li:first-child .w-video {
+    height: auto;
+    aspect-ratio: 9 / 16;
+    border-radius: 16px;
+  }
+
+  .w-videos__grid li:first-child .w-video__play {
+    width: 56px;
+    height: 56px;
+  }
+
+  .w-videos__grid li:first-child .w-video__play svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .w-videos__grid li:first-child .w-video__n {
+    bottom: 10px;
+    left: 14px;
+    font-size: 1.6rem;
+  }
+
   .w-results__cta {
     padding: var(--s3);
   }
@@ -2574,27 +2684,16 @@ body {
   }
 
   /* Thumb CTA: the floating button becomes a labelled pill. */
+  /* A compact round button: the header already carries the labelled CTA,
+     and a wide pill here covers the page's own buttons. */
   .w-float {
-    width: auto;
+    width: 56px;
     height: 56px;
-    grid-auto-flow: column;
-    gap: 10px;
-    padding-inline: 18px 22px;
-    border-radius: 999px;
   }
 
   .w-float svg {
-    width: 26px;
-    height: 26px;
-  }
-
-  .w-float__label {
-    position: static;
-    width: auto;
-    height: auto;
-    overflow: visible;
-    clip: auto;
-    font-weight: 800;
+    width: 28px;
+    height: 28px;
   }
 }
 
