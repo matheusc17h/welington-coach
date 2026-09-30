@@ -16,14 +16,9 @@ import {
   weeks,
   whatsapp,
 } from "./content";
-import {
-  ArrowIcon,
-  CheckIcon,
-  CrossIcon,
-  PlusIcon,
-  WhatsAppIcon,
-} from "./icons";
+import { ArrowIcon, CheckIcon, CrossIcon, PlusIcon, WhatsAppIcon } from "./icons";
 import { external, PillCta } from "./pill";
+import { Preloader } from "./preloader";
 import { ProFilm } from "./pro-film";
 import { Results } from "./results";
 
@@ -124,7 +119,7 @@ function Header() {
           }
         }
       },
-      { rootMargin: "-45% 0px -50% 0px" }
+      { rootMargin: "-45% 0px -50% 0px" },
     );
     for (const target of targets) {
       observer.observe(target);
@@ -154,10 +149,7 @@ function Header() {
         <ul className="w-header__links">
           {navLinks.map((link) => (
             <li key={link.href}>
-              <a
-                aria-current={active === link.href ? "location" : undefined}
-                href={link.href}
-              >
+              <a aria-current={active === link.href ? "location" : undefined} href={link.href}>
                 {link.label}
               </a>
             </li>
@@ -231,8 +223,8 @@ function Hero() {
             </span>
           </h1>
           <p className="w-hero__lead w-in w-in--late">
-            Aulas individuais com análise do seu gameplay. Você para de perder
-            no automático e começa a jogar com método.
+            Aulas individuais com análise do seu gameplay. Você para de perder no automático e
+            começa a jogar com método.
           </p>
           <div className="w-hero__ctas w-in w-in--cta">
             <PillCta href={whatsapp.geral} size="lg">
@@ -301,13 +293,15 @@ function About() {
             Quem é o <span className="w-grad-text">Welington</span>
           </h2>
           <p className="w-lead">
-            Coach de EA SPORTS FC e jogador competitivo, com perfil verificado
-            pela EA e mais de 3.500 alunos. Ele joga o mesmo modo que você, sob
-            a mesma pressão, e ensina o que decide partida dentro de campo.
+            Coach de EA SPORTS FC e jogador competitivo, com perfil verificado pela EA e mais de
+            3.500 alunos. Ele joga o mesmo modo que você, sob a mesma pressão, e ensina o que decide
+            partida dentro de campo.
           </p>
           <dl className="w-about__stats">
             <div>
-              <dd>26,1<small>mil</small></dd>
+              <dd>
+                26,1<small>mil</small>
+              </dd>
               <dt>seguidores no Instagram</dt>
             </div>
             <div>
@@ -406,7 +400,7 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
               stagger: 0.16,
               clearProps: "opacity,visibility,scale",
             },
-            "-=0.45"
+            "-=0.45",
           );
 
         return () => split.revert();
@@ -421,9 +415,118 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
   }, [sectionRef]);
 }
 
+/**
+ * Scroll-driven horizontal rail: the `pin` block holds on screen while the
+ * page scroll slides `track` sideways, one card after another; once the last
+ * card is in, the page scrolls on normally. `section` gets `is-scrub` while it
+ * runs (CSS switches the rail to a single row). Without JS, with reduced
+ * motion or outside `media`, the normal swipe/grid layout stays.
+ */
+function useHorizontalScrub(
+  sectionRef: RefObject<HTMLElement | null>,
+  {
+    media,
+    pin,
+    track,
+    items,
+    priority,
+  }: {
+    media: string;
+    pin: string;
+    track: string;
+    items?: string;
+    /** Higher refreshes first. Upper pins must go first, because their added
+        scroll distance moves every trigger below them. */
+    priority: number;
+  },
+) {
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) {
+      return;
+    }
+    let cleanup = () => {};
+    let cancelled = false;
+
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger"), document.fonts.ready]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        if (cancelled) {
+          return;
+        }
+        gsap.registerPlugin(ScrollTrigger);
+        const mm = gsap.matchMedia();
+        mm.add(`${media} and (prefers-reduced-motion: no-preference)`, () => {
+          const pinEl = section.querySelector<HTMLElement>(pin);
+          const rail = section.querySelector<HTMLElement>(track);
+          const viewport = rail?.parentElement;
+          if (!pinEl || !rail || !viewport) {
+            return;
+          }
+          section.classList.add("is-scrub");
+          const distance = () => Math.max(0, rail.scrollWidth - viewport.clientWidth);
+
+          const slide = gsap.to(rail, {
+            x: () => -distance(),
+            ease: "none",
+            scrollTrigger: {
+              trigger: pinEl,
+              pin: pinEl,
+              // Centre the block when it fits, otherwise hold it under the header.
+              start: () =>
+                pinEl.offsetHeight < window.innerHeight - 96 ? "center center" : "top 80px",
+              end: () => `+=${distance()}`,
+              scrub: 0.6,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              refreshPriority: priority,
+            },
+          });
+
+          // Light up each card while it crosses the middle of the rail.
+          if (items) {
+            for (const item of section.querySelectorAll(items)) {
+              ScrollTrigger.create({
+                trigger: item,
+                containerAnimation: slide,
+                start: "left 72%",
+                end: "right 28%",
+                toggleClass: "is-active",
+              });
+            }
+          }
+
+          return () => section.classList.remove("is-scrub");
+        });
+        // The rails set up asynchronously and in any order: re-measure every
+        // trigger (by priority) once this one exists.
+        const frame = requestAnimationFrame(() => {
+          ScrollTrigger.sort();
+          ScrollTrigger.refresh();
+        });
+        cleanup = () => {
+          cancelAnimationFrame(frame);
+          mm.revert();
+        };
+      },
+    );
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, [sectionRef, media, pin, track, items, priority]);
+}
+
 function Stuck() {
   const sectionRef = useRef<HTMLElement>(null);
   useStuckReveal(sectionRef);
+  useHorizontalScrub(sectionRef, {
+    media: "(min-width: 0px)",
+    pin: ".w-stuck__grid",
+    track: ".w-stuck__list",
+    items: ".w-stuck__card",
+    priority: 2,
+  });
 
   return (
     <section
@@ -442,26 +545,27 @@ function Stuck() {
               Onde você está <span className="w-grad-text">travando</span>
             </h2>
             <p className="w-lead">
-              Seis sinais que aparecem em quase toda call de diagnóstico. Conta
-              quantos são seus.
+              Seis sinais que aparecem em quase toda call de diagnóstico. Conta quantos são seus.
             </p>
           </div>
-          <ol className="w-stuck__list">
-            {stuckPoints.map((point, index) => (
-              <li className="w-glass w-stuck__card" key={point.title}>
-                <span aria-hidden="true" className="w-stuck__num">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3>{point.title}</h3>
-                <p>{point.body}</p>
-              </li>
-            ))}
-          </ol>
+          <div className="w-stuck__viewport">
+            <ol className="w-stuck__list">
+              {stuckPoints.map((point, index) => (
+                <li className="w-glass w-stuck__card" key={point.title}>
+                  <span aria-hidden="true" className="w-stuck__num">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h3>{point.title}</h3>
+                  <p>{point.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
         <div className="w-stuck__close">
           <p>
-            Se você se reconheceu em três ou mais, falta{" "}
-            <span className="w-grad-text">método</span> — não talento.
+            Se você se reconheceu em três ou mais, falta <span className="w-grad-text">método</span>{" "}
+            — não talento.
           </p>
           <PillCta href={whatsapp.geral}>Quero corrigir isso</PillCta>
         </div>
@@ -487,8 +591,8 @@ function Weeks() {
             Plano de <span className="w-grad-text">4 semanas</span>
           </h2>
           <p className="w-lead">
-            O que você vai receber, na ordem certa. Um fundamento por semana,
-            do bote no tempo à rotina de Weekend League.
+            O que você vai receber, na ordem certa. Um fundamento por semana, do bote no tempo à
+            rotina de Weekend League.
           </p>
         </div>
         <ol className="w-weeks__line">
@@ -519,8 +623,7 @@ function Reasons() {
             Por que treinar com o <span className="w-grad-text">Welington</span>
           </h2>
           <p className="w-lead">
-            Treino em cima das suas partidas, com uma meta que dá para medir:
-            subir de divisão.
+            Treino em cima das suas partidas, com uma meta que dá para medir: subir de divisão.
           </p>
         </div>
         {reasons.map((reason, index) => (
@@ -549,8 +652,8 @@ function NotFor() {
             Para quem <span className="w-outline w-outline--magenta">não</span> é
           </h2>
           <p className="w-lead">
-            Aula é treino, não atalho. Se você se encaixa em algum desses, é
-            melhor não gastar seu tempo nem o meu.
+            Aula é treino, não atalho. Se você se encaixa em algum desses, é melhor não gastar seu
+            tempo nem o meu.
           </p>
         </div>
         <ul className="w-notfor__list">
@@ -572,8 +675,22 @@ function NotFor() {
 }
 
 function Plans() {
+  const sectionRef = useRef<HTMLElement>(null);
+  // Desktop shows the three plans side by side; the rail only exists below 861px.
+  useHorizontalScrub(sectionRef, {
+    media: "(max-width: 860px)",
+    pin: ".w-plans__viewport",
+    track: ".w-plans__grid",
+    priority: 1,
+  });
+
   return (
-    <section aria-labelledby="planos-title" className="w-plans w-section" id="planos">
+    <section
+      aria-labelledby="planos-title"
+      className="w-plans w-section"
+      id="planos"
+      ref={sectionRef}
+    >
       <div aria-hidden="true" className="w-aurora w-aurora--mid" />
       <p aria-hidden="true" className="w-bleed w-bleed--plans">
         Elite
@@ -584,41 +701,43 @@ function Plans() {
             Escolha seu <span className="w-grad-text">plano</span>
           </h2>
           <p className="w-lead">
-            Valor a gente fala no WhatsApp, junto com a indicação do plano que
-            faz sentido para o seu momento.
+            Valor a gente fala no WhatsApp, junto com a indicação do plano que faz sentido para o
+            seu momento.
           </p>
         </div>
-        <ul className="w-plans__grid">
-          {plans.map((plan) => (
-            <li
-              className={`w-plan w-rise${plan.featured ? " w-plan--featured" : ""}`}
-              key={plan.name}
-            >
-              {plan.featured ? <p className="w-plan__seal">Mais escolhido</p> : null}
-              <h3 className="w-plan__name">{plan.name}</h3>
-              <p className="w-plan__pitch">{plan.pitch}</p>
-              <ul className="w-plan__items">
-                {plan.items.map((item) => (
-                  <li key={item}>
-                    <CheckIcon />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <a
-                aria-label={`Consultar valores do plano ${plan.name} no WhatsApp`}
-                className="w-plan__cta"
-                href={plan.href}
-                {...external}
+        <div className="w-plans__viewport">
+          <ul className="w-plans__grid">
+            {plans.map((plan) => (
+              <li
+                className={`w-plan w-rise${plan.featured ? " w-plan--featured" : ""}`}
+                key={plan.name}
               >
-                <WhatsAppIcon />
-                <span>
-                  Consultar valores<span className="w-plan__cta-more"> no WhatsApp</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
+                {plan.featured ? <p className="w-plan__seal">Mais escolhido</p> : null}
+                <h3 className="w-plan__name">{plan.name}</h3>
+                <p className="w-plan__pitch">{plan.pitch}</p>
+                <ul className="w-plan__items">
+                  {plan.items.map((item) => (
+                    <li key={item}>
+                      <CheckIcon />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a
+                  aria-label={`Consultar valores do plano ${plan.name} no WhatsApp`}
+                  className="w-plan__cta"
+                  href={plan.href}
+                  {...external}
+                >
+                  <WhatsAppIcon />
+                  <span>
+                    Consultar valores<span className="w-plan__cta-more"> no WhatsApp</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
@@ -674,12 +793,10 @@ function FinalCta() {
       <div className="w-wrap w-final__inner">
         <Shield className="w-final__shield" />
         <h2 className="w-final__title" id="final-title">
-          Chama no WhatsApp e agenda sua{" "}
-          <span className="w-grad-text">primeira aula</span>
+          Chama no WhatsApp e agenda sua <span className="w-grad-text">primeira aula</span>
         </h2>
         <p className="w-lead">
-          Manda a mensagem, conta em que divisão você está e marca sua primeira
-          análise de gameplay.
+          Manda a mensagem, conta em que divisão você está e marca sua primeira análise de gameplay.
         </p>
         <PillCta href={whatsapp.geral} size="lg">
           Agendar minha primeira aula
@@ -717,8 +834,7 @@ function Footer() {
           </li>
         </ul>
         <p className="w-footer__legal">
-          EA SPORTS FC é marca registrada da Electronic Arts. Este site não tem
-          vínculo com a EA.
+          EA SPORTS FC é marca registrada da Electronic Arts. Este site não tem vínculo com a EA.
         </p>
       </div>
     </footer>
@@ -834,6 +950,7 @@ function trackGlow(event: PointerEvent<HTMLDivElement>) {
 export function Landing() {
   return (
     <div className="wgt" lang="pt-BR" onPointerMove={trackGlow}>
+      <Preloader />
       <a className="w-skip" href="#conteudo">
         Pular para o conteúdo
       </a>
