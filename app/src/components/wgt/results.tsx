@@ -6,8 +6,7 @@ import { PillCta } from "./pill";
 
 function prefersReducedMotion() {
   return (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 }
 
@@ -90,9 +89,6 @@ function Prints() {
           </li>
         ))}
       </ul>
-      <p className="w-prints__note">
-        Nomes e avatares de terceiros foram removidos ou borrados.
-      </p>
     </div>
   );
 }
@@ -127,9 +123,7 @@ function Videos() {
 
   const step = (direction: 1 | -1) =>
     setCurrent((value) =>
-      value === null
-        ? value
-        : (value + direction + studentVideos.length) % studentVideos.length
+      value === null ? value : (value + direction + studentVideos.length) % studentVideos.length,
     );
 
   return (
@@ -231,8 +225,8 @@ export function Results() {
             Resultado de <span className="w-grad-text">aluno</span>, não promessa
           </h2>
           <p className="w-lead">
-            Mensagens reais do grupo e dos comentários. Divisão nova, Elite,
-            top 200 e adversário quitando de raiva.
+            Mensagens reais do grupo e dos comentários. Divisão nova, Elite, top 200 e adversário
+            quitando de raiva.
           </p>
         </div>
         <Testimonials />

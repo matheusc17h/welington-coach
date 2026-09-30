@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 const SHIELD = "/assets/brand/wgt-shield.webp";
-/** Never faster than this, so the fill reads as a moment, not a flicker. */
-const MIN_MS = 1400;
-/** Give up waiting after this; the CSS bail-out (6s) sits just behind it. */
-const MAX_MS = 5000;
+/** The count takes at least this long, one number at a time. */
+const MIN_MS = 3200;
+/** Give up waiting after this; the CSS bail-out (8s) sits just behind it. */
+const MAX_MS = 7000;
 
 /**
  * Full-screen loader: the WGT shield fills from the bottom while a counter
@@ -64,10 +64,10 @@ export function Preloader() {
       const real = loaded / total;
       const pace = Math.min(1, elapsed / minMs);
       const target = elapsed > MAX_MS ? 100 : from + (100 - from) * Math.min(real, pace);
-      shown += (target - shown) * 0.14;
-      if (target === 100 && shown > 99.4) {
-        shown = 100;
-      }
+      // Step at a steady rate (about 32 numbers a second) so the count
+      // reads 1, 2, 3... instead of numbers tumbling over each other.
+      const maxStep = (100 / minMs) * 16.7 * 1.05;
+      shown = Math.min(target, shown + maxStep);
       el.style.setProperty("--p", String(Math.floor(shown)));
       if (shown >= 100) {
         setDone(true);

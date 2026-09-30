@@ -21,6 +21,8 @@ import { external, PillCta } from "./pill";
 import { Preloader } from "./preloader";
 import { ProFilm } from "./pro-film";
 import { Results } from "./results";
+import { Modules } from "./modules";
+import { Shortcuts } from "./shortcuts";
 
 import "./wgt.css";
 
@@ -371,7 +373,6 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const title = section.querySelector<HTMLElement>(".w-stuck__head .w-h2");
         const lead = section.querySelector(".w-stuck__head .w-lead");
-        const cards = section.querySelectorAll(".w-stuck__card");
         if (!title) {
           return;
         }
@@ -389,21 +390,23 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
             onComplete: () => split.revert(),
           })
           .from(split.lines, { yPercent: 110, duration: 1.1, stagger: 0.12 })
-          .from(lead, { autoAlpha: 0, y: 28, duration: 0.9, ease: "power3.out" }, "-=0.6")
-          .from(
-            cards,
-            {
-              autoAlpha: 0,
-              y: "+=64",
-              scale: 0.95,
-              duration: 1,
-              stagger: 0.16,
-              clearProps: "opacity,visibility,scale",
-            },
-            "-=0.45",
-          );
+          .from(lead, { autoAlpha: 0, y: 28, duration: 0.9, ease: "power3.out" }, "-=0.6");
 
         return () => split.revert();
+      });
+      // Desktop keeps the two-column grid beside the sticky heading; each
+      // card rises into place tied to the page scroll (mobile uses the
+      // horizontal rail instead). Transform/opacity only, so it stays light.
+      mm.add("(min-width: 861px) and (prefers-reduced-motion: no-preference)", () => {
+        for (const card of section.querySelectorAll(".w-stuck__card")) {
+          gsap.from(card, {
+            autoAlpha: 0,
+            yPercent: 35,
+            scale: 0.94,
+            ease: "none",
+            scrollTrigger: { trigger: card, start: "top 96%", end: "top 62%", scrub: 0.5 },
+          });
+        }
       });
       cleanup = () => mm.revert();
     });
@@ -521,7 +524,7 @@ function Stuck() {
   const sectionRef = useRef<HTMLElement>(null);
   useStuckReveal(sectionRef);
   useHorizontalScrub(sectionRef, {
-    media: "(min-width: 0px)",
+    media: "(max-width: 860px)",
     pin: ".w-stuck__grid",
     track: ".w-stuck__list",
     items: ".w-stuck__card",
@@ -582,9 +585,125 @@ function Film() {
   );
 }
 
+/**
+ * Plan timeline, played once (not scrubbed) when the visitor is about half
+ * way into the section: week 1's dot lights up and its text rises, then the
+ * line draws on to the next dot, and so on until week 4. The line is
+ * horizontal on desktop and vertical on phones; both are measured from the
+ * real dot positions. Everything is visible without JS or with reduced motion.
+ */
+function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) {
+      return;
+    }
+    let cleanup = () => {};
+    let cancelled = false;
+
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        if (cancelled) {
+          return;
+        }
+        gsap.registerPlugin(ScrollTrigger);
+        const mm = gsap.matchMedia();
+        mm.add(
+          {
+            vertical: "(max-width: 860px) and (prefers-reduced-motion: no-preference)",
+            horizontal: "(min-width: 861px) and (prefers-reduced-motion: no-preference)",
+          },
+          (context) => {
+            const vertical = Boolean(context.conditions?.vertical);
+            const line = section.querySelector<HTMLElement>(".w-weeks__line");
+            const fill = section.querySelector<HTMLElement>(".w-weeks__fill");
+            const steps = [...section.querySelectorAll<HTMLElement>(".w-weeks__step")];
+            if (!line || !fill || !steps.length) {
+              return;
+            }
+            const dots = steps.map((step) => step.querySelector<HTMLElement>(".w-weeks__dot"));
+            // Fraction of the line (0-1) where dot i sits. Measured on the
+            // unscaled track: the fill itself starts at scale 0 (no size).
+            const track = fill.parentElement ?? fill;
+            const at = (i: number) => {
+              const dot = dots[i];
+              if (!dot) {
+                return 1;
+              }
+              const l = track.getBoundingClientRect();
+              const d = dot.getBoundingClientRect();
+              return vertical
+                ? (d.top + d.height / 2 - l.top) / l.height
+                : (d.left + d.width / 2 - l.left) / l.width;
+            };
+            const axis = vertical ? "scaleY" : "scaleX";
+            gsap.set(fill, { [axis]: 0 });
+
+            const tl = gsap.timeline({
+              paused: true,
+              defaults: { ease: "power3.out" },
+            });
+            steps.forEach((step, i) => {
+              const dot = dots[i];
+              const text = step.querySelectorAll(".w-weeks__week, h3, p");
+              if (i > 0) {
+                // Draw the connection up to this week's dot.
+                tl.to(fill, { [axis]: () => at(i), duration: 0.7, ease: "power2.inOut" });
+              } else {
+                tl.to(fill, { [axis]: () => at(0), duration: 0.3, ease: "power2.out" });
+              }
+              if (dot) {
+                tl.fromTo(
+                  dot,
+                  { scale: 0, autoAlpha: 0 },
+                  { scale: 1, autoAlpha: 1, duration: 0.55, ease: "back.out(2.6)" },
+                  "-=0.1",
+                ).fromTo(
+                  dot,
+                  { "--glow": 0 },
+                  { "--glow": 1, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut" },
+                  "<0.15",
+                );
+              }
+              tl.from(text, { autoAlpha: 0, y: 22, duration: 0.6, stagger: 0.08 }, "<");
+            });
+            // Finish the line to its end after the last week.
+            tl.to(fill, { [axis]: 1, duration: 0.5, ease: "power2.inOut" });
+
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top 45%",
+              once: true,
+              onEnter: () => tl.play(),
+            });
+            return () => {
+              tl.kill();
+              gsap.set(fill, { clearProps: "transform" });
+            };
+          },
+        );
+        cleanup = () => mm.revert();
+      },
+    );
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, [sectionRef]);
+}
+
 function Weeks() {
+  const sectionRef = useRef<HTMLElement>(null);
+  useWeeksSequence(sectionRef);
+
   return (
-    <section aria-labelledby="metodo-title" className="w-weeks w-section" id="metodo">
+    <section
+      aria-labelledby="metodo-title"
+      className="w-weeks w-section"
+      id="metodo"
+      ref={sectionRef}
+    >
       <div className="w-wrap">
         <div className="w-weeks__head">
           <h2 className="w-h2" id="metodo-title">
@@ -596,8 +715,11 @@ function Weeks() {
           </p>
         </div>
         <ol className="w-weeks__line">
+          <li aria-hidden="true" className="w-weeks__track">
+            <span className="w-weeks__fill" />
+          </li>
           {weeks.map((item, index) => (
-            <li className="w-weeks__step w-rise" key={item.week}>
+            <li className="w-weeks__step" key={item.week}>
               <span aria-hidden="true" className="w-weeks__dot" />
               <p className="w-weeks__week">
                 <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
@@ -960,7 +1082,9 @@ export function Landing() {
         <Marquee />
         <About />
         <Stuck />
+        <Shortcuts />
         <Film />
+        <Modules />
         <Weeks />
         <ProFilm />
         <Reasons />

@@ -1367,8 +1367,27 @@ body {
   height: 2px;
   border-radius: 2px;
   content: "";
+  background: rgb(255 255 255 / 0.1);
+}
+
+/* The lit connection. Full without JS; GSAP scales it dot by dot. */
+.w-weeks__track {
+  position: absolute;
+  top: 9px;
+  right: 0;
+  left: 0;
+  height: 2px;
+  pointer-events: none;
+}
+
+.w-weeks__fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
   background: var(--brand-h);
   box-shadow: 0 0 18px rgb(123 47 247 / 0.8);
+  transform-origin: left center;
 }
 
 .w-weeks__step {
@@ -1387,18 +1406,20 @@ body {
   box-shadow:
     0 0 0 2px var(--magenta),
     0 0 22px 4px rgb(224 33 138 / 0.8);
+  /* --glow flashes to 1 when the dot lights up in the sequence. */
+  filter: brightness(calc(1 + var(--glow, 0) * 0.9));
   animation: w-pulse 2.6s var(--ease-in-out) infinite;
 }
 
-.w-weeks__step:nth-child(2) .w-weeks__dot {
+.w-weeks__step:nth-of-type(3) .w-weeks__dot {
   animation-delay: 0.4s;
 }
 
-.w-weeks__step:nth-child(3) .w-weeks__dot {
+.w-weeks__step:nth-of-type(4) .w-weeks__dot {
   animation-delay: 0.8s;
 }
 
-.w-weeks__step:nth-child(4) .w-weeks__dot {
+.w-weeks__step:nth-of-type(5) .w-weeks__dot {
   animation-delay: 1.2s;
 }
 
@@ -1681,10 +1702,6 @@ body {
   text-transform: uppercase;
 }
 
-.w-prints__note {
-  color: var(--muted);
-  font-size: 0.78rem;
-}
 
 .w-videos__hint {
   color: var(--muted);
@@ -2693,13 +2710,19 @@ body {
     padding-left: var(--s5);
   }
 
-  .w-weeks__line::before {
+  .w-weeks__line::before,
+  .w-weeks__track {
     top: 0;
+    right: auto;
     bottom: 0;
     left: 9px;
     width: 2px;
     height: auto;
+  }
+
+  .w-weeks__fill {
     background: linear-gradient(180deg, #1f3bff, #7b2ff7 55%, #e0218a);
+    transform-origin: center top;
   }
 
   .w-weeks__dot {
@@ -3129,18 +3152,18 @@ body {
     radial-gradient(circle at 50% 70%, rgb(31 59 255 / 0.22), transparent 60%),
     var(--bg);
   animation:
-    w-preloader-boot 2.6s cubic-bezier(0.2, 0.7, 0.3, 1) forwards,
-    w-preloader-bail 0.6s 6s forwards;
+    w-preloader-boot 3s linear forwards,
+    w-preloader-bail 0.6s 8s forwards;
 }
 
 /* JS owns --p now; keep only the bail-out (same name, so it isn't restarted). */
 .w-preloader[data-active] {
-  animation: w-preloader-bail 0.6s 6s forwards;
+  animation: w-preloader-bail 0.6s 8s forwards;
 }
 
 @keyframes w-preloader-boot {
   to {
-    --p: 72;
+    --p: 90;
   }
 }
 
@@ -3247,5 +3270,505 @@ body {
     transform: none;
     opacity: 0;
     transition: opacity 0.2s linear;
+  }
+}
+
+/* Shortcuts ("Atalhos que não resolvem"): three things players pay for,
+   each stamped out by a magenta slash when it scrolls in, then the answer. */
+.w-cuts__head {
+  max-width: 860px;
+}
+
+.w-cuts__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--s3);
+  padding: 8px 14px;
+  border: 1px solid rgb(224 33 138 / 0.45);
+  border-radius: var(--r-chip);
+  background: rgb(224 33 138 / 0.1);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.w-cuts__eyebrow::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  content: "";
+  background: var(--magenta);
+  box-shadow: 0 0 10px var(--magenta);
+}
+
+.w-cuts__head .w-lead {
+  margin-top: var(--s3);
+}
+
+.w-cuts__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s3);
+  margin-top: var(--s8);
+}
+
+.w-cut {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--bg-2);
+  box-shadow:
+    inset 0 1px 0 var(--line-top),
+    0 30px 60px -34px rgb(224 33 138 / 0.45);
+  transition:
+    transform 0.5s var(--ease),
+    border-color 0.4s var(--ease);
+}
+
+.w-cut:hover {
+  border-color: rgb(224 33 138 / 0.45);
+  transform: translateY(-4px);
+}
+
+.w-cut__visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 30% 20%, rgb(31 59 255 / 0.35), transparent 60%),
+    linear-gradient(160deg, #0a0d28, #06081a);
+}
+
+/* Diagonal light beam behind the art. */
+.w-cut__beam {
+  position: absolute;
+  inset: -20% 18% -20% auto;
+  width: 26%;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.55), rgb(224 33 138 / 0.65) 55%, transparent);
+  filter: blur(2px);
+  opacity: 0.55;
+  transform: skewX(-24deg);
+}
+
+.w-cut__art {
+  position: relative;
+  width: 72%;
+  height: auto;
+  filter: drop-shadow(0 16px 30px rgb(31 59 255 / 0.45));
+  transition: transform 0.8s var(--ease), filter 0.8s var(--ease);
+}
+
+.w-cut:hover .w-cut__art {
+  transform: scale(1.04) rotate(-1.5deg);
+}
+
+/* The strike: a magenta slash across the art, plus a stamped label. */
+.w-cut__slash {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  width: 84%;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e0218a, #ff5fb4);
+  box-shadow: 0 0 18px rgb(224 33 138 / 0.9);
+  transform: rotate(-18deg);
+  transform-origin: left center;
+}
+
+.w-cut__stamp {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--magenta);
+  border-radius: 8px;
+  color: #ff7fc1;
+  background: rgb(6 8 26 / 0.7);
+  font-family: var(--display);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-6deg);
+}
+
+.w-cut__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--s1);
+  padding: var(--s3);
+}
+
+.w-cut__body h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.w-cut__body > p:not(.w-cut__cost) {
+  color: var(--muted);
+}
+
+.w-cut__cost {
+  display: grid;
+  gap: 2px;
+  margin-top: auto;
+  padding-top: var(--s3);
+}
+
+.w-cut__cost span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.w-cut__cost strong {
+  color: #ff5fb4;
+  font-family: var(--display);
+  font-size: clamp(1.4rem, 2vw, 1.75rem);
+  font-weight: 400;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+/* The answer strip. */
+.w-cuts__answer {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin-top: var(--s3);
+  padding: var(--s4);
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: var(--r-card);
+  background:
+    linear-gradient(rgb(12 16 48 / 0.94), rgb(12 16 48 / 0.94)) padding-box,
+    var(--brand) border-box;
+}
+
+.w-cuts__answer-kicker {
+  color: var(--blue-light);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.w-cuts__answer-line {
+  max-width: 30ch;
+  margin-top: 6px;
+  font-family: var(--display);
+  font-size: clamp(1.7rem, 3vw, 2.6rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+/* Scroll-in choreography (only once JS arms it). */
+@media (prefers-reduced-motion: no-preference) {
+  .w-cuts.is-armed .w-cut,
+  .w-cuts.is-armed .w-cuts__answer {
+    opacity: 0;
+    transform: translateY(48px);
+    transition:
+      opacity 0.8s var(--ease) calc(var(--i, 0) * 0.14s),
+      transform 0.9s var(--ease) calc(var(--i, 0) * 0.14s),
+      border-color 0.4s var(--ease);
+  }
+
+  .w-cuts.is-armed .w-cut.is-in,
+  .w-cuts.is-armed .w-cuts__answer.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  .w-cuts.is-armed .w-cut.is-in:hover {
+    transform: translateY(-4px);
+  }
+
+  .w-cuts.is-armed .w-cut__slash {
+    transform: rotate(-18deg) scaleX(0);
+    transition: transform 0.55s cubic-bezier(0.7, 0, 0.2, 1) calc(0.5s + var(--i, 0) * 0.14s);
+  }
+
+  .w-cuts.is-armed .w-cut.is-in .w-cut__slash {
+    transform: rotate(-18deg) scaleX(1);
+  }
+
+  .w-cuts.is-armed .w-cut__stamp {
+    opacity: 0;
+    transform: rotate(-6deg) scale(1.6);
+    transition:
+      opacity 0.3s var(--ease) calc(0.95s + var(--i, 0) * 0.14s),
+      transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.95s + var(--i, 0) * 0.14s);
+  }
+
+  .w-cuts.is-armed .w-cut.is-in .w-cut__stamp {
+    opacity: 1;
+    transform: rotate(-6deg) scale(1);
+  }
+}
+
+@media (max-width: 1024px) {
+  .w-cuts__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .w-cut:last-child {
+    grid-column: 1 / -1;
+    flex-direction: row;
+  }
+
+  .w-cut:last-child .w-cut__visual {
+    width: 46%;
+    aspect-ratio: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .w-cuts__grid {
+    grid-template-columns: 1fr;
+    margin-top: var(--s6);
+  }
+
+  .w-cut:last-child {
+    flex-direction: column;
+  }
+
+  .w-cut:last-child .w-cut__visual {
+    width: auto;
+    aspect-ratio: 16 / 10;
+  }
+
+  .w-cuts__answer {
+    padding: var(--s3);
+  }
+
+  .w-cuts__answer .w-pill {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Modules ("O que você vai treinar"): game-cover cards. Each media stacks the
+   scene, a giant italic word, then a background-removed copy of the frame
+   so the player stands in front of the word. */
+.w-mods__head {
+  max-width: 760px;
+}
+
+.w-mods__head .w-lead {
+  margin-top: var(--s3);
+}
+
+.w-mod {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--bg-2);
+  box-shadow:
+    inset 0 1px 0 var(--line-top),
+    0 30px 60px -34px rgb(31 59 255 / 0.5);
+}
+
+.w-mod__media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0a0d28;
+}
+
+.w-mod__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.1s var(--ease);
+}
+
+/* Readability of the word over bright skies. */
+.w-mod__media::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: "";
+  background: linear-gradient(180deg, rgb(6 8 26 / 0.35), transparent 45%, rgb(6 8 26 / 0.55));
+  pointer-events: none;
+}
+
+.w-mod__word {
+  position: absolute;
+  z-index: 2;
+  top: 9%;
+  left: 50%;
+  width: 104%;
+  color: var(--white);
+  font-family: var(--display);
+  font-size: clamp(3.4rem, 8.6vw, 7.5rem);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 10px 40px rgb(6 8 26 / 0.45);
+  transform: translateX(-50%) skewX(-10deg);
+  pointer-events: none;
+}
+
+.w-mod__cut {
+  z-index: 3;
+}
+
+.w-mod:hover .w-mod__media img {
+  transform: scale(1.045);
+}
+
+.w-mod__copy {
+  display: grid;
+  align-content: start;
+  gap: var(--s2);
+  padding: var(--s3);
+}
+
+.w-mod__copy > p {
+  color: var(--muted);
+}
+
+.w-mod__title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* Featured "Jornada": image left, copy right. */
+.w-mod--feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  align-items: center;
+  margin-top: var(--s8);
+}
+
+.w-mod--feature .w-mod__word {
+  font-size: clamp(3.8rem, 10vw, 9.5rem);
+}
+
+.w-mod--feature .w-mod__copy {
+  gap: var(--s3);
+  padding: var(--s5) var(--s5) var(--s5) var(--s4);
+}
+
+.w-mod--feature .w-mod__title {
+  font-family: var(--display);
+  font-size: clamp(2.2rem, 3.6vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.w-mod--feature .w-pill {
+  justify-self: start;
+  margin-top: var(--s1);
+}
+
+.w-mod__tag {
+  justify-self: start;
+  padding: 8px 14px;
+  border: 1px solid var(--line-top);
+  border-radius: var(--r-chip);
+  color: var(--white);
+  background: rgb(255 255 255 / 0.04);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.w-mods__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s3);
+  margin-top: var(--s3);
+}
+
+.w-mod--card .w-mod__word {
+  font-size: clamp(3rem, 5.4vw, 5rem);
+}
+
+/* Scroll-in: the card rises, then the word wipes in from the left. */
+@media (prefers-reduced-motion: no-preference) {
+  .w-mods.is-armed .w-mod {
+    opacity: 0;
+    transform: translateY(56px);
+    transition:
+      opacity 0.8s var(--ease) calc(var(--i, 0) * 0.12s),
+      transform 1s var(--ease) calc(var(--i, 0) * 0.12s);
+  }
+
+  .w-mods.is-armed .w-mod.is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  .w-mods.is-armed .w-mod__word {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.9s cubic-bezier(0.7, 0, 0.2, 1) calc(0.35s + var(--i, 0) * 0.12s);
+  }
+
+  .w-mods.is-armed .w-mod.is-in .w-mod__word {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .w-mod--feature {
+    grid-template-columns: 1fr;
+  }
+
+  .w-mod--feature .w-mod__copy {
+    padding: var(--s4);
+  }
+
+  .w-mods__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .w-mods__grid > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  .w-mods__grid > :last-child .w-mod__media {
+    aspect-ratio: 21 / 9;
+  }
+}
+
+@media (max-width: 640px) {
+  .w-mod--feature {
+    margin-top: var(--s6);
+  }
+
+  .w-mods__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .w-mods__grid > :last-child .w-mod__media {
+    aspect-ratio: 16 / 9;
+  }
+
+  .w-mod--feature .w-pill {
+    justify-self: stretch;
+    justify-content: space-between;
   }
 }
