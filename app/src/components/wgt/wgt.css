@@ -3579,9 +3579,9 @@ body {
   }
 }
 
-/* Modules ("O que você vai treinar"): game-cover cards. Each media stacks the
-   scene, a giant italic word, then a background-removed copy of the frame
-   so the player stands in front of the word. */
+/* Modules ("O que você vai treinar"): a horizontal accordion. Closed
+   panels are slim strips with a vertical label; the open one takes the room
+   and shows its title over the image. Phones stack all panels open. */
 .w-mods__head {
   max-width: 760px;
 }
@@ -3590,223 +3590,212 @@ body {
   margin-top: var(--s3);
 }
 
-.w-mod {
+.w-acc {
+  display: flex;
+  gap: 12px;
+  height: clamp(440px, 62vh, 600px);
+  margin-top: var(--s8);
+}
+
+.w-acc__panel {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--r-card);
   background: var(--bg-2);
-  box-shadow:
-    inset 0 1px 0 var(--line-top),
-    0 30px 60px -34px rgb(31 59 255 / 0.5);
+  transition:
+    flex-grow 0.8s var(--ease),
+    border-color 0.4s var(--ease);
 }
 
-.w-mod__media {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  isolation: isolate;
-  background: #0a0d28;
+.w-acc__panel[data-open] {
+  flex-grow: 5;
+  border-color: rgb(63 169 255 / 0.45);
 }
 
-.w-mod__media img {
+.w-acc__img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 1.1s var(--ease);
+  filter: saturate(0.6) brightness(0.55);
+  transform: scale(1.08);
+  transition:
+    filter 0.8s var(--ease),
+    transform 1.2s var(--ease);
 }
 
-/* Readability of the word over bright skies. */
-.w-mod__media::after {
+.w-acc__panel[data-open] .w-acc__img {
+  filter: none;
+  transform: none;
+}
+
+/* Brand tint + bottom fade so the copy reads. */
+.w-acc__panel::after {
   position: absolute;
-  z-index: 1;
   inset: 0;
   content: "";
-  background: linear-gradient(180deg, rgb(6 8 26 / 0.35), transparent 45%, rgb(6 8 26 / 0.55));
+  background:
+    linear-gradient(0deg, rgb(6 8 26 / 0.95) 0%, rgb(6 8 26 / 0.4) 42%, transparent 70%),
+    linear-gradient(135deg, rgb(31 59 255 / 0.25), transparent 50%, rgb(224 33 138 / 0.22));
   pointer-events: none;
 }
 
-.w-mod__word {
+.w-acc__toggle {
   position: absolute;
   z-index: 2;
-  top: 9%;
-  left: 50%;
-  width: 104%;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s3) 0;
+  border: 0;
   color: var(--white);
+  background: transparent;
+  cursor: pointer;
+  transition: opacity 0.4s var(--ease);
+}
+
+.w-acc__toggle:focus-visible {
+  outline: 2px solid var(--blue-light);
+  outline-offset: -4px;
+  border-radius: var(--r-card);
+}
+
+.w-acc__num {
   font-family: var(--display);
-  font-size: clamp(3.4rem, 8.6vw, 7.5rem);
-  font-style: italic;
-  font-weight: 400;
-  line-height: 0.9;
-  letter-spacing: 0.02em;
-  text-align: center;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.w-acc__label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  white-space: nowrap;
-  text-shadow: 0 10px 40px rgb(6 8 26 / 0.45);
-  transform: translateX(-50%) skewX(-10deg);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.w-acc__panel[data-open] .w-acc__toggle {
+  opacity: 0;
   pointer-events: none;
 }
 
-.w-mod__cut {
-  z-index: 3;
-}
-
-.w-mod:hover .w-mod__media img {
-  transform: scale(1.045);
-}
-
-.w-mod__copy {
+.w-acc__copy {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  left: 0;
   display: grid;
-  align-content: start;
-  gap: var(--s2);
-  padding: var(--s3);
+  gap: var(--s1);
+  max-width: 560px;
+  padding: var(--s4);
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.6s var(--ease);
+  pointer-events: none;
 }
 
-.w-mod__copy > p {
-  color: var(--muted);
+.w-acc__panel[data-open] .w-acc__copy {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.25s;
 }
 
-.w-mod__title {
-  font-size: 1.3rem;
+.w-acc__tag {
+  justify-self: start;
+  padding: 6px 12px;
+  border: 1px solid rgb(63 169 255 / 0.5);
+  border-radius: var(--r-chip);
+  color: var(--blue-light);
+  background: rgb(6 8 26 / 0.6);
+  font-size: 0.75rem;
   font-weight: 800;
-  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-/* Featured "Jornada": image left, copy right. */
-.w-mod--feature {
-  display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-  align-items: center;
-  margin-top: var(--s8);
-}
-
-.w-mod--feature .w-mod__word {
-  font-size: clamp(3.8rem, 10vw, 9.5rem);
-}
-
-.w-mod--feature .w-mod__copy {
-  gap: var(--s3);
-  padding: var(--s5) var(--s5) var(--s5) var(--s4);
-}
-
-.w-mod--feature .w-mod__title {
+.w-acc__title {
+  margin-top: var(--s1);
   font-family: var(--display);
-  font-size: clamp(2.2rem, 3.6vw, 3.4rem);
+  font-size: clamp(2rem, 3.6vw, 3.2rem);
   font-weight: 400;
   line-height: 1;
   text-transform: uppercase;
 }
 
-.w-mod--feature .w-pill {
-  justify-self: start;
-  margin-top: var(--s1);
+.w-acc__body {
+  color: rgb(245 247 255 / 0.85);
 }
 
-.w-mod__tag {
-  justify-self: start;
-  padding: 8px 14px;
-  border: 1px solid var(--line-top);
-  border-radius: var(--r-chip);
-  color: var(--white);
-  background: rgb(255 255 255 / 0.04);
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-/* 3 cards on the first row, 2 wider ones on the second. */
-.w-mods__grid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+.w-mods__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--s3);
-  margin-top: var(--s3);
+  margin-top: var(--s4);
 }
 
-.w-mods__grid > li {
-  grid-column: span 2;
+.w-mods__cta p {
+  max-width: 46ch;
+  color: var(--muted);
 }
 
-.w-mods__grid > li:nth-child(n + 4) {
-  grid-column: span 3;
+@media (prefers-reduced-motion: reduce) {
+  .w-acc__panel,
+  .w-acc__img,
+  .w-acc__copy {
+    transition: none;
+  }
 }
 
-.w-mods__grid > li:nth-child(n + 4) .w-mod__word {
-  font-size: clamp(3.4rem, 7vw, 6.4rem);
-}
-
-.w-mod--card .w-mod__word {
-  font-size: clamp(3rem, 5.4vw, 5rem);
-}
-
-/* Scroll-in: the card rises, then the word wipes in from the left. */
-@media (prefers-reduced-motion: no-preference) {
-  .w-mods.is-armed .w-mod {
-    opacity: 0;
-    transform: translateY(56px);
-    transition:
-      opacity 0.8s var(--ease) calc(var(--i, 0) * 0.12s),
-      transform 1s var(--ease) calc(var(--i, 0) * 0.12s);
+/* Phones/tablets: stacked cards, every panel open. */
+@media (max-width: 860px) {
+  .w-acc {
+    flex-direction: column;
+    height: auto;
+    margin-top: var(--s6);
   }
 
-  .w-mods.is-armed .w-mod.is-in {
+  .w-acc__panel,
+  .w-acc__panel[data-open] {
+    flex: none;
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+  }
+
+  .w-acc__img {
+    filter: none;
+    transform: none;
+  }
+
+  .w-acc__toggle {
+    display: none;
+  }
+
+  .w-acc__copy {
+    padding: var(--s3);
     opacity: 1;
     transform: none;
   }
 
-  /* Negative top/bottom insets keep accents (DECISÃO, TÉCNICO) unclipped. */
-  .w-mods.is-armed .w-mod__word {
-    clip-path: inset(-40% 100% -30% 0);
-    transition: clip-path 0.9s cubic-bezier(0.7, 0, 0.2, 1) calc(0.35s + var(--i, 0) * 0.12s);
-  }
-
-  .w-mods.is-armed .w-mod.is-in .w-mod__word {
-    clip-path: inset(-40% -10% -30% 0);
-  }
-}
-
-@media (max-width: 1024px) {
-  .w-mod--feature {
-    grid-template-columns: 1fr;
-  }
-
-  .w-mod--feature .w-mod__copy {
-    padding: var(--s4);
-  }
-
-  /* Tablet: 2 + 2 + 1 wide. */
-  .w-mods__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .w-mods__grid > li,
-  .w-mods__grid > li:nth-child(n + 4) {
-    grid-column: auto;
-  }
-
-  .w-mods__grid > :last-child {
-    grid-column: 1 / -1;
-  }
-
-  .w-mods__grid > :last-child .w-mod__media {
-    aspect-ratio: 21 / 9;
-  }
-}
-
-@media (max-width: 640px) {
-  .w-mod--feature {
-    margin-top: var(--s6);
-  }
-
-  .w-mods__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .w-mods__grid > :last-child .w-mod__media {
-    aspect-ratio: 16 / 9;
-  }
-
-  .w-mod--feature .w-pill {
-    justify-self: stretch;
+  .w-mods__cta .w-pill {
+    width: 100%;
     justify-content: space-between;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 860px) {
+  .w-acc__panel {
+    aspect-ratio: 16 / 10;
   }
 }

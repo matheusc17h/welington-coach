@@ -1,12 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useState } from "react";
 import type { CSSProperties } from "react";
 
 import { whatsapp } from "./content";
 import { PillCta } from "./pill";
 
 type Module = {
-  word: string;
-  cut?: boolean;
+  id: string;
+  tag: string;
   title: string;
   body: string;
   img: string;
@@ -14,132 +14,45 @@ type Module = {
 
 const modules: Module[] = [
   {
-    word: "Ataque",
-    title: "O maestro do ataque",
-    body: "Construção, passe mirado e finalização certa para cada situação.",
-    img: "/assets/modulos/ataque",
-    cut: true,
+    id: "partida",
+    tag: "Primeira call",
+    title: "Ponto de partida no FC 27",
+    body: "Controle, câmera e configurações acertados para o jogo novo, e o diagnóstico do seu gameplay: onde você perde jogo e por onde começar.",
+    img: "/assets/modulos/jornada",
   },
   {
-    word: "Defesa",
-    title: "Muralha defensiva",
-    body: "Troca manual, jockey e bote no tempo certo. Sem depender da IA.",
-    img: "/assets/modulos/defesa",
-    cut: true,
+    id: "velocidade",
+    tag: "Ataque",
+    title: "Atacar o espaço",
+    body: "Condução em velocidade, passe mirado e a finalização certa para cada lance. Menos toque de lado, mais jogada que termina em gol.",
+    img: "/assets/modulos/velocidade",
   },
   {
-    word: "Drible",
-    title: "Drible com propósito",
-    body: "Skill que abre espaço, não que perde a bola no meio-campo.",
-    img: "/assets/modulos/drible",
-    cut: true,
-  },
-  {
-    word: "Decisão",
-    title: "Tomada de decisão",
-    body: "Ler o jogo antes da bola chegar: quando tocar, quando segurar, quando acelerar.",
+    id: "leitura",
+    tag: "Decisão",
+    title: "Leitura de jogo",
+    body: "Proteger a bola sob pressão e saber quando tocar, segurar ou acelerar. A decisão vem antes da bola chegar.",
     img: "/assets/modulos/decisao",
-    cut: true,
   },
   {
-    word: "Técnico",
-    title: "Cabeça de técnico",
-    body: "Plano de jogo, ajuste no intervalo e sangue frio quando o placar aperta.",
+    id: "plano",
+    tag: "Mentalidade",
+    title: "Plano de jogo",
+    body: "Ajuste no intervalo, leitura do adversário e sangue frio quando o placar aperta. Jogar como quem comanda o time.",
     img: "/assets/modulos/tecnico",
-    cut: true,
   },
 ];
 
-/** Responsive image: 960w for cards/phones, 1600w for the featured card. */
-function ModuleImage({
-  base,
-  sizes,
-  className,
-}: {
-  base: string;
-  sizes: string;
-  className?: string;
-}) {
-  return (
-    <img
-      alt=""
-      className={className}
-      decoding="async"
-      height={900}
-      loading="lazy"
-      sizes={sizes}
-      src={`${base}-960.webp`}
-      srcSet={`${base}-960.webp 960w, ${base}-1600.webp 1600w`}
-      width={1600}
-    />
-  );
-}
-
 /**
- * Three layers, like a game cover: the scene, the giant word, then the same
- * frame with the background removed on top, so the player stands in front
- * of the word. The cutout is optional (layout is identical without it).
- */
-function ModuleMedia({
-  base,
-  word,
-  sizes,
-  cut,
-}: {
-  base: string;
-  word: string;
-  sizes: string;
-  cut?: boolean;
-}) {
-  return (
-    <div className="w-mod__media">
-      <ModuleImage base={base} className="w-mod__scene" sizes={sizes} />
-      <p aria-hidden="true" className="w-mod__word">
-        {word}
-      </p>
-      {cut ? <ModuleImage base={`${base}-cut`} className="w-mod__cut" sizes={sizes} /> : null}
-    </div>
-  );
-}
-
-/**
- * "O que você vai treinar": a featured journey card plus three skill cards.
- * Each image carries a giant italic word (JORNADA, ATAQUE...) that wipes in
- * as the card scrolls into view. Everything is visible without JS.
+ * "O que você vai treinar": a horizontal accordion. One panel is open at a
+ * time (hover, focus or tap opens it); closed panels show a vertical label.
+ * On phones the panels simply stack, all open.
  */
 export function Modules() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section || !("IntersectionObserver" in window)) {
-      return;
-    }
-    section.classList.add("is-armed");
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-in");
-            observer.unobserve(entry.target);
-          }
-        }
-      },
-      { rootMargin: "0px 0px -15% 0px" },
-    );
-    for (const el of section.querySelectorAll(".w-mod")) {
-      observer.observe(el);
-    }
-    return () => observer.disconnect();
-  }, []);
+  const [open, setOpen] = useState(0);
 
   return (
-    <section
-      aria-labelledby="modulos-title"
-      className="w-mods w-section"
-      id="modulos"
-      ref={sectionRef}
-    >
+    <section aria-labelledby="modulos-title" className="w-mods w-section" id="modulos">
       <div aria-hidden="true" className="w-aurora w-aurora--mid" />
       <div className="w-wrap">
         <div className="w-mods__head">
@@ -147,49 +60,55 @@ export function Modules() {
             O que você vai <span className="w-grad-text">treinar</span>
           </h2>
           <p className="w-lead">
-            Do primeiro diagnóstico ao jogo completo. Cada fundamento com o Welington do seu lado.
+            Quatro frentes, uma de cada vez, sempre em cima das suas partidas.
           </p>
         </div>
 
-        <article className="w-mod w-mod--feature">
-          <ModuleMedia
-            base="/assets/modulos/jornada"
-            cut
-            sizes="(max-width: 860px) 100vw, 60vw"
-            word="Jornada"
-          />
-          <div className="w-mod__copy">
-            <p className="w-mod__tag">Aula 01 · Comece por aqui</p>
-            <h3 className="w-mod__title">Jornada EA FC 27</h3>
-            <p>
-              O que mudou do 26 para o 27 e como ajustar controle, câmera e configurações antes de
-              entrar em campo.
-            </p>
-            <p>Depois, o diagnóstico do seu gameplay: onde você perde jogo e por onde começar.</p>
-            <PillCta href={whatsapp.geral}>Começar agora</PillCta>
-          </div>
-        </article>
-
-        <ul className="w-mods__grid">
+        <ul className="w-acc">
           {modules.map((mod, index) => (
             <li
-              className="w-mod w-mod--card"
-              key={mod.word}
+              className="w-acc__panel"
+              data-open={open === index || undefined}
+              key={mod.id}
+              onFocus={() => setOpen(index)}
+              onMouseEnter={() => setOpen(index)}
               style={{ "--i": index } as CSSProperties}
             >
-              <ModuleMedia
-                base={mod.img}
-                cut={mod.cut}
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                word={mod.word}
+              <img
+                alt=""
+                className="w-acc__img"
+                decoding="async"
+                height={900}
+                loading="lazy"
+                sizes="(max-width: 860px) 100vw, 60vw"
+                src={`${mod.img}-960.webp`}
+                srcSet={`${mod.img}-960.webp 960w, ${mod.img}-1600.webp 1600w`}
+                width={1600}
               />
-              <div className="w-mod__copy">
-                <h3 className="w-mod__title">{mod.title}</h3>
-                <p>{mod.body}</p>
+              <button
+                aria-expanded={open === index}
+                className="w-acc__toggle"
+                onClick={() => setOpen(index)}
+                type="button"
+              >
+                <span className="w-acc__num">{String(index + 1).padStart(2, "0")}</span>
+                <span className="w-acc__label">{mod.tag}</span>
+              </button>
+              <div className="w-acc__copy">
+                <p className="w-acc__tag">
+                  {String(index + 1).padStart(2, "0")} · {mod.tag}
+                </p>
+                <h3 className="w-acc__title">{mod.title}</h3>
+                <p className="w-acc__body">{mod.body}</p>
               </div>
             </li>
           ))}
         </ul>
+
+        <div className="w-mods__cta">
+          <p>Você começa pelo ponto de partida. O resto, o Welington monta com você.</p>
+          <PillCta href={whatsapp.geral}>Quero começar</PillCta>
+        </div>
       </div>
     </section>
   );

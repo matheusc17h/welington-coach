@@ -157,21 +157,21 @@ function CoinsArt() {
 
 const shortcuts: Shortcut[] = [
   {
-    title: "Pagou para jogarem na sua conta",
+    title: "Boost na conta",
     body: "A divisão subiu. O seu nível ficou exatamente onde estava.",
     costLabel: "Custa",
     cost: "Sua conta na mão de outro",
     art: <BoostArt />,
   },
   {
-    title: "Comprou FC Points atrás de pack",
+    title: "Pack atrás de pack",
     body: "Carta boa no clube não segura contra-ataque nem vira jogo.",
     costLabel: "Retorno",
     cost: "Sorte, e ela acaba",
     art: <PointsArt />,
   },
   {
-    title: "Comprou coins por fora",
+    title: "Coins de fora",
     body: "É contra as regras da EA. Um ban apaga anos de clube.",
     costLabel: "Risco",
     cost: "Banimento da conta",
@@ -220,13 +220,12 @@ export function Shortcuts() {
       <div aria-hidden="true" className="w-aurora w-aurora--side" />
       <div className="w-wrap">
         <div className="w-cuts__head">
-          <p className="w-cuts__eyebrow">Atalhos que não resolvem</p>
+          <p className="w-cuts__eyebrow">Dinheiro que não vira divisão</p>
           <h2 className="w-h2" id="atalhos-title">
-            Você já pagou por atalho. <span className="w-grad-text">O time</span> continua não
-            jogando sozinho.
+            Gastar não sobe divisão. <span className="w-grad-text">Treinar</span> sobe.
           </h2>
           <p className="w-lead">
-            Elenco nunca foi o problema. O problema é quem segura o controle.
+            Boost, pack e coins mudam o clube por um tempo. O seu jeito de jogar continua o mesmo.
           </p>
         </div>
 
