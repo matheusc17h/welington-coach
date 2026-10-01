@@ -10,6 +10,8 @@ type Module = {
   title: string;
   body: string;
   img: string;
+  /** object-position for the image, to keep the key element in frame. */
+  focus?: string;
 };
 
 const modules: Module[] = [
@@ -33,6 +35,22 @@ const modules: Module[] = [
     title: "Leitura de jogo",
     body: "Proteger a bola sob pressão e saber quando tocar, segurar ou acelerar. A decisão vem antes da bola chegar.",
     img: "/assets/modulos/decisao",
+  },
+  {
+    id: "tatica",
+    tag: "Tática",
+    title: "Prancheta na mão",
+    body: "Formação, instruções e posicionamento desenhados para o seu estilo. Você entra em campo sabendo o que cada jogador faz.",
+    img: "/assets/modulos/tatica",
+    focus: "88% 40%",
+  },
+  {
+    id: "elenco",
+    tag: "Elenco",
+    title: "Time do seu jeito",
+    body: "O Welington ajuda a montar o elenco que combina com como você gosta de jogar: mais toque de bola, mais velocidade ou mais força.",
+    img: "/assets/modulos/elenco",
+    focus: "35% 40%",
   },
   {
     id: "plano",
@@ -59,9 +77,7 @@ export function Modules() {
           <h2 className="w-h2" id="modulos-title">
             O que você vai <span className="w-grad-text">treinar</span>
           </h2>
-          <p className="w-lead">
-            Quatro frentes, uma de cada vez, sempre em cima das suas partidas.
-          </p>
+          <p className="w-lead">Seis frentes, uma de cada vez, sempre em cima das suas partidas.</p>
         </div>
 
         <ul className="w-acc">
@@ -78,6 +94,7 @@ export function Modules() {
                 alt=""
                 className="w-acc__img"
                 decoding="async"
+                style={mod.focus ? { objectPosition: mod.focus } : undefined}
                 height={900}
                 loading="lazy"
                 sizes="(max-width: 860px) 100vw, 60vw"

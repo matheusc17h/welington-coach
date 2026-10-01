@@ -3611,7 +3611,7 @@ body {
 }
 
 .w-acc__panel[data-open] {
-  flex-grow: 5;
+  flex-grow: 6;
   border-color: rgb(63 169 255 / 0.45);
 }
 
