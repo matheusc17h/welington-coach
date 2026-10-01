@@ -1521,8 +1521,8 @@ body {
 .w-reasons__check {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   margin-bottom: var(--s2);
   border-radius: 12px;
   color: var(--white);
@@ -1531,8 +1531,17 @@ body {
 }
 
 .w-reasons__check svg {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
+}
+
+/* Desktop: wide card beside the heading, then 3 + 2 (no orphan). */
+.w-reasons__card:nth-of-type(n + 2) {
+  grid-column: span 4;
+}
+
+.w-reasons__card:nth-of-type(n + 5) {
+  grid-column: span 6;
 }
 
 /* Results */
@@ -2461,12 +2470,15 @@ body {
     display: none;
   }
 
-  .w-reasons__card {
+  .w-reasons__card,
+  .w-reasons__card:nth-of-type(n + 2),
+  .w-reasons__card:nth-of-type(n + 5) {
     grid-column: span 6;
   }
 
   .w-reasons__card--wide,
-  .w-reasons__head {
+  .w-reasons__head,
+  .w-reasons__card:last-of-type {
     grid-column: 1 / -1;
   }
 }
@@ -3030,8 +3042,14 @@ body {
     grid-column: 1 / -1;
   }
 
-  .w-reasons__card {
+  .w-reasons__card,
+  .w-reasons__card:nth-of-type(n + 2),
+  .w-reasons__card:nth-of-type(n + 5) {
     grid-column: auto;
+  }
+
+  .w-reasons__card:last-of-type {
+    grid-column: 1 / -1;
   }
 
   .w-plans__grid {
@@ -3696,11 +3714,24 @@ body {
   font-weight: 700;
 }
 
+/* 3 cards on the first row, 2 wider ones on the second. */
 .w-mods__grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: var(--s3);
   margin-top: var(--s3);
+}
+
+.w-mods__grid > li {
+  grid-column: span 2;
+}
+
+.w-mods__grid > li:nth-child(n + 4) {
+  grid-column: span 3;
+}
+
+.w-mods__grid > li:nth-child(n + 4) .w-mod__word {
+  font-size: clamp(3.4rem, 7vw, 6.4rem);
 }
 
 .w-mod--card .w-mod__word {
@@ -3722,13 +3753,14 @@ body {
     transform: none;
   }
 
+  /* Negative top/bottom insets keep accents (DECISÃO, TÉCNICO) unclipped. */
   .w-mods.is-armed .w-mod__word {
-    clip-path: inset(0 100% 0 0);
+    clip-path: inset(-40% 100% -30% 0);
     transition: clip-path 0.9s cubic-bezier(0.7, 0, 0.2, 1) calc(0.35s + var(--i, 0) * 0.12s);
   }
 
   .w-mods.is-armed .w-mod.is-in .w-mod__word {
-    clip-path: inset(0 0 0 0);
+    clip-path: inset(-40% -10% -30% 0);
   }
 }
 
@@ -3741,8 +3773,14 @@ body {
     padding: var(--s4);
   }
 
+  /* Tablet: 2 + 2 + 1 wide. */
   .w-mods__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .w-mods__grid > li,
+  .w-mods__grid > li:nth-child(n + 4) {
+    grid-column: auto;
   }
 
   .w-mods__grid > :last-child {

@@ -16,7 +16,22 @@ import {
   weeks,
   whatsapp,
 } from "./content";
-import { ArrowIcon, CheckIcon, CrossIcon, PlusIcon, WhatsAppIcon } from "./icons";
+import {
+  ArrowIcon,
+  CheckIcon,
+  CrossIcon,
+  GameplayIcon,
+  GroupIcon,
+  MindIcon,
+  PlusIcon,
+  RoutineIcon,
+  TacticsIcon,
+  TrophyIcon,
+  WhatsAppIcon,
+} from "./icons";
+
+/** One icon per "Por que treinar" reason, in content order. */
+const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon, RoutineIcon, GroupIcon, TrophyIcon];
 import { external, PillCta } from "./pill";
 import { Preloader } from "./preloader";
 import { ProFilm } from "./pro-film";
@@ -748,18 +763,21 @@ function Reasons() {
             Treino em cima das suas partidas, com uma meta que dá para medir: subir de divisão.
           </p>
         </div>
-        {reasons.map((reason, index) => (
-          <article
-            className={`w-glass w-reasons__card w-rise${index === 0 ? " w-reasons__card--wide" : ""}`}
-            key={reason.title}
-          >
-            <span aria-hidden="true" className="w-reasons__check">
-              <CheckIcon />
-            </span>
-            <h3>{reason.title}</h3>
-            <p>{reason.body}</p>
-          </article>
-        ))}
+        {reasons.map((reason, index) => {
+          const Icon = reasonIcons[index] ?? CheckIcon;
+          return (
+            <article
+              className={`w-glass w-reasons__card w-rise${index === 0 ? " w-reasons__card--wide" : ""}`}
+              key={reason.title}
+            >
+              <span aria-hidden="true" className="w-reasons__check">
+                <Icon />
+              </span>
+              <h3>{reason.title}</h3>
+              <p>{reason.body}</p>
+            </article>
+          );
+        })}
       </div>
     </section>
   );

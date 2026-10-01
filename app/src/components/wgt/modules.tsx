@@ -34,6 +34,20 @@ const modules: Module[] = [
     img: "/assets/modulos/drible",
     cut: true,
   },
+  {
+    word: "Decisão",
+    title: "Tomada de decisão",
+    body: "Ler o jogo antes da bola chegar: quando tocar, quando segurar, quando acelerar.",
+    img: "/assets/modulos/decisao",
+    cut: true,
+  },
+  {
+    word: "Técnico",
+    title: "Cabeça de técnico",
+    body: "Plano de jogo, ajuste no intervalo e sangue frio quando o placar aperta.",
+    img: "/assets/modulos/tecnico",
+    cut: true,
+  },
 ];
 
 /** Responsive image: 960w for cards/phones, 1600w for the featured card. */

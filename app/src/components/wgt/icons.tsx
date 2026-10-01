@@ -87,3 +87,66 @@ export function WhatsAppIcon(props: IconProps) {
     </svg>
   );
 }
+
+/* "Por que treinar" icons: one per reason, same 24px line style. */
+export function GameplayIcon(props: IconProps) {
+  return (
+    <svg {...base} stroke="currentColor" strokeWidth={2} {...props}>
+      <rect height="12" rx="2" width="18" x="3" y="4" />
+      <path d="M8 20h8M12 16v4" />
+      <path d="m10.5 8 4 2-4 2z" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function TacticsIcon(props: IconProps) {
+  return (
+    <svg {...base} stroke="currentColor" strokeWidth={2} {...props}>
+      <rect height="17" rx="2" width="14" x="5" y="4" />
+      <path d="M9 2.5h6v3H9z" />
+      <path d="m8 10 2.5 2.5M10.5 10 8 12.5" />
+      <circle cx="15" cy="16" r="1.6" />
+      <path d="M10 16c1.5-2.5 3-3.5 4-4.5m0 0h-2.2m2.2 0v2.2" />
+    </svg>
+  );
+}
+
+export function MindIcon(props: IconProps) {
+  return (
+    <svg {...base} stroke="currentColor" strokeWidth={2} {...props}>
+      <path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V5a2 2 0 0 0-3-1Z" />
+      <path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1" />
+      <path d="M12 9h2.5M12 14h3M6 12h2.5" />
+    </svg>
+  );
+}
+
+export function RoutineIcon(props: IconProps) {
+  return (
+    <svg {...base} stroke="currentColor" strokeWidth={2} {...props}>
+      <rect height="16" rx="2" width="18" x="3" y="5" />
+      <path d="M3 10h18M8 3v4M16 3v4" />
+      <path d="m9 15 2 2 4-4" />
+    </svg>
+  );
+}
+
+export function GroupIcon(props: IconProps) {
+  return (
+    <svg {...base} stroke="currentColor" strokeWidth={2} {...props}>
+      <circle cx="9" cy="8" r="3.2" />
+      <path d="M3 20c.6-3.4 3-5 6-5s5.4 1.6 6 5" />
+      <path d="M16 5.2a3 3 0 0 1 0 5.6M17.5 15c2 .6 3.2 2.2 3.5 5" />
+    </svg>
+  );
+}
+
+export function TrophyIcon(props: IconProps) {
+  return (
+    <svg {...base} stroke="currentColor" strokeWidth={2} {...props}>
+      <path d="M7 4h10v5a5 5 0 0 1-10 0z" />
+      <path d="M7 6H4.5a2.5 2.5 0 0 0 2.6 3.5M17 6h2.5a2.5 2.5 0 0 1-2.6 3.5" />
+      <path d="M12 14v3M8.5 20h7M9.5 17h5v3h-5z" />
+    </svg>
+  );
+}
