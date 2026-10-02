@@ -307,8 +307,10 @@ function Marquee() {
 }
 
 function About() {
+  const sectionRef = useRef<HTMLElement>(null);
+  useCardsReveal(sectionRef, ".w-about__card");
   return (
-    <section aria-labelledby="quem-title" className="w-about w-section" id="quem">
+    <section aria-labelledby="quem-title" className="w-about w-section" id="quem" ref={sectionRef}>
       <p aria-hidden="true" className="w-bleed w-bleed--about">
         Welington
       </p>
@@ -356,11 +358,11 @@ function About() {
               width={800}
             />
           </figure>
-          <article className="w-about__card w-about__card--mission w-rise">
+          <article className="w-about__card w-about__card--mission">
             <p className="w-about__tag">Missão</p>
             <h3>Tirar você do automático.</h3>
           </article>
-          <article className="w-about__card w-about__card--method w-rise">
+          <article className="w-about__card w-about__card--method">
             <p className="w-about__tag">Método</p>
             <h3>Defesa na mão, passe mirado, cabeça no lugar.</h3>
           </article>
@@ -371,12 +373,14 @@ function About() {
 }
 
 /**
- * The six cards come in one at a time with the scroll: tied to the scroll on
- * desktop, played once per card on phones (stacked list). The heading is
- * static (no GSAP), so it never re-wraps or clips. Cards are server-rendered
- * and only hidden once GSAP runs, so without JS everything is visible.
+ * Cards come in one at a time with the scroll: tied to the scroll on desktop,
+ * played once per card on phones (stacked), alternating the side they come
+ * from. Headings stay static. Cards are server-rendered and only hidden once
+ * GSAP runs, so without JS everything is visible. A card offset sideways in
+ * CSS sets `--nudge-x` (percent of its width) so the offset stays responsive
+ * while GSAP owns its transform.
  */
-function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
+function useCardsReveal(sectionRef: RefObject<HTMLElement | null>, cards: string) {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) {
@@ -392,11 +396,17 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
         }
         gsap.registerPlugin(ScrollTrigger);
         const mm = gsap.matchMedia();
-        // Desktop keeps the two-column grid beside the sticky heading; each
-        // card rises into place tied to the page scroll. Transform/opacity
-        // only, so it stays light.
+        const nudge = (card: HTMLElement) => {
+          const shift = parseFloat(getComputedStyle(card).getPropertyValue("--nudge-x"));
+          if (shift) {
+            gsap.set(card, { x: 0, xPercent: shift });
+          }
+        };
+        // Desktop: each card rises into place tied to the page scroll.
+        // Transform/opacity only, so it stays light.
         mm.add("(min-width: 861px) and (prefers-reduced-motion: no-preference)", () => {
-          for (const card of section.querySelectorAll(".w-stuck__card")) {
+          for (const card of section.querySelectorAll<HTMLElement>(cards)) {
+            nudge(card);
             gsap.from(card, {
               autoAlpha: 0,
               yPercent: 35,
@@ -406,10 +416,10 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
             });
           }
         });
-        // Phones: the cards are stacked; each one rises in on its own as it
-        // reaches the screen, alternating the side it comes from.
+        // Phones: each card rises in on its own as it reaches the screen.
         mm.add("(max-width: 860px) and (prefers-reduced-motion: no-preference)", () => {
-          section.querySelectorAll(".w-stuck__card").forEach((card, index) => {
+          section.querySelectorAll<HTMLElement>(cards).forEach((card, index) => {
+            nudge(card);
             gsap.from(card, {
               autoAlpha: 0,
               y: 48,
@@ -429,7 +439,7 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
       cancelled = true;
       cleanup();
     };
-  }, [sectionRef]);
+  }, [sectionRef, cards]);
 }
 
 /**
@@ -542,7 +552,7 @@ function useHorizontalScrub(
 
 function Stuck() {
   const sectionRef = useRef<HTMLElement>(null);
-  useStuckReveal(sectionRef);
+  useCardsReveal(sectionRef, ".w-stuck__card");
 
   return (
     <section
@@ -749,8 +759,15 @@ function Weeks() {
 }
 
 function Reasons() {
+  const sectionRef = useRef<HTMLElement>(null);
+  useCardsReveal(sectionRef, ".w-reasons__card");
   return (
-    <section aria-labelledby="porque-title" className="w-reasons w-section" id="porque">
+    <section
+      aria-labelledby="porque-title"
+      className="w-reasons w-section"
+      id="porque"
+      ref={sectionRef}
+    >
       <div aria-hidden="true" className="w-aurora w-aurora--side" />
       <div className="w-wrap w-reasons__grid">
         <div className="w-reasons__head">
@@ -765,7 +782,7 @@ function Reasons() {
           const Icon = reasonIcons[index] ?? CheckIcon;
           return (
             <article
-              className={`w-glass w-reasons__card w-rise${index === 0 ? " w-reasons__card--wide" : ""}`}
+              className={`w-glass w-reasons__card${index === 0 ? " w-reasons__card--wide" : ""}`}
               key={reason.title}
             >
               <span aria-hidden="true" className="w-reasons__check">
