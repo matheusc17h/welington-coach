@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
+/** Fired on window once the preloader curtain starts lifting. */
+export const REVEALED_EVENT = "wgt:revealed";
+
 const SHIELD = "/assets/brand/wgt-shield.webp";
 /** The count takes at least this long, one number at a time. */
 const MIN_MS = 3200;
@@ -71,6 +74,9 @@ export function Preloader() {
       el.style.setProperty("--p", String(Math.floor(shown)));
       if (shown >= 100) {
         setDone(true);
+        // The hero entrance (typewriter title) starts as the curtain lifts.
+        document.documentElement.dataset.wgtRevealed = "";
+        window.dispatchEvent(new Event(REVEALED_EVENT));
         root.style.overflow = previousOverflow;
         exit = window.setTimeout(() => setGone(true), reduced ? 200 : 1200);
         return;

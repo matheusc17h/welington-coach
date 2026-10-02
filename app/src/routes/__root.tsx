@@ -12,6 +12,7 @@ import { button } from "@higgsfield/quanta/button";
 import { NotFound } from "@higgsfield/quanta/not-found";
 
 import appCss from "../styles.css?url";
+import landingCss from "../landing-base.css?url";
 import { reportHiggsfieldError } from "../lib/higgsfield-error-reporting";
 // Page metadata (browser <title>/favicon + social og: tags) committed into the
 // repo by the marketplace meta API and read at BUILD time — no runtime fetch.
@@ -67,7 +68,7 @@ function toOwnAssetUrl(value: string | null | undefined): string | null {
   }
 }
 
-function buildHead(meta: AppMeta) {
+function buildHead(meta: AppMeta, { landing }: { landing: boolean }) {
   const title = meta.og_title ?? DEFAULT_TITLE;
   const description = meta.og_description ?? DEFAULT_DESCRIPTION;
   const ogImage = toOwnAssetUrl(meta.og_image_url);
@@ -96,13 +97,33 @@ function buildHead(meta: AppMeta) {
       ...(ogVideo ? [{ property: "og:video", content: ogVideo }] : []),
     ],
     links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" as const },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&display=swap",
-      },
-      { rel: "stylesheet", href: appCss },
+      // The landing self-hosts its two fonts (declared in landing-base.css)
+      // and ships only its reset; everything else keeps Google Fonts and the
+      // full app CSS.
+      ...(landing
+        ? [
+            ...["/fonts/anton-latin.woff2", "/fonts/manrope-latin.woff2"].map((href) => ({
+              rel: "preload",
+              href,
+              as: "font",
+              type: "font/woff2",
+              crossOrigin: "anonymous" as const,
+            })),
+            { rel: "stylesheet", href: landingCss },
+          ]
+        : [
+            { rel: "preconnect", href: "https://fonts.googleapis.com" },
+            {
+              rel: "preconnect",
+              href: "https://fonts.gstatic.com",
+              crossOrigin: "anonymous" as const,
+            },
+            {
+              rel: "stylesheet",
+              href: "https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&display=swap",
+            },
+            { rel: "stylesheet", href: appCss },
+          ]),
       { rel: "apple-touch-icon", href: "/assets/brand/apple-touch-icon.png" },
       ...(favicon ? [{ rel: "icon", href: favicon }] : []),
     ],
@@ -161,7 +182,10 @@ function ErrorComponent({ error, reset }: { error: unknown; reset: () => void })
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   // Read the committed page metadata at build time (no runtime fetch).
-  head: () => buildHead(appMeta),
+  head: ({ matches }) =>
+    // Leaf route "/" only: on a 404 the leaf is the root, whose pathname is
+    // also "/". The id is typed as the root's alone, hence the widening.
+    buildHead(appMeta, { landing: (matches.at(-1)?.routeId as string | undefined) === "/" }),
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,

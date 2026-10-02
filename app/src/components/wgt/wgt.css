@@ -776,7 +776,6 @@ body {
 
 .w-line {
   display: block;
-  overflow: hidden;
   padding-bottom: 0.04em;
 }
 
@@ -785,6 +784,36 @@ body {
 .w-line__in {
   display: inline-block;
   text-wrap: balance;
+}
+
+/* Typewriter caret: moves along as the title is typed, then blinks a few
+   times and fades. Brand gradient, a hair narrower than a stroke. */
+.w-caret {
+  display: inline-block;
+  width: 0.07em;
+  height: 0.8em;
+  margin-left: 0.05em;
+  border-radius: 2px;
+  background: var(--brand);
+  vertical-align: -0.02em;
+}
+
+.w-caret.is-done {
+  animation:
+    w-caret-blink 0.9s steps(1) 4,
+    w-caret-out 0.4s 3.6s forwards;
+}
+
+@keyframes w-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes w-caret-out {
+  to {
+    opacity: 0;
+  }
 }
 
 .w-hero__title .w-outline {
@@ -947,13 +976,10 @@ body {
   }
 }
 
-/* Hero entrance: chips, title line by line, photo with halo, CTA. */
+/* Hero entrance: chips, typewriter title (useHeroTypewriter), photo with
+   halo, CTA. */
 .w-in {
   animation: w-rise-in 0.8s var(--ease) calc(0.1s + var(--i, 0) * 0.08s) both;
-}
-
-.w-line__in {
-  animation: w-line-in 0.9s var(--ease) calc(0.3s + var(--i, 0) * 0.12s) both;
 }
 
 .w-in--late {
@@ -974,12 +1000,6 @@ body {
   from {
     opacity: 0;
     transform: translateY(18px);
-  }
-}
-
-@keyframes w-line-in {
-  from {
-    transform: translateY(105%);
   }
 }
 
@@ -1189,6 +1209,34 @@ body {
   align-self: start;
   position: sticky;
   top: 120px;
+}
+
+/* Counter (counter.tsx): the hidden final value and the counting one share
+   one grid cell, so the width is fixed from the start. */
+.w-count {
+  display: inline-grid;
+}
+
+.w-count__ghost,
+.w-count__live {
+  grid-area: 1 / 1;
+}
+
+.w-count__ghost {
+  visibility: hidden;
+}
+
+.w-nowrap {
+  white-space: nowrap;
+}
+
+/* Title reveal masks (SplitText, see useTitleReveal): overflow is hidden at
+   the line box, which would clip accents above (VOCÊ, ESTÁ) and the
+   cedilla/comma below. Extra room above/below, cancelled by negative
+   margins so the layout doesn't move. */
+.w-split-line-mask {
+  margin-block: -0.24em -0.14em;
+  padding-block: 0.24em 0.14em;
 }
 
 .w-stuck__head .w-lead {

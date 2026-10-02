@@ -32,8 +32,9 @@ import {
 
 /** One icon per "Por que treinar" reason, in content order. */
 const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon, RoutineIcon, GroupIcon, TrophyIcon];
+import { Counter, useCounters, withCounter } from "./counter";
 import { external, PillCta } from "./pill";
-import { Preloader } from "./preloader";
+import { Preloader, REVEALED_EVENT } from "./preloader";
 import { ProFilm } from "./pro-film";
 import { Results } from "./results";
 import { Modules } from "./modules";
@@ -209,7 +210,91 @@ function Header() {
   );
 }
 
+/** Seconds per typed character, and the extra pause between title lines. */
+const TYPE_STEP = 0.05;
+const TYPE_LINE_PAUSE = 0.22;
+
+/**
+ * Hero title types itself in, character by character with a caret, once the
+ * preloader lifts. Chars are hidden only when this runs, so without JS (or
+ * with reduced motion) the title is simply there. Afterwards the split is
+ * reverted to the original markup and the caret blinks out.
+ */
+function useHeroTypewriter(titleRef: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const title = titleRef.current;
+    if (!title || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    let cleanup = () => {};
+    let cancelled = false;
+
+    // Measured with the display font loaded, or words wrap differently.
+    void Promise.all([import("gsap"), import("gsap/SplitText"), document.fonts.ready]).then(
+      ([{ gsap }, { SplitText }]) => {
+        if (cancelled) {
+          return;
+        }
+        gsap.registerPlugin(SplitText);
+        // Words keep each word whole while its letters appear one by one.
+        const split = SplitText.create(title, { type: "words,chars" });
+        const caret = document.createElement("span");
+        caret.className = "w-caret";
+        caret.setAttribute("aria-hidden", "true");
+        gsap.set(split.chars, { autoAlpha: 0 });
+        split.chars[0]?.before(caret);
+
+        const typing = gsap.timeline({
+          paused: true,
+          onComplete: () => {
+            split.revert();
+            title.querySelector(".w-line:last-child .w-line__in")?.append(caret);
+            caret.classList.add("is-done");
+          },
+        });
+        let at = 0;
+        let line: Element | null = null;
+        for (const char of split.chars) {
+          const charLine = char.closest(".w-line");
+          if (line && charLine !== line) {
+            at += TYPE_LINE_PAUSE;
+          }
+          line = charLine;
+          typing.set(char, { autoAlpha: 1 }, at).call(() => char.after(caret), undefined, at);
+          at += TYPE_STEP;
+        }
+
+        // Start as the curtain lifts (or now, if it already has).
+        const start = () => gsap.delayedCall(0.35, () => typing.play());
+        const revealed =
+          "wgtRevealed" in document.documentElement.dataset ||
+          !document.querySelector(".w-preloader");
+        if (revealed) {
+          start();
+        } else {
+          window.addEventListener(REVEALED_EVENT, start, { once: true });
+        }
+
+        cleanup = () => {
+          window.removeEventListener(REVEALED_EVENT, start);
+          typing.kill();
+          caret.remove();
+          split.revert();
+        };
+      },
+    );
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, [titleRef]);
+}
+
 function Hero() {
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  useHeroTypewriter(titleRef);
+
   return (
     <section aria-labelledby="hero-title" className="w-hero" id="topo">
       <div aria-hidden="true" className="w-aurora w-aurora--hero" />
@@ -218,11 +303,12 @@ function Hero() {
           <ul aria-label="Credenciais" className="w-hero__chips">
             {heroChips.map((chip, index) => (
               <li className="w-in" key={chip} style={{ "--i": index } as CSSProperties}>
-                {chip}
+                {/* One flex item, or the chip gap splits number and word. */}
+                <span>{withCounter(chip)}</span>
               </li>
             ))}
           </ul>
-          <h1 className="w-hero__title" id="hero-title">
+          <h1 className="w-hero__title" id="hero-title" ref={titleRef}>
             <span className="w-line">
               <span className="w-line__in" style={{ "--i": 0 } as CSSProperties}>
                 Hora de subir sua
@@ -269,7 +355,9 @@ function Hero() {
           />
           <Shield className="w-hero__shield" eager />
           <p className="w-hero__badge">
-            <strong>+3.500</strong>
+            <strong>
+              <Counter prefix="+" value={3500} />
+            </strong>
             <span>alunos já passaram pela call</span>
           </p>
         </div>
@@ -317,12 +405,15 @@ function About() {
           <dl className="w-about__stats">
             <div>
               <dd>
-                26,1<small>mil</small>
+                <Counter decimals={1} value={26.1} />
+                <small>mil</small>
               </dd>
               <dt>seguidores no Instagram</dt>
             </div>
             <div>
-              <dd>+3.500</dd>
+              <dd>
+                <Counter prefix="+" value={3500} />
+              </dd>
               <dt>alunos treinados</dt>
             </div>
             <div>
@@ -1067,7 +1158,66 @@ function trackGlow(event: PointerEvent<HTMLDivElement>) {
   card.style.setProperty("--my", `${event.clientY - rect.top}px`);
 }
 
+/** Section titles that rise line by line (the hero has its own entrance). */
+const REVEAL_TITLES = ".w-h2, .w-final__title, .w-pro__title";
+
+/**
+ * Every section title rises line by line out of a mask as it scrolls into
+ * view. Lines are measured with the display font loaded and re-split on
+ * resize (autoSplit), so wrapping stays right. Titles are server-rendered and
+ * only hidden once GSAP runs: without JS or with reduced motion they are
+ * simply visible.
+ */
+function useTitleReveal() {
+  useEffect(() => {
+    let cleanup = () => {};
+    let cancelled = false;
+
+    void Promise.all([
+      import("gsap"),
+      import("gsap/ScrollTrigger"),
+      import("gsap/SplitText"),
+      document.fonts.ready,
+    ]).then(([{ gsap }, { ScrollTrigger }, { SplitText }]) => {
+      if (cancelled) {
+        return;
+      }
+      gsap.registerPlugin(ScrollTrigger, SplitText);
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        for (const title of document.querySelectorAll<HTMLElement>(REVEAL_TITLES)) {
+          SplitText.create(title, {
+            type: "lines",
+            mask: "lines",
+            linesClass: "w-split-line",
+            autoSplit: true,
+            // Returned so autoSplit can kill and rebuild it on a re-split.
+            onSplit: (self) =>
+              gsap.from(self.lines, {
+                // Past the mask's padded bottom (room kept for Ç and commas),
+                // so no accent peeks out before the reveal.
+                yPercent: 120,
+                duration: 0.9,
+                ease: "power4.out",
+                stagger: 0.12,
+                scrollTrigger: { trigger: title, start: "top 85%", once: true },
+              }),
+          });
+        }
+      });
+      cleanup = () => mm.revert();
+    });
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, []);
+}
+
 export function Landing() {
+  useTitleReveal();
+  useCounters();
   return (
     <div className="wgt" lang="pt-BR" onPointerMove={trackGlow}>
       <Preloader />

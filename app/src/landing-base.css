@@ -1,0 +1,30 @@
+/* Base stylesheet for the landing page ("/"), instead of styles.css.
+ * The landing is styled entirely by components/wgt/wgt.css (+ scroll-scrub),
+ * so it only needs the reset. styles.css (Tailwind utilities, Quanta and the
+ * template's components, ~490 KB) stays on the other routes and the
+ * error/404 screens, which use it. */
+@import "tailwindcss/preflight.css";
+
+/* Self-hosted (same files Google Fonts serves, latin subset, which covers
+   Portuguese). Preloaded from the root head, so no third-party connection
+   before first paint. Manrope is variable: one file, all weights. */
+@font-face {
+  font-family: "Anton";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/anton-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("/fonts/manrope-latin.woff2") format("woff2");
+}
+
+html {
+  background-color: #06081a;
+  color-scheme: dark;
+}

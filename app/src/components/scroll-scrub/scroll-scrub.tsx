@@ -433,7 +433,10 @@ export function ScrollScrub({
 
     const readScroll = () => {
       const pageY = window.scrollY || window.pageYOffset;
-      const y = clamp(pageY - rootTop, 0, total);
+      // Unclamped, for preloading: above the section y is pinned at 0, which
+      // made the first clip download on page load from the very top.
+      const rawY = pageY - rootTop;
+      const y = clamp(rawY, 0, total);
       const crossfade = 0.1 * viewportHeight;
       let currentIndex = 0;
 
@@ -465,8 +468,8 @@ export function ScrollScrub({
         segment.layer.style.zIndex = index === currentIndex ? "2" : "1";
 
         if (
-          y > segment.start - 1.5 * viewportHeight &&
-          y < segment.end + 1.5 * viewportHeight
+          rawY > segment.start - 1.5 * viewportHeight &&
+          rawY < segment.end + 1.5 * viewportHeight
         ) {
           void loadClip(segment);
         }
