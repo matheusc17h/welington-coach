@@ -33,7 +33,7 @@ import {
 /** One icon per "Por que treinar" reason, in content order. */
 const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon, RoutineIcon, GroupIcon, TrophyIcon];
 import { Counter, useCounters, withCounter } from "./counter";
-import { useTitleScramble } from "./title-scramble";
+import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
 import { Preloader } from "./preloader";
 import { ProFilm } from "./pro-film";
@@ -232,7 +232,10 @@ function Hero() {
               </span>
             </span>
             <span className="w-line">
-              <span className="w-line__in w-grad-text" style={{ "--i": 1 } as CSSProperties}>
+              <span
+                className="w-line__in w-grad-text scramble"
+                style={{ "--i": 1 } as CSSProperties}
+              >
                 jogabilidade
               </span>
             </span>
@@ -1085,7 +1088,7 @@ function trackGlow(event: PointerEvent<HTMLDivElement>) {
 }
 
 export function Landing() {
-  useTitleScramble();
+  useTextAnimations();
   useCounters();
   return (
     <div className="wgt" lang="pt-BR" onPointerMove={trackGlow}>
