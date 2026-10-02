@@ -282,17 +282,67 @@
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: flex-end;
-  padding: 6.5rem max(1.25rem, env(safe-area-inset-right))
-    calc(2.5rem + env(safe-area-inset-bottom))
+  flex-direction: column;
+  padding: 0 max(1.25rem, env(safe-area-inset-right))
+    calc(2rem + env(safe-area-inset-bottom))
     max(1.25rem, env(safe-area-inset-left));
   will-change: opacity, transform;
 }
 
-/* Lift the film a little so the controller clears the copy on short
-   phones; its dark edge matches the stage, so no seam shows. */
-.scroll-scrub[data-stacked] .scroll-scrub__media {
-  transform: translateY(-7svh);
+/* Spacer above the copy: the copy starts at --ss-copy-top, overlapping the
+   bottom of the film; it only shrinks (never below the tabs) when a long
+   chapter would otherwise run off the screen. Percent of the stage height,
+   so it follows the film at every width. */
+.scroll-scrub__slide::before {
+  flex: 0 1 var(--ss-copy-top, 50%);
+  min-height: 7rem;
+  content: "";
+}
+
+.scroll-scrub__slide > .scroll-scrub__copy {
+  flex: none;
+}
+
+/* Soft shade for legibility where the copy overlaps the film: radial, so
+   it has no edge (the box gradient used beside the film would show one). */
+.scroll-scrub__slide > .scroll-scrub__copy::before {
+  inset: -2.5rem -1.25rem;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--ss-edge, var(--ss-bg)) 72%, transparent),
+    transparent
+  );
+}
+
+/* The film dissolves into the page: fades over its upper and lower parts
+   (hiding where the picture ends inside the frame) into --ss-edge, plus a soft glow in the film's own
+   light behind the copy. Moves with the film, never a hard line. */
+.scroll-scrub[data-stacked] .scroll-scrub__media::after {
+  position: absolute;
+  /* Above the film layers, which take z-index 1/2 from JS. */
+  z-index: 3;
+  inset: 0;
+  content: "";
+  background:
+    radial-gradient(
+      120% 38% at 50% var(--ss-glow-y, 66%),
+      var(--ss-glow, transparent),
+      transparent 70%
+    ),
+    linear-gradient(
+      to bottom,
+      var(--ss-edge, var(--ss-bg)) var(--ss-fade-top-solid, 0%),
+      transparent var(--ss-fade-top, 0%),
+      transparent var(--ss-fade-from, 50%),
+      color-mix(in srgb, var(--ss-edge, var(--ss-bg)) 70%, transparent)
+        calc((var(--ss-fade-from, 50%) + var(--ss-fade-to, 64%)) / 2),
+      var(--ss-edge, var(--ss-bg)) var(--ss-fade-to, 64%)
+    );
+  pointer-events: none;
+}
+
+.scroll-scrub[data-stacked] .scroll-scrub__stage {
+  background: var(--ss-edge, var(--ss-bg));
 }
 
 .scroll-scrub__slide:not(:first-child) {

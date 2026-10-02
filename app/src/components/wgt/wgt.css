@@ -1271,6 +1271,16 @@ body {
 }
 
 .w-film .scroll-scrub {
+  /* Phones (stacked copy): colours read from the mobile clips' frames.
+     Their edges are #050718, flat fill above ~21% and below ~60% of the
+     height; the controller sits at 28-57% and its light averages #2b3871. */
+  --ss-edge: #050718;
+  --ss-glow: rgb(43 56 113 / 0.34);
+  --ss-fade-top-solid: 18%;
+  --ss-fade-top: 28%;
+  --ss-fade-from: 46%;
+  --ss-fade-to: 63%;
+  --ss-copy-top: 55%;
   font-family: var(--body);
 }
 
