@@ -33,7 +33,7 @@ import {
 /** One icon per "Por que treinar" reason, in content order. */
 const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon, RoutineIcon, GroupIcon, TrophyIcon];
 import { Counter, useCounters, withCounter } from "./counter";
-import { useLetterReveal } from "./letter-reveal";
+import { useTitleScramble } from "./title-scramble";
 import { external, PillCta } from "./pill";
 import { Preloader } from "./preloader";
 import { ProFilm } from "./pro-film";
@@ -1076,7 +1076,7 @@ function trackGlow(event: PointerEvent<HTMLDivElement>) {
 }
 
 export function Landing() {
-  useLetterReveal();
+  useTitleScramble();
   useCounters();
   return (
     <div className="wgt" lang="pt-BR" onPointerMove={trackGlow}>

@@ -946,7 +946,7 @@ body {
   }
 }
 
-/* Hero entrance: chips, title and lead letter by letter (letter-reveal.ts),
+/* Hero entrance: chips, title decoding (title-scramble.ts),
    photo with halo, CTA. */
 .w-in {
   animation: w-rise-in 0.8s var(--ease) calc(0.1s + var(--i, 0) * 0.08s) both;
@@ -1196,8 +1196,8 @@ body {
   white-space: nowrap;
 }
 
-/* Letter reveal (letter-reveal.ts): hidden from when the script starts until
-   the block plays. Visibility keeps its space, so nothing shifts. */
+/* Title scramble (title-scramble.ts): hidden from when the script starts until
+   the title plays. Visibility keeps its space, so nothing shifts. */
 .w-letters-pending {
   visibility: hidden;
 }
