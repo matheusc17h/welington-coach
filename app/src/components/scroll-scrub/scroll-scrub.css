@@ -267,6 +267,39 @@
   }
 }
 
+/* Stacked mode (phones, set from JS): all chapter copies share one spot at
+   the bottom of the pinned stage, under the film. Only opacity and a small
+   drift are scrubbed, so the copy never slides over the film and the stage
+   never shows an empty strip. */
+.scroll-scrub__deck {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  pointer-events: none;
+}
+
+.scroll-scrub__slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 6.5rem max(1.25rem, env(safe-area-inset-right))
+    calc(2.5rem + env(safe-area-inset-bottom))
+    max(1.25rem, env(safe-area-inset-left));
+  will-change: opacity, transform;
+}
+
+/* Lift the film a little so the controller clears the copy on short
+   phones; its dark edge matches the stage, so no seam shows. */
+.scroll-scrub[data-stacked] .scroll-scrub__media {
+  transform: translateY(-7svh);
+}
+
+.scroll-scrub__slide:not(:first-child) {
+  visibility: hidden;
+  opacity: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scroll-scrub__chapter {
     min-height: 100dvh !important;

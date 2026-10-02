@@ -404,7 +404,8 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
             // Restore the plain heading so later resizes re-wrap naturally.
             onComplete: () => split.revert(),
           })
-          .from(split.lines, { yPercent: 110, duration: 1.1, stagger: 0.12 })
+          // Starts below the mask's padded bottom edge, accents included.
+          .from(split.lines, { yPercent: 135, duration: 1.1, stagger: 0.12 })
           .from(lead, { autoAlpha: 0, y: 28, duration: 0.9, ease: "power3.out" }, "-=0.6");
 
         return () => split.revert();
@@ -521,8 +522,14 @@ function useHorizontalScrub(
           ScrollTrigger.sort();
           ScrollTrigger.refresh();
         });
+        // Fonts are awaited above; late images can still move the pins.
+        const onLoad = () => ScrollTrigger.refresh();
+        if (document.readyState !== "complete") {
+          window.addEventListener("load", onLoad, { once: true });
+        }
         cleanup = () => {
           cancelAnimationFrame(frame);
+          window.removeEventListener("load", onLoad);
           mm.revert();
         };
       },

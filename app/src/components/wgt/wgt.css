@@ -21,6 +21,10 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --display: "Anton", "Arial Narrow", Impact, sans-serif;
+  /* Line spacing for Anton titles: its accents (Ê, Á, Ã) and cedilla sit
+     outside the cap height: below 1.2 the Ç of one line meets the Ê of the
+     next. Every display title uses it. */
+  --lh-title: 1.2;
   --body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
   --s1: 8px;
   --s2: 16px;
@@ -244,7 +248,7 @@ body {
   font-family: var(--display);
   font-size: clamp(2.6rem, 6.4vw, 5.75rem);
   font-weight: 400;
-  line-height: 1.16;
+  line-height: var(--lh-title);
   letter-spacing: 0.005em;
   text-transform: uppercase;
   text-wrap: balance;
@@ -254,7 +258,7 @@ body {
   font-family: var(--display);
   font-size: clamp(1.5rem, 2.6vw, 2.1rem);
   font-weight: 400;
-  line-height: 1.08;
+  line-height: var(--lh-title);
   letter-spacing: 0.01em;
   text-transform: uppercase;
 }
@@ -1149,7 +1153,7 @@ body {
   font-family: var(--display);
   font-size: clamp(1.6rem, 2.4vw, 2.2rem);
   font-weight: 400;
-  line-height: 1.12;
+  line-height: var(--lh-title);
   text-transform: uppercase;
 }
 
@@ -1187,12 +1191,12 @@ body {
   top: 120px;
 }
 
-/* SplitText line masks: with the tight display line-height the mask would
-   clip accents (VOCÊ, ESTÁ). Extra room above/below, cancelled by negative
-   margins so the layout doesn't move. */
+/* SplitText line masks: overflow is hidden at the line box, which would
+   clip accents above (VOCÊ, ESTÁ) and the cedilla/comma below. Extra room
+   above/below, cancelled by negative margins so the layout doesn't move. */
 .w-split-line-mask {
-  margin-block: -0.16em -0.06em;
-  padding-block: 0.16em 0.06em;
+  margin-block: -0.24em -0.14em;
+  padding-block: 0.24em 0.14em;
 }
 
 .w-stuck__head .w-lead {
@@ -1264,7 +1268,7 @@ body {
   max-width: 24ch;
   font-family: var(--display);
   font-size: clamp(1.8rem, 3.6vw, 3rem);
-  line-height: 1;
+  line-height: var(--lh-title);
   text-transform: uppercase;
 }
 
@@ -1283,7 +1287,7 @@ body {
   font-family: var(--display);
   font-size: clamp(2.4rem, 4.6vw, 4.9rem);
   font-weight: 400;
-  line-height: 1.14;
+  line-height: var(--lh-title);
   letter-spacing: 0.005em;
   text-transform: uppercase;
 }
@@ -1455,7 +1459,7 @@ body {
   font-family: var(--display);
   font-size: clamp(1.5rem, 2.2vw, 2rem);
   font-weight: 400;
-  line-height: 1;
+  line-height: var(--lh-title);
   text-transform: uppercase;
 }
 
@@ -1503,7 +1507,7 @@ body {
   font-family: var(--display);
   font-size: clamp(2rem, 3.4vw, 3rem);
   font-weight: 400;
-  line-height: 1.06;
+  line-height: var(--lh-title);
   text-transform: uppercase;
 }
 
@@ -1906,7 +1910,7 @@ body {
 .w-results__cta p {
   font-family: var(--display);
   font-size: clamp(1.6rem, 3vw, 2.4rem);
-  line-height: 1;
+  line-height: var(--lh-title);
   text-transform: uppercase;
 }
 
@@ -2043,7 +2047,7 @@ body {
   font-family: var(--display);
   font-size: clamp(2.2rem, 3.4vw, 3rem);
   font-weight: 400;
-  line-height: 1;
+  line-height: var(--lh-title);
   text-transform: uppercase;
 }
 
@@ -2301,7 +2305,7 @@ body {
   font-family: var(--display);
   font-size: clamp(2.8rem, 8vw, 7.5rem);
   font-weight: 400;
-  line-height: 1.12;
+  line-height: var(--lh-title);
   text-transform: uppercase;
   text-wrap: balance;
 }
@@ -2961,7 +2965,7 @@ body {
   font-family: var(--display);
   font-size: clamp(3rem, 9vw, 8.5rem);
   font-weight: 400;
-  line-height: 1.04;
+  line-height: var(--lh-title);
   text-transform: uppercase;
   text-shadow: 0 10px 40px rgb(6 8 26 / 0.8);
   text-wrap: balance;
@@ -3479,7 +3483,7 @@ body {
   font-family: var(--display);
   font-size: clamp(1.4rem, 2vw, 1.75rem);
   font-weight: 400;
-  line-height: 1.1;
+  line-height: var(--lh-title);
   text-transform: uppercase;
 }
 
@@ -3514,7 +3518,7 @@ body {
   margin-top: 6px;
   font-family: var(--display);
   font-size: clamp(1.7rem, 3vw, 2.6rem);
-  line-height: 1.05;
+  line-height: var(--lh-title);
   text-transform: uppercase;
 }
 
@@ -3753,7 +3757,7 @@ body {
   font-family: var(--display);
   font-size: clamp(2rem, 3.6vw, 3.2rem);
   font-weight: 400;
-  line-height: 1;
+  line-height: var(--lh-title);
   text-transform: uppercase;
 }
 

@@ -89,6 +89,8 @@ interface RuntimeSegment extends Segment {
 
 interface Controller {
   jumpToSection: (index: number) => void;
+  /** Re-read the scroll position on the next frame (after markup changes). */
+  refresh: () => void;
 }
 
 type ThemeStyle = CSSProperties & Record<`--ss-${string}`, string | number>;
@@ -100,6 +102,11 @@ const smoothstep = (value: number) => {
   const x = clamp(value);
   return x * x * (3 - 2 * x);
 };
+
+/** Below this width the chapter copy sits under the film, stacked in one spot. */
+const STACKED_QUERY = "(max-width: 860px)";
+/** How far (px) a stacked slide drifts while it fades. */
+const SLIDE_DRIFT = 24;
 
 const lingerEase = (value: number, amount: number) => {
   const x = clamp(value);
@@ -177,6 +184,10 @@ export function ScrollScrub({
   const controllerRef = useRef<Controller | null>(null);
   const onActiveRef = useRef(onActiveSectionChange);
   const [activeSection, setActiveSection] = useState(0);
+  // Phones: every chapter's copy is stacked in the pinned stage and only its
+  // opacity is scrubbed, so the text never travels over the film. Starts false
+  // so the server markup (desktop layout) hydrates cleanly.
+  const [stacked, setStacked] = useState(false);
   const segments = useMemo(
     () => buildSegments(scenes, connectors ?? []),
     [connectors, scenes]
@@ -188,6 +199,19 @@ export function ScrollScrub({
   useEffect(() => {
     onActiveRef.current = onActiveSectionChange;
   }, [onActiveSectionChange]);
+
+  useEffect(() => {
+    const query = window.matchMedia(STACKED_QUERY);
+    const sync = () => setStacked(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  // The slides mount/unmount with `stacked`: paint them on the next frame.
+  useEffect(() => {
+    controllerRef.current?.refresh();
+  }, [stacked]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -464,6 +488,38 @@ export function ScrollScrub({
       }
 
       root.style.setProperty("--ss-progress", String(clamp(y / total)));
+
+      // Stacked slides: each chapter fades in over the start of its band and
+      // out over the end, so one is fully gone before the next appears and
+      // the swap lands exactly where the active tab changes. The first stays
+      // on while the section enters, the last while it leaves.
+      const scenes = runtime.filter((segment) => segment.kind === "scene");
+      for (const slide of root.querySelectorAll<HTMLElement>(
+        "[data-scroll-scrub-slide]"
+      )) {
+        const index = Number(slide.dataset.scrollScrubSlide);
+        const scene = scenes[index];
+        if (!scene) {
+          continue;
+        }
+        const fade = Math.max(
+          Math.min(0.3 * viewportHeight, 0.4 * (scene.end - scene.start)),
+          1
+        );
+        const fadeIn = index === 0 ? 1 : clamp((y - scene.start) / fade);
+        const fadeOut =
+          index === scenes.length - 1 ? 1 : clamp((scene.end - y) / fade);
+        let opacity = Math.min(fadeIn, fadeOut);
+        if (reduceMotion) {
+          opacity = opacity > 0 ? 1 : 0;
+        }
+        // Rises into place, then keeps rising slightly as it fades out.
+        const drift =
+          (1 - opacity) * SLIDE_DRIFT * (fadeOut < fadeIn ? -1 : 1);
+        slide.style.opacity = String(opacity);
+        slide.style.transform = `translate3d(0, ${reduceMotion ? 0 : drift}px, 0)`;
+        slide.style.visibility = opacity > 0.001 ? "visible" : "hidden";
+      }
     };
 
     const updateVideos = () => {
@@ -540,9 +596,18 @@ export function ScrollScrub({
           top,
         });
       },
+      refresh() {
+        dirty = true;
+      },
     };
 
+    // Content above can change height after this measured (images, fonts,
+    // GSAP pin spacers): re-measure, or every chapter starts early.
+    const pageResize = new ResizeObserver(() => layout());
+    pageResize.observe(document.body);
+
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("load", layout);
     window.addEventListener("resize", onResize);
     window.addEventListener("orientationchange", layout);
     window.addEventListener("pointerdown", onFirstGesture, {
@@ -561,7 +626,9 @@ export function ScrollScrub({
       destroyed = true;
       controllerRef.current = null;
       window.cancelAnimationFrame(frame);
+      pageResize.disconnect();
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("load", layout);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("orientationchange", layout);
       window.removeEventListener("pointerdown", onFirstGesture);
@@ -581,6 +648,29 @@ export function ScrollScrub({
     return null;
   }
 
+  const renderCopy = (scene: ScrollScrubScene, index: number) => {
+    const Heading = index === 0 ? "h1" : "h2";
+    return (
+      <div className="scroll-scrub__copy">
+        {scene.kicker ? (
+          <p className="scroll-scrub__kicker">{scene.kicker}</p>
+        ) : null}
+        <Heading className="scroll-scrub__title">{scene.title}</Heading>
+        <p className="scroll-scrub__body">{scene.body}</p>
+        {scene.tags?.length ? (
+          <ul className="scroll-scrub__tags">
+            {scene.tags.map((tag) => (
+              <li key={tag}>{tag}</li>
+            ))}
+          </ul>
+        ) : null}
+        {scene.actions ? (
+          <div className="scroll-scrub__actions">{scene.actions}</div>
+        ) : null}
+      </div>
+    );
+  };
+
   const themeStyle: ThemeStyle = {
     "--ss-accent": theme.accent,
     "--ss-bg": theme.background,
@@ -591,6 +681,7 @@ export function ScrollScrub({
   return (
     <section
       className={["scroll-scrub", className].filter(Boolean).join(" ")}
+      data-stacked={stacked ? "" : undefined}
       ref={rootRef}
       style={themeStyle}
     >
@@ -628,6 +719,20 @@ export function ScrollScrub({
             );
           })}
         </div>
+
+        {stacked ? (
+          <div className="scroll-scrub__deck">
+            {scenes.map((scene, index) => (
+              <div
+                className="scroll-scrub__slide"
+                data-scroll-scrub-slide={index}
+                key={scene.id}
+              >
+                {renderCopy(scene, index)}
+              </div>
+            ))}
+          </div>
+        ) : null}
 
         <div aria-hidden="true" className="scroll-scrub__progress">
           <span />
@@ -670,8 +775,6 @@ export function ScrollScrub({
           if (!scene) {
             return null;
           }
-          const Heading = segment.sectionIndex === 0 ? "h1" : "h2";
-
           return (
             <article
               className="scroll-scrub__chapter"
@@ -681,27 +784,13 @@ export function ScrollScrub({
               key={segment.key}
               style={bandStyle}
             >
-              <div className="scroll-scrub__chapter-pin">
-                <div className="scroll-scrub__copy">
-                  {scene.kicker ? (
-                    <p className="scroll-scrub__kicker">{scene.kicker}</p>
-                  ) : null}
-                  <Heading className="scroll-scrub__title">
-                    {scene.title}
-                  </Heading>
-                  <p className="scroll-scrub__body">{scene.body}</p>
-                  {scene.tags?.length ? (
-                    <ul className="scroll-scrub__tags">
-                      {scene.tags.map((tag) => (
-                        <li key={tag}>{tag}</li>
-                      ))}
-                    </ul>
-                  ) : null}
-                  {scene.actions ? (
-                    <div className="scroll-scrub__actions">{scene.actions}</div>
-                  ) : null}
+              {/* Stacked mode keeps the band (scroll distance, anchor) and
+                  shows the copy in the stage instead. */}
+              {stacked ? null : (
+                <div className="scroll-scrub__chapter-pin">
+                  {renderCopy(scene, segment.sectionIndex)}
                 </div>
-              </div>
+              )}
             </article>
           );
         })}
