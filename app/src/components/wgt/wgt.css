@@ -2678,24 +2678,14 @@ body {
     gap: var(--s2);
   }
 
-  /* Stuck cards become a swipe rail. */
+  /* Stuck cards stack in one column; GSAP brings them in one by one. */
   .w-stuck__list {
-    display: grid;
-    grid-auto-columns: 78%;
-    grid-auto-flow: column;
-    grid-template-columns: none;
-    margin-inline: calc(var(--gutter) * -1);
-    padding: var(--s1) var(--gutter) var(--s2);
-    overflow-x: auto;
-    scroll-padding-inline: var(--gutter);
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .w-stuck__card,
   .w-stuck__card:nth-child(even) {
     transform: none;
-    scroll-snap-align: start;
   }
 
   .w-stuck__card:nth-child(even).w-rise {
@@ -3088,32 +3078,6 @@ body {
 /* Scroll-driven rails. JS adds .is-scrub while GSAP pins the block and
    slides the row sideways with the page scroll; without it the grid / swipe
    layouts above apply. */
-.w-stuck.is-scrub .w-stuck__head {
-  position: static;
-}
-
-/* Desktop: the rail is clipped beside the heading, with a soft fade on the
-   left edge instead of a hard cut. */
-.w-stuck.is-scrub .w-stuck__viewport {
-  overflow: clip;
-  mask-image: linear-gradient(90deg, transparent 0, #000 56px);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 56px);
-}
-
-.w-stuck.is-scrub .w-stuck__list {
-  display: flex;
-  gap: var(--s2);
-  width: max-content;
-  margin: 0;
-  padding: var(--s1) 0 var(--s8);
-  overflow: visible;
-  scroll-snap-type: none;
-}
-
-.w-stuck.is-scrub .w-stuck__card {
-  flex: 0 0 clamp(260px, 24vw, 320px);
-}
-
 .w-stuck__card {
   transition: border-color 0.4s var(--ease);
 }
@@ -3122,32 +3086,7 @@ body {
   transition: color 0.4s var(--ease);
 }
 
-.w-stuck__card.is-active {
-  border-color: rgb(63 169 255 / 0.5);
-}
-
-.w-stuck__card.is-active .w-stuck__num {
-  color: var(--blue-light);
-}
-
-/* Phones/tablets: the rail stays inside the gutters (the pin drops negative
-   margins) and cards travel freely to the screen edge; the page root clips
-   anything outside the viewport. */
 @media (max-width: 860px) {
-  .w-stuck.is-scrub .w-stuck__viewport {
-    overflow: visible;
-    mask-image: none;
-    -webkit-mask-image: none;
-  }
-
-  .w-stuck.is-scrub .w-stuck__list {
-    padding: var(--s1) 0 var(--s2);
-  }
-
-  .w-stuck.is-scrub .w-stuck__card {
-    flex-basis: min(78vw, 320px);
-  }
-
   /* Heading and rail are pinned together: keep the pair short enough to
      fit a phone screen. */
   .w-plans.is-scrub .w-plans__viewport {

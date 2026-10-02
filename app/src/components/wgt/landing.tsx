@@ -368,7 +368,8 @@ function About() {
 }
 
 /**
- * Desktop: the six cards rise one at a time with the scroll. The heading is
+ * The six cards come in one at a time with the scroll: tied to the scroll on
+ * desktop, played once per card on phones (stacked list). The heading is
  * static (no GSAP), so it never re-wraps or clips. Cards are server-rendered
  * and only hidden once GSAP runs, so without JS everything is visible.
  */
@@ -389,8 +390,8 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
         gsap.registerPlugin(ScrollTrigger);
         const mm = gsap.matchMedia();
         // Desktop keeps the two-column grid beside the sticky heading; each
-        // card rises into place tied to the page scroll (mobile uses the
-        // horizontal rail instead). Transform/opacity only, so it stays light.
+        // card rises into place tied to the page scroll. Transform/opacity
+        // only, so it stays light.
         mm.add("(min-width: 861px) and (prefers-reduced-motion: no-preference)", () => {
           for (const card of section.querySelectorAll(".w-stuck__card")) {
             gsap.from(card, {
@@ -401,6 +402,21 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
               scrollTrigger: { trigger: card, start: "top 96%", end: "top 62%", scrub: 0.5 },
             });
           }
+        });
+        // Phones: the cards are stacked; each one rises in on its own as it
+        // reaches the screen, alternating the side it comes from.
+        mm.add("(max-width: 860px) and (prefers-reduced-motion: no-preference)", () => {
+          section.querySelectorAll(".w-stuck__card").forEach((card, index) => {
+            gsap.from(card, {
+              autoAlpha: 0,
+              y: 48,
+              x: index % 2 ? 24 : -24,
+              scale: 0.96,
+              duration: 0.8,
+              ease: "power3.out",
+              scrollTrigger: { trigger: card, start: "top 90%", once: true },
+            });
+          });
         });
         cleanup = () => mm.revert();
       },
@@ -524,13 +540,6 @@ function useHorizontalScrub(
 function Stuck() {
   const sectionRef = useRef<HTMLElement>(null);
   useStuckReveal(sectionRef);
-  useHorizontalScrub(sectionRef, {
-    media: "(max-width: 860px)",
-    pin: ".w-stuck__grid",
-    track: ".w-stuck__list",
-    items: ".w-stuck__card",
-    priority: 2,
-  });
 
   return (
     <section
