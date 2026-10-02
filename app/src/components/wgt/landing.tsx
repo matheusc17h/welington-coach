@@ -817,9 +817,11 @@ function NotFor() {
 function Plans() {
   const sectionRef = useRef<HTMLElement>(null);
   // Desktop shows the three plans side by side; the rail only exists below 861px.
+  // The heading is pinned with the rail, so the cards never slide over it.
+  // Short screens can't fit both: they keep the plain swipe rail.
   useHorizontalScrub(sectionRef, {
-    media: "(max-width: 860px)",
-    pin: ".w-plans__viewport",
+    media: "(max-width: 860px) and (min-height: 760px)",
+    pin: ".w-plans__stage",
     track: ".w-plans__grid",
     priority: 1,
   });
@@ -835,7 +837,7 @@ function Plans() {
       <p aria-hidden="true" className="w-bleed w-bleed--plans">
         Elite
       </p>
-      <div className="w-wrap">
+      <div className="w-wrap w-plans__stage">
         <div className="w-plans__head">
           <h2 className="w-h2" id="planos-title">
             Escolha seu <span className="w-grad-text">plano</span>

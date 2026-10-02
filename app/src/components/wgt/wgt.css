@@ -244,7 +244,7 @@ body {
   font-family: var(--display);
   font-size: clamp(2.6rem, 6.4vw, 5.75rem);
   font-weight: 400;
-  line-height: 0.92;
+  line-height: 1.16;
   letter-spacing: 0.005em;
   text-transform: uppercase;
   text-wrap: balance;
@@ -254,7 +254,7 @@ body {
   font-family: var(--display);
   font-size: clamp(1.5rem, 2.6vw, 2.1rem);
   font-weight: 400;
-  line-height: 1;
+  line-height: 1.08;
   letter-spacing: 0.01em;
   text-transform: uppercase;
 }
@@ -1149,7 +1149,7 @@ body {
   font-family: var(--display);
   font-size: clamp(1.6rem, 2.4vw, 2.2rem);
   font-weight: 400;
-  line-height: 1;
+  line-height: 1.12;
   text-transform: uppercase;
 }
 
@@ -1283,7 +1283,7 @@ body {
   font-family: var(--display);
   font-size: clamp(2.4rem, 4.6vw, 4.9rem);
   font-weight: 400;
-  line-height: 0.92;
+  line-height: 1.14;
   letter-spacing: 0.005em;
   text-transform: uppercase;
 }
@@ -1499,11 +1499,11 @@ body {
     var(--glass);
 }
 
-.w-reasons__card--wide h3 {
+.w-reasons__card.w-reasons__card--wide h3 {
   font-family: var(--display);
   font-size: clamp(2rem, 3.4vw, 3rem);
   font-weight: 400;
-  line-height: 0.95;
+  line-height: 1.06;
   text-transform: uppercase;
 }
 
@@ -2301,7 +2301,7 @@ body {
   font-family: var(--display);
   font-size: clamp(2.8rem, 8vw, 7.5rem);
   font-weight: 400;
-  line-height: 0.9;
+  line-height: 1.12;
   text-transform: uppercase;
   text-wrap: balance;
 }
@@ -2644,18 +2644,16 @@ body {
     transform: none;
   }
 
+  /* Cards sit below the photo, never over it, so the text reads clean. */
   .w-about__card {
-    min-height: 180px;
-    padding: var(--s2);
+    grid-column: 1 / -1;
+    gap: var(--s2);
+    min-height: 0;
+    padding: var(--s3);
   }
 
   .w-about__card--mission {
-    margin-top: calc(var(--s8) * -1);
     transform: none;
-  }
-
-  .w-about__card--method {
-    margin-top: calc(var(--s3) * -1);
   }
 
   .w-about__stats {
@@ -2963,7 +2961,7 @@ body {
   font-family: var(--display);
   font-size: clamp(3rem, 9vw, 8.5rem);
   font-weight: 400;
-  line-height: 0.9;
+  line-height: 1.04;
   text-transform: uppercase;
   text-shadow: 0 10px 40px rgb(6 8 26 / 0.8);
   text-wrap: balance;
@@ -3133,8 +3131,35 @@ body {
     flex-basis: min(78vw, 320px);
   }
 
+  /* Heading and rail are pinned together: keep the pair short enough to
+     fit a phone screen. */
   .w-plans.is-scrub .w-plans__viewport {
-    margin-top: var(--s6);
+    margin-top: var(--s3);
+  }
+
+  .w-plans.is-scrub .w-plans__head .w-lead {
+    margin-top: var(--s1);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .w-plans.is-scrub .w-plan {
+    gap: var(--s1);
+    padding: var(--s4) var(--s3) var(--s3);
+  }
+
+  .w-plans.is-scrub .w-plan--featured {
+    padding-block: var(--s5) var(--s3);
+  }
+
+  .w-plans.is-scrub .w-plan__pitch {
+    min-height: 0;
+  }
+
+  .w-plans.is-scrub .w-plan__items {
+    gap: 10px;
+    margin-block: var(--s1) var(--s2);
+    padding-top: var(--s2);
   }
 
   .w-plans.is-scrub .w-plans__grid {
