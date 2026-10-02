@@ -29,6 +29,11 @@ const SKIP = [
 
 const PENDING = "w-letters-pending";
 
+/** Share of a block's run after which the next one in line may start. */
+const HAND_OFF = 0.6;
+/** Longest a block waits for the one before it (seconds). */
+const MAX_WAIT = 1.2;
+
 /**
  * Titles and paragraphs come in letter by letter (GSAP stagger) as they
  * scroll into view; the hero's wait for the preloader to lift. Each block is
@@ -69,6 +74,16 @@ export function useLetterReveal() {
       gsap.registerPlugin(ScrollTrigger, SplitText);
       const running = new Set<gsap.core.Timeline>();
       const splits = new Set<SplitText>();
+      // Blocks that reach the screen together play in page order (a section
+      // or card title before its text): each waits until the previous one is
+      // HAND_OFF through, but only while that one is still on screen, so a
+      // fast scroll never builds a backlog. Seconds on the GSAP clock.
+      let queueAt = 0;
+      let previous: HTMLElement | null = null;
+      const onScreen = (el: HTMLElement) => {
+        const box = el.getBoundingClientRect();
+        return box.bottom > 0 && box.top < window.innerHeight;
+      };
 
       const play = (el: HTMLElement) => {
         // Words keep each word whole while its letters move.
@@ -79,9 +94,16 @@ export function useLetterReveal() {
 
         const title = /^H\d$/.test(el.tagName);
         const count = Math.max(split.chars.length, 1);
-        // Long paragraphs keep a tiny step so the whole block lands in ~1s.
-        const stagger = title ? Math.min(0.035, 1 / count) : Math.min(0.012, 0.9 / count);
+        // Long paragraphs keep a small step so the whole block lands in ~1.3s.
+        const stagger = title ? Math.min(0.045, 1.3 / count) : Math.min(0.016, 1.2 / count);
+        const duration = title ? 0.9 : 0.7;
+        const now = gsap.ticker.time;
+        const waiting = previous && onScreen(previous) ? queueAt - now : 0;
+        const delay = Math.min(Math.max(0, waiting), MAX_WAIT);
+        previous = el;
+        queueAt = now + delay + (duration + stagger * (count - 1)) * HAND_OFF;
         const tl = gsap.timeline({
+          delay,
           onComplete: () => {
             split.revert();
             splits.delete(split);
@@ -94,7 +116,7 @@ export function useLetterReveal() {
           {
             autoAlpha: 1,
             yPercent: 0,
-            duration: title ? 0.7 : 0.5,
+            duration,
             ease: title ? "power3.out" : "power2.out",
             stagger,
           },
@@ -102,12 +124,16 @@ export function useLetterReveal() {
         running.add(tl);
       };
 
-      // The hero plays as the curtain lifts: title, then its lead.
+      // The hero plays as the curtain lifts: title, then its lead (queued).
       const hero = targets.filter((el) => el.closest(".w-hero"));
       const delayed: gsap.core.Tween[] = [];
       const playHero = () => {
-        hero.forEach((el, index) =>
-          delayed.push(gsap.delayedCall(0.3 + index * 0.45, () => play(el))),
+        delayed.push(
+          gsap.delayedCall(0.3, () => {
+            for (const el of hero) {
+              play(el);
+            }
+          }),
         );
       };
       if (
