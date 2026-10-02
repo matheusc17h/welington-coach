@@ -1191,14 +1191,6 @@ body {
   top: 120px;
 }
 
-/* SplitText line masks: overflow is hidden at the line box, which would
-   clip accents above (VOCÊ, ESTÁ) and the cedilla/comma below. Extra room
-   above/below, cancelled by negative margins so the layout doesn't move. */
-.w-split-line-mask {
-  margin-block: -0.24em -0.14em;
-  padding-block: 0.24em 0.14em;
-}
-
 .w-stuck__head .w-lead {
   margin-top: var(--s3);
 }

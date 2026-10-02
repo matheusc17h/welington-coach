@@ -360,9 +360,9 @@ function About() {
 }
 
 /**
- * Title rises line by line out of a mask, then the lead, then the six cards
- * one at a time. Text is server-rendered and only hidden once GSAP runs, so
- * without JS or with reduced motion everything is simply visible.
+ * Desktop: the six cards rise one at a time with the scroll. The heading is
+ * static (no GSAP), so it never re-wraps or clips. Cards are server-rendered
+ * and only hidden once GSAP runs, so without JS everything is visible.
  */
 function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -373,59 +373,30 @@ function useStuckReveal(sectionRef: RefObject<HTMLElement | null>) {
     let cleanup = () => {};
     let cancelled = false;
 
-    // Lines must be measured with the display font loaded, or they break wrong.
-    void Promise.all([
-      import("gsap"),
-      import("gsap/ScrollTrigger"),
-      import("gsap/SplitText"),
-      document.fonts.ready,
-    ]).then(([{ gsap }, { ScrollTrigger }, { SplitText }]) => {
-      if (cancelled) {
-        return;
-      }
-      gsap.registerPlugin(ScrollTrigger, SplitText);
-      const mm = gsap.matchMedia();
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const title = section.querySelector<HTMLElement>(".w-stuck__head .w-h2");
-        const lead = section.querySelector(".w-stuck__head .w-lead");
-        if (!title) {
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        if (cancelled) {
           return;
         }
-        const split = SplitText.create(title, {
-          type: "lines",
-          mask: "lines",
-          linesClass: "w-split-line",
+        gsap.registerPlugin(ScrollTrigger);
+        const mm = gsap.matchMedia();
+        // Desktop keeps the two-column grid beside the sticky heading; each
+        // card rises into place tied to the page scroll (mobile uses the
+        // horizontal rail instead). Transform/opacity only, so it stays light.
+        mm.add("(min-width: 861px) and (prefers-reduced-motion: no-preference)", () => {
+          for (const card of section.querySelectorAll(".w-stuck__card")) {
+            gsap.from(card, {
+              autoAlpha: 0,
+              yPercent: 35,
+              scale: 0.94,
+              ease: "none",
+              scrollTrigger: { trigger: card, start: "top 96%", end: "top 62%", scrub: 0.5 },
+            });
+          }
         });
-
-        gsap
-          .timeline({
-            defaults: { ease: "expo.out" },
-            scrollTrigger: { trigger: section, start: "top 72%", once: true },
-            // Restore the plain heading so later resizes re-wrap naturally.
-            onComplete: () => split.revert(),
-          })
-          // Starts below the mask's padded bottom edge, accents included.
-          .from(split.lines, { yPercent: 135, duration: 1.1, stagger: 0.12 })
-          .from(lead, { autoAlpha: 0, y: 28, duration: 0.9, ease: "power3.out" }, "-=0.6");
-
-        return () => split.revert();
-      });
-      // Desktop keeps the two-column grid beside the sticky heading; each
-      // card rises into place tied to the page scroll (mobile uses the
-      // horizontal rail instead). Transform/opacity only, so it stays light.
-      mm.add("(min-width: 861px) and (prefers-reduced-motion: no-preference)", () => {
-        for (const card of section.querySelectorAll(".w-stuck__card")) {
-          gsap.from(card, {
-            autoAlpha: 0,
-            yPercent: 35,
-            scale: 0.94,
-            ease: "none",
-            scrollTrigger: { trigger: card, start: "top 96%", end: "top 62%", scrub: 0.5 },
-          });
-        }
-      });
-      cleanup = () => mm.revert();
-    });
+        cleanup = () => mm.revert();
+      },
+    );
 
     return () => {
       cancelled = true;
