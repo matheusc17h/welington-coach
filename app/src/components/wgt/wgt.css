@@ -1703,6 +1703,93 @@ body {
   font-weight: 700;
 }
 
+/* Students' chats in phone frames, endless sideways scroll. */
+.w-phones {
+  margin-top: var(--s10);
+}
+
+.w-phones .w-h3 {
+  margin-bottom: var(--s4);
+}
+
+.w-phones__viewport {
+  margin-inline: calc(var(--gutter) * -1);
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.w-phones__track {
+  display: flex;
+  width: max-content;
+  padding-block: var(--s2) var(--s4);
+  animation: w-marquee 70s linear infinite;
+}
+
+.w-phones__viewport:hover .w-phones__track {
+  animation-play-state: paused;
+}
+
+.w-phone {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(180px, 17vw, 230px);
+  aspect-ratio: 9 / 19;
+  margin-right: var(--s3);
+  overflow: hidden;
+  border: 7px solid #15182b;
+  border-radius: 34px;
+  background: #0b141a;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.06),
+    0 0 0 1px rgb(255 255 255 / 0.08),
+    0 24px 50px -20px rgb(0 0 0 / 0.8);
+}
+
+.w-phone__island {
+  position: absolute;
+  z-index: 1;
+  top: 8px;
+  left: 50%;
+  width: 34%;
+  height: 16px;
+  border-radius: 999px;
+  background: #05060d;
+  transform: translateX(-50%);
+}
+
+.w-phone__shot {
+  width: 100%;
+  height: auto;
+}
+
+/* Tall screenshots fill the screen from the top. */
+.w-phone__shot--fill {
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .w-phones__viewport {
+    overflow-x: auto;
+    mask-image: none;
+    -webkit-mask-image: none;
+    scrollbar-width: none;
+  }
+
+  .w-phones__track {
+    padding-inline: var(--gutter);
+    animation: none;
+  }
+
+  .w-phone:nth-child(n + 13) {
+    display: none;
+  }
+}
+
 .w-prints .w-h3 {
   margin-bottom: var(--s4);
 }
@@ -3556,6 +3643,48 @@ body {
   font-size: clamp(1.7rem, 3vw, 2.6rem);
   line-height: var(--lh-title);
   text-transform: uppercase;
+}
+
+/* Light sheet: the one bright section of the page, a rounded off-white panel
+   inset from the edges so it reads as deliberate. Text tokens are re-pointed
+   to dark ink; the illustrations and the answer strip stay dark as anchors. */
+.w-cuts {
+  --ink-dark: #0b0e24;
+  --muted: #4c5378;
+  --line: rgb(11 14 36 / 0.09);
+  --line-top: rgb(255 255 255 / 0.9);
+  margin-inline: clamp(8px, 1.6vw, 24px);
+  overflow: clip;
+  border-radius: clamp(28px, 4vw, 56px);
+  color: var(--ink-dark);
+  background:
+    radial-gradient(60% 50% at 100% 0%, rgb(31 59 255 / 0.1), transparent 70%),
+    radial-gradient(50% 45% at 0% 100%, rgb(224 33 138 / 0.08), transparent 70%),
+    #f5f6fc;
+}
+
+.w-cuts .w-aurora {
+  display: none;
+}
+
+.w-cuts__eyebrow {
+  color: #b0126a;
+}
+
+.w-cuts .w-cut {
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgb(11 14 36 / 0.06),
+    0 28px 56px -32px rgb(31 59 255 / 0.35);
+}
+
+.w-cuts .w-cut__cost strong {
+  color: #c4127a;
+}
+
+.w-cuts__answer {
+  color: var(--white);
+  box-shadow: 0 30px 60px -30px rgb(31 59 255 / 0.55);
 }
 
 /* Scroll-in choreography (only once JS arms it). */

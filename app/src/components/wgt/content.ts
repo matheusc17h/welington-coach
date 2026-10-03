@@ -93,7 +93,7 @@ export const weeks = [
 
 export const reasons = [
   {
-    title: "Análise do SEU gameplay",
+    title: "Análise da SUA gameplay",
     body: "Nada de dica genérica. O Welington assiste às suas partidas e aponta onde você perde jogo.",
   },
   {
@@ -198,6 +198,22 @@ export const prints = [
   { src: "/assets/prints/primeira-divisao.webp", alt: "Tela de nova divisão, rumo à 1ª", label: "1ª Divisão" },
   { src: "/assets/prints/time-montado.webp", alt: "Time montado no Ultimate Team", label: "Time ajustado" },
 ];
+
+/** Real chats students send (WhatsApp group and Instagram), shown in phones. */
+export const chatPrints = [
+  { id: "01", alt: "Peterson no grupo: time montado e 4/1 na WL", fill: true },
+  { id: "02", alt: "Robson: do Intermediário pro Premium sem arrependimento", fill: false },
+  { id: "03", alt: "Diego: 3 contas no Elite, com 12/3, 11/4 e 12/3", fill: false },
+  { id: "04", alt: "Alessandro: top 200 e jogando presencial", fill: true },
+  { id: "05", alt: "Comentários no Instagram recomendando o Welington", fill: false },
+  { id: "06", alt: "KaiQue: com 2 aulas o Elite está perto", fill: false },
+  { id: "07", alt: "Peterson: nova divisão e adversário quitando de raiva", fill: true },
+  { id: "08", alt: "Diego e Roberto agradecendo pela defesa e pelos volantes", fill: false },
+  { id: "09", alt: "Diego mostrando a recompensa do Division Rivals", fill: false },
+  { id: "10", alt: "Comentários no Instagram: didática e evolução", fill: true },
+  { id: "11", alt: "Kassyon comemorando a 1ª divisão", fill: true },
+  { id: "12", alt: "naelson no Instagram: da segunda divisão ao Elite", fill: false },
+].map((print) => ({ ...print, src: `/assets/conversas/conversa-${print.id}.webp` }));
 
 export const studentVideos = Array.from({ length: 9 }, (_, index) => {
   const id = String(index + 1).padStart(2, "0");

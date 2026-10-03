@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { prints, studentVideos, testimonials, whatsapp } from "./content";
+import { chatPrints, prints, studentVideos, testimonials, whatsapp } from "./content";
 import { ChevronIcon, CrossIcon, PlayIcon, QuoteIcon } from "./icons";
 import { PillCta } from "./pill";
 
@@ -64,6 +64,39 @@ function Testimonials() {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/**
+ * Students' chats inside phone frames, scrolling sideways without end (CSS:
+ * the row is doubled and slides half its width). Hover pauses it; with
+ * reduced motion it becomes a plain swipe row.
+ */
+function ChatPhones() {
+  const row = [...chatPrints, ...chatPrints];
+  return (
+    <div className="w-phones">
+      <h3 className="w-h3">Direto do WhatsApp dos alunos</h3>
+      <div className="w-phones__viewport">
+        <ul aria-label="Conversas de alunos" className="w-phones__track">
+          {row.map((print, index) => {
+            const copy = index >= chatPrints.length;
+            return (
+              <li aria-hidden={copy || undefined} className="w-phone" key={`${print.id}-${index}`}>
+                <span aria-hidden="true" className="w-phone__island" />
+                <img
+                  alt={copy ? "" : print.alt}
+                  className={print.fill ? "w-phone__shot w-phone__shot--fill" : "w-phone__shot"}
+                  decoding="async"
+                  loading="lazy"
+                  src={print.src}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 }
@@ -235,6 +268,7 @@ export function Results() {
           </p>
         </div>
         <Testimonials />
+        <ChatPhones />
         <Prints />
         <Videos />
         <div className="w-results__cta">
