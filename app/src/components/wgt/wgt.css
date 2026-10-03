@@ -1710,29 +1710,67 @@ body {
   .w-phone:nth-child(n + 13) {
     display: none;
   }
+
+  .w-prints__viewport {
+    overflow-x: auto;
+    mask-image: none;
+    -webkit-mask-image: none;
+    scrollbar-width: none;
+  }
+
+  .w-prints__track {
+    padding-inline: var(--gutter);
+    animation: none;
+  }
+
+  .w-print:nth-child(n + 7) {
+    display: none;
+  }
+
+  .w-videos__viewport {
+    overflow-x: auto;
+    mask-image: none;
+    -webkit-mask-image: none;
+    scrollbar-width: none;
+  }
+
+  .w-videos__track {
+    padding-inline: var(--gutter);
+    animation: none;
+  }
+
+  .w-videos__track li:nth-child(n + 10) {
+    display: none;
+  }
 }
 
 .w-prints .w-h3 {
   margin-bottom: var(--s4);
 }
 
-.w-prints__track {
-  display: flex;
-  gap: var(--s3);
+/* Endless row moving right (the phones above move left). */
+.w-prints__viewport {
   margin-inline: calc(var(--gutter) * -1);
-  padding: var(--s4) var(--gutter) var(--s5);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
-.w-prints__track::-webkit-scrollbar {
-  display: none;
+.w-prints__track {
+  display: flex;
+  width: max-content;
+  padding-block: var(--s4) var(--s6);
+  animation: w-marquee 80s linear infinite reverse;
+}
+
+.w-prints__viewport:hover .w-prints__track {
+  animation-play-state: paused;
 }
 
 .w-print {
-  flex: 0 0 clamp(220px, 24vw, 300px);
-  scroll-snap-align: center;
+  flex: none;
+  width: clamp(200px, 22vw, 300px);
+  margin-right: var(--s3);
   transform: rotate(-4deg);
   transition: transform 0.6s var(--ease);
 }
@@ -1777,39 +1815,29 @@ body {
   font-size: 0.9rem;
 }
 
-/* 9 videos as a bento: one featured video (2x2) + 8 in a 4x2 block, so the
-   grid always closes as a clean rectangle instead of leaving orphans. */
-.w-videos__grid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: var(--s2);
+/* Endless row moving left, like the phones above. */
+.w-videos__viewport {
+  margin-inline: calc(var(--gutter) * -1);
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
-.w-videos__grid li:first-child {
-  grid-row: span 2;
-  grid-column: span 2;
+.w-videos__track {
+  display: flex;
+  width: max-content;
+  padding-block: var(--s1) var(--s3);
+  animation: w-marquee 90s linear infinite;
 }
 
-.w-videos__grid li:first-child .w-video {
-  height: 100%;
-  aspect-ratio: auto;
-  border-radius: 24px;
+.w-videos__viewport:hover .w-videos__track {
+  animation-play-state: paused;
 }
 
-.w-videos__grid li:first-child .w-video__play {
-  width: 84px;
-  height: 84px;
-}
-
-.w-videos__grid li:first-child .w-video__play svg {
-  width: 32px;
-  height: 32px;
-}
-
-.w-videos__grid li:first-child .w-video__n {
-  bottom: 18px;
-  left: 22px;
-  font-size: 3rem;
+.w-videos__track li {
+  flex: none;
+  width: clamp(160px, 15vw, 220px);
+  margin-right: var(--s2);
 }
 
 .w-video {
@@ -2940,54 +2968,6 @@ body {
 
   .w-reasons__card--wide {
     min-height: 200px;
-  }
-
-  .w-print {
-    flex-basis: 64%;
-  }
-
-  .w-videos__grid {
-    grid-auto-columns: 42%;
-    grid-auto-flow: column;
-    grid-template-columns: none;
-    margin-inline: calc(var(--gutter) * -1);
-    padding: 0 var(--gutter) var(--s2);
-    overflow-x: auto;
-    scroll-padding-inline: var(--gutter);
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-
-  .w-videos__grid li {
-    scroll-snap-align: start;
-  }
-
-  /* Mobile is a swipe rail: no featured tile. */
-  .w-videos__grid li:first-child {
-    grid-row: auto;
-    grid-column: auto;
-  }
-
-  .w-videos__grid li:first-child .w-video {
-    height: auto;
-    aspect-ratio: 9 / 16;
-    border-radius: 16px;
-  }
-
-  .w-videos__grid li:first-child .w-video__play {
-    width: 56px;
-    height: 56px;
-  }
-
-  .w-videos__grid li:first-child .w-video__play svg {
-    width: 22px;
-    height: 22px;
-  }
-
-  .w-videos__grid li:first-child .w-video__n {
-    bottom: 10px;
-    left: 14px;
-    font-size: 1.6rem;
   }
 
   .w-results__cta {
