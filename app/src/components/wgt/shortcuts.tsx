@@ -33,7 +33,7 @@ const shortcuts: Shortcut[] = [
     body: "É contra as regras da EA. Um ban apaga anos de clube.",
     costLabel: "Risco",
     cost: "Banimento da conta",
-    art: { src: "/assets/atalhos/coins.webp", width: 640, height: 455 },
+    art: { src: "/assets/atalhos/coins.webp", width: 529, height: 362 },
   },
 ];
 
