@@ -1,7 +1,5 @@
 import { useEffect } from "react";
 
-import { REVEALED_EVENT } from "./preloader";
-
 // Títulos de seção (o filme "jogando como pro" anima a própria copy).
 const TITLES = "main :is(.w-h2, .w-final__title)";
 // Palavra de destaque do hero.
@@ -14,8 +12,8 @@ const PENDING = "w-letters-pending";
  * Animações de texto (GSAP):
  * - títulos de seção sobem linha por linha por trás de uma máscara (SplitText),
  *   uma vez, quando entram na tela;
- * - a palavra de destaque do hero se monta com ScrambleText quando o
- *   preloader sai.
+ * - a palavra de destaque do hero se monta com ScrambleText quando a
+ *   página carrega.
  * Os contadores ficam em counter.tsx. Com reduced motion nada anima.
  */
 export function useTextAnimations() {
@@ -87,17 +85,9 @@ export function useTextAnimations() {
           },
         });
       };
-      if (
-        "wgtRevealed" in document.documentElement.dataset ||
-        !document.querySelector(".w-preloader")
-      ) {
-        playHero();
-      } else {
-        window.addEventListener(REVEALED_EVENT, playHero, { once: true });
-      }
+      playHero();
 
       cleanup = () => {
-        window.removeEventListener(REVEALED_EVENT, playHero);
         if (scramble && word) {
           scramble.progress(1).kill();
           gsap.set(word, { clearProps: "display,width,minWidth,whiteSpace" });

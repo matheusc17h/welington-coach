@@ -1,7 +1,5 @@
 import { useEffect } from "react";
 
-import { REVEALED_EVENT } from "./preloader";
-
 const format = (value: number, decimals: number) =>
   value.toLocaleString("pt-BR", {
     maximumFractionDigits: decimals,
@@ -61,8 +59,8 @@ export function withCounter(text: string) {
 
 /**
  * Runs every Counter on the page: 0 → value over 2s (power2.out) once it is
- * 85% up the viewport. Counters in the hero wait for the preloader to lift,
- * so the count is actually seen.
+ * 85% up the viewport. Counters in the hero start right away, after a short
+ * beat so the entrance is seen.
  */
 export function useCounters() {
   useEffect(() => {
@@ -79,7 +77,6 @@ export function useCounters() {
         }
         gsap.registerPlugin(ScrollTrigger);
         const tweens: gsap.core.Tween[] = [];
-        const heroStarts: (() => void)[] = [];
 
         for (const el of document.querySelectorAll<HTMLElement>("[data-count]")) {
           const { count = "0", decimals = "0", prefix = "", suffix = "" } = el.dataset;
@@ -95,33 +92,14 @@ export function useCounters() {
             duration: 2,
             ease: "power2.out",
             onUpdate: paint,
-            paused: inHero,
             ...(inHero
               ? { delay: 0.6 }
               : { scrollTrigger: { trigger: el, start: "top 85%", once: true } }),
           });
           tweens.push(tween);
-          if (inHero) {
-            heroStarts.push(() => tween.play());
-          }
-        }
-
-        const startHero = () => {
-          for (const start of heroStarts) {
-            start();
-          }
-        };
-        if (
-          "wgtRevealed" in document.documentElement.dataset ||
-          !document.querySelector(".w-preloader")
-        ) {
-          startHero();
-        } else {
-          window.addEventListener(REVEALED_EVENT, startHero, { once: true });
         }
 
         cleanup = () => {
-          window.removeEventListener(REVEALED_EVENT, startHero);
           for (const tween of tweens) {
             tween.scrollTrigger?.kill();
             tween.kill();

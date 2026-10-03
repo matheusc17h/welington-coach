@@ -35,7 +35,6 @@ const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon, RoutineIcon, GroupIcon
 import { Counter, useCounters, withCounter } from "./counter";
 import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
-import { Preloader } from "./preloader";
 import { ProFilm } from "./pro-film";
 import { Results } from "./results";
 import { Modules } from "./modules";
@@ -1151,7 +1150,6 @@ export function Landing() {
   useCounters();
   return (
     <div className="wgt" lang="pt-BR" onPointerMove={trackGlow}>
-      <Preloader />
       <a className="w-skip" href="#conteudo">
         Pular para o conteúdo
       </a>
