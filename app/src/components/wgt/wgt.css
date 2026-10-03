@@ -2210,6 +2210,24 @@ body {
   transform: scale(0.98);
 }
 
+/* "Quem sou eu" on the light sheet: ink in the page's dark navy, the giant
+   background name as a faint dark outline, the gradient cards keep white text. */
+.w-about {
+  color: var(--bg);
+}
+
+.w-about .w-bleed--about {
+  -webkit-text-stroke-color: rgb(6 8 26 / 0.07);
+}
+
+.w-about .w-about__stats small {
+  color: var(--blue);
+}
+
+.w-about .w-about__card {
+  color: var(--white);
+}
+
 /* Reasons on the light sheet: white cards, the wide lead card stays dark. */
 .w-reasons .w-reasons__card {
   background: #fff;
@@ -3635,9 +3653,11 @@ body {
   text-transform: uppercase;
 }
 
-/* Light sheets ("Dinheiro que não vira divisão", reasons, plans): rounded
+/* Light sheets ("Quem sou eu", "Dinheiro que não vira divisão", reasons,
+   plans): rounded
    off-white panels inset from the edges so they read as deliberate. Text
    tokens are re-pointed to dark ink; dark pieces inside stay as anchors. */
+.w-about,
 .w-cuts,
 .w-reasons,
 .w-plans {
