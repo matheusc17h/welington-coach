@@ -1,72 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
-import { chatPrints, prints, studentVideos, testimonials, whatsapp } from "./content";
-import { ChevronIcon, CrossIcon, PlayIcon, QuoteIcon } from "./icons";
+import { chatPrints, prints, studentVideos, whatsapp } from "./content";
+import { ChevronIcon, CrossIcon, PlayIcon } from "./icons";
 import { PillCta } from "./pill";
-
-function prefersReducedMotion() {
-  return (
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-}
-
-function Testimonials() {
-  const trackRef = useRef<HTMLUListElement>(null);
-
-  const scrollByCard = (direction: 1 | -1) => {
-    const track = trackRef.current;
-    if (!track) {
-      return;
-    }
-    const card = track.querySelector<HTMLElement>("li");
-    const step = card ? card.offsetWidth + 24 : track.clientWidth * 0.8;
-    track.scrollBy({
-      behavior: prefersReducedMotion() ? "auto" : "smooth",
-      left: step * direction,
-    });
-  };
-
-  return (
-    <div className="w-quotes">
-      <div className="w-quotes__bar">
-        <h3 className="w-h3">O que os alunos falam no grupo</h3>
-        <div className="w-quotes__nav">
-          <button
-            aria-label="Depoimento anterior"
-            className="w-round"
-            onClick={() => scrollByCard(-1)}
-            type="button"
-          >
-            <ChevronIcon className="w-flip" />
-          </button>
-          <button
-            aria-label="Próximo depoimento"
-            className="w-round"
-            onClick={() => scrollByCard(1)}
-            type="button"
-          >
-            <ChevronIcon />
-          </button>
-        </div>
-      </div>
-      <ul aria-label="Depoimentos de alunos" className="w-quotes__track" ref={trackRef}>
-        {testimonials.map((item, index) => (
-          <li className="w-glass w-quote" key={`${item.name}-${index}`}>
-            <QuoteIcon className="w-quote__mark" />
-            {item.badge ? <p className="w-quote__badge">{item.badge}</p> : null}
-            <blockquote className="w-quote__text">
-              <p>{item.text}</p>
-            </blockquote>
-            <p className="w-quote__who">
-              <strong>{item.name}</strong>
-              <span>{item.plan}</span>
-            </p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 /**
  * Students' chats inside phone frames, scrolling sideways without end (CSS:
@@ -267,7 +203,6 @@ export function Results() {
             quitando de raiva.
           </p>
         </div>
-        <Testimonials />
         <ChatPhones />
         <Prints />
         <Videos />

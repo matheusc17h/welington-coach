@@ -1611,7 +1611,6 @@ body {
   grid-column: 9 / -1;
 }
 
-.w-quotes,
 .w-prints,
 .w-videos {
   margin-top: var(--s10);
@@ -1624,83 +1623,6 @@ body {
   justify-content: space-between;
   gap: var(--s2);
   margin-bottom: var(--s3);
-}
-
-.w-quotes__nav {
-  display: flex;
-  gap: var(--s1);
-}
-
-.w-quotes__track {
-  display: grid;
-  grid-auto-columns: minmax(300px, 400px);
-  grid-auto-flow: column;
-  /* Each card takes its own height: short quotes no longer carry the
-     empty space of the longest one. */
-  align-items: start;
-  gap: var(--s3);
-  margin-inline: calc(var(--gutter) * -1);
-  padding: var(--s1) var(--gutter) var(--s3);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-padding-inline: var(--gutter);
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-}
-
-.w-quotes__track::-webkit-scrollbar {
-  display: none;
-}
-
-.w-quote {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s2);
-  padding: var(--s4) var(--s3) var(--s3);
-  scroll-snap-align: start;
-}
-
-.w-quote__mark {
-  width: 48px;
-  height: 40px;
-}
-
-.w-quote__badge {
-  position: absolute;
-  top: var(--s3);
-  right: var(--s3);
-  padding: 6px 12px;
-  border: 1px solid rgb(224 33 138 / 0.55);
-  border-radius: 999px;
-  background: rgb(224 33 138 / 0.18);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.w-quote__text {
-  flex: 1;
-  font-size: 1.05rem;
-  font-weight: 500;
-  line-height: 1.55;
-}
-
-.w-quote__who {
-  display: grid;
-  gap: 2px;
-  padding-top: var(--s2);
-  border-top: 1px solid var(--line);
-}
-
-.w-quote__who strong {
-  font-weight: 800;
-}
-
-.w-quote__who span {
-  color: var(--blue-light);
-  font-size: 0.85rem;
-  font-weight: 700;
 }
 
 /* Students' chats in phone frames, endless sideways scroll. */
@@ -2286,6 +2208,26 @@ body {
 
 .w-plan__cta:active {
   transform: scale(0.98);
+}
+
+/* Reasons on the light sheet: white cards, the wide lead card stays dark. */
+.w-reasons .w-reasons__card {
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgb(11 14 36 / 0.06),
+    0 28px 56px -32px rgb(31 59 255 / 0.35);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.w-reasons .w-reasons__card--wide {
+  --muted: #9aa3c7;
+  --line: rgb(255 255 255 / 0.08);
+  color: var(--white);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(224 33 138 / 0.4), transparent 55%),
+    radial-gradient(circle at 0% 100%, rgb(31 59 255 / 0.4), transparent 55%),
+    #0c1030;
 }
 
 /* Plans on the light sheet: white cards, the featured one stays dark. */
@@ -2980,10 +2922,6 @@ body {
 
   .w-reasons__card--wide {
     min-height: 200px;
-  }
-
-  .w-quotes__track {
-    grid-auto-columns: 86%;
   }
 
   .w-print {
@@ -3697,10 +3635,11 @@ body {
   text-transform: uppercase;
 }
 
-/* Light sheets ("Dinheiro que não vira divisão" and the plans): rounded
+/* Light sheets ("Dinheiro que não vira divisão", reasons, plans): rounded
    off-white panels inset from the edges so they read as deliberate. Text
    tokens are re-pointed to dark ink; dark pieces inside stay as anchors. */
 .w-cuts,
+.w-reasons,
 .w-plans {
   --ink-dark: #0b0e24;
   --muted: #4c5378;
@@ -3717,6 +3656,7 @@ body {
 }
 
 .w-cuts .w-aurora,
+.w-reasons .w-aurora,
 .w-plans .w-aurora {
   display: none;
 }

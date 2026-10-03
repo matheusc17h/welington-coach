@@ -59,24 +59,6 @@ export function PlusIcon(props: IconProps) {
   );
 }
 
-export function QuoteIcon(props: IconProps) {
-  return (
-    <svg {...base} viewBox="0 0 48 40" {...props}>
-      <defs>
-        <linearGradient id="wgt-quote" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="var(--blue)" />
-          <stop offset="0.55" stopColor="var(--violet)" />
-          <stop offset="1" stopColor="var(--magenta)" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M0 40V24C0 10.7 6.4 2.7 19.2 0l2.2 5.4C14.6 7.6 11 12 10.6 18.4H20V40H0Zm28 0V24c0-13.3 6.4-21.3 19.2-24l.8 5.4C41.2 7.6 38.6 12 38.2 18.4H48V40H28Z"
-        fill="url(#wgt-quote)"
-      />
-    </svg>
-  );
-}
-
 export function WhatsAppIcon(props: IconProps) {
   return (
     <svg {...base} viewBox="0 0 32 32" {...props}>
