@@ -317,7 +317,7 @@ function About() {
       <div className="w-wrap w-about__grid">
         <div className="w-about__intro w-rise">
           <h2 className="w-h2" id="quem-title">
-            Quem é o <span className="w-grad-text">Welington</span>
+            Quem <span className="w-grad-text">sou eu</span>
           </h2>
           <p className="w-lead">
             Coach de EA SPORTS FC e jogador competitivo, com perfil verificado pela EA e mais de
@@ -350,12 +350,12 @@ function About() {
             <img
               alt="Welington Rodrigues com a camisa da WGT eSports"
               decoding="async"
-              height={1000}
+              height={635}
               loading="lazy"
-              sizes="(max-width: 860px) 70vw, 30vw"
-              src="/assets/brand/welington.webp"
-              srcSet="/assets/brand/welington-480.webp 480w, /assets/brand/welington.webp 800w"
-              width={800}
+              sizes="(max-width: 860px) 92vw, 30vw"
+              src="/assets/brand/welington-quem.webp"
+              srcSet="/assets/brand/welington-quem-480.webp 480w, /assets/brand/welington-quem.webp 640w"
+              width={640}
             />
           </figure>
           <article className="w-about__card w-about__card--mission">
