@@ -169,10 +169,11 @@ export function ProFilm() {
 
       <div className="w-pro__overlay">
         <h2 className="w-pro__title" id="pro-title">
-          Isso é jogar com <span className="w-grad-text">método.</span>
+          Em <span className="w-grad-text">4 semanas</span>, você para de depender da IA pra
+          defender.
         </h2>
-        <PillCta href={whatsapp.geral} size="lg">
-          Quero jogar assim
+        <PillCta href={whatsapp.plano4} size="lg">
+          Quero seguir esse plano
         </PillCta>
       </div>
 

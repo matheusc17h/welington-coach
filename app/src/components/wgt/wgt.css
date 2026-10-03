@@ -822,6 +822,38 @@ body {
   background-position: right 88%;
 }
 
+/* Main CTA with its microcopy right under it. */
+.w-hero__main {
+  display: grid;
+  gap: 10px;
+}
+
+.w-hero__micro {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* One short student quote under the CTAs. */
+.w-hero__quote {
+  max-width: 46ch;
+  margin-top: var(--s4);
+  padding-left: var(--s2);
+  border-left: 2px solid var(--magenta);
+}
+
+.w-hero__quote blockquote {
+  color: var(--white);
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.w-hero__quote figcaption {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .w-hero__visual {
   position: relative;
   z-index: 1;
@@ -924,8 +956,9 @@ body {
     padding-bottom: clamp(24px, 5svh, 64px);
   }
 
+  /* Four lines of headline: sized so the CTAs and quote still fit the screen. */
   .w-hero__title {
-    font-size: clamp(3rem, min(8.4vw, 10.6svh), 8.4rem);
+    font-size: clamp(3rem, min(6.4vw, 7.6svh), 6.6rem);
   }
 
   .w-hero__chips {
@@ -1954,6 +1987,15 @@ body {
   gap: 12px;
 }
 
+.w-notfor__yes {
+  grid-column: 1 / -1;
+  max-width: 60ch;
+  margin-top: var(--s3);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 .w-notfor__item {
   display: grid;
   grid-template-columns: auto auto 1fr;
@@ -2442,6 +2484,53 @@ body {
 
 .w-float[data-visible]:active {
   transform: scale(0.95);
+}
+
+/* Sticky CTA bar: phones only (StickyCta in landing.tsx). */
+.w-sticky {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Room for the bar, so it never covers the end of the page. */
+  .wgt {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  .w-sticky {
+    position: fixed;
+    z-index: 56;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    padding: var(--s2) var(--gutter) max(var(--s2), env(safe-area-inset-bottom));
+    background: linear-gradient(to top, rgb(6 8 26 / 0.96) 55%, rgb(6 8 26 / 0));
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity 0.35s var(--ease),
+      transform 0.45s var(--ease),
+      visibility 0s linear 0.45s;
+  }
+
+  .w-sticky[data-visible] {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s;
+  }
+
+  .w-sticky .w-pill {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* The bar carries the WhatsApp CTA on phones. */
+  .w-float {
+    display: none;
+  }
 }
 
 /* Scroll-linked rise: transform only, content is always visible. */

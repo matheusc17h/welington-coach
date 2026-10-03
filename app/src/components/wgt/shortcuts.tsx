@@ -222,10 +222,11 @@ export function Shortcuts() {
         <div className="w-cuts__head">
           <p className="w-cuts__eyebrow">Dinheiro que não vira divisão</p>
           <h2 className="w-h2" id="atalhos-title">
-            Gastar não sobe divisão. <span className="w-grad-text">Treinar</span> sobe.
+            Você já gastou com boost, pack e coin. E continua na{" "}
+            <span className="w-grad-text">mesma divisão</span>.
           </h2>
           <p className="w-lead">
-            Boost, pack e coins mudam o clube por um tempo. O seu jeito de jogar continua o mesmo.
+            Gastar não sobe divisão. <span className="w-grad-text">Treinar</span> sobe.
           </p>
         </div>
 
@@ -260,7 +261,7 @@ export function Shortcuts() {
               tira da sua conta.
             </p>
           </div>
-          <PillCta href={whatsapp.geral}>Quero treinar de verdade</PillCta>
+          <PillCta href={whatsapp.geral}>Quero investir no meu jogo, não no clube</PillCta>
         </div>
       </div>
     </section>

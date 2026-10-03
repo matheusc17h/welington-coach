@@ -176,7 +176,7 @@ function Header() {
         </ul>
         <a className="w-header__cta" href={whatsapp.geral} {...external}>
           <WhatsAppIcon className="w-header__cta-icon" />
-          Agendar aula
+          Agendar minha análise
         </a>
         <button
           aria-controls="menu-mobile"
@@ -228,35 +228,36 @@ function Hero() {
           <h1 className="w-hero__title" id="hero-title">
             <span className="w-line">
               <span className="w-line__in" style={{ "--i": 0 } as CSSProperties}>
-                Hora de subir sua
+                Pare de perder no <span className="w-outline">automático.</span>
               </span>
             </span>
             <span className="w-line">
-              <span
-                className="w-line__in w-grad-text scramble"
-                style={{ "--i": 1 } as CSSProperties}
-              >
-                jogabilidade
-              </span>
-            </span>
-            <span className="w-line">
-              <span className="w-line__in" style={{ "--i": 2 } as CSSProperties}>
-                para outro <span className="w-outline">patamar</span>
+              <span className="w-line__in" style={{ "--i": 1 } as CSSProperties}>
+                Suba de divisão no <span className="w-grad-text scramble">FC 27</span>.
               </span>
             </span>
           </h1>
           <p className="w-hero__lead">
-            Aulas individuais com análise do seu gameplay. Você para de perder no automático e
-            começa a jogar com método.
+            O Welington assiste às suas partidas, mostra exatamente onde você perde jogo e monta o
+            plano pra você corrigir. Aula individual, em cima do SEU gameplay.
           </p>
           <div className="w-hero__ctas w-in w-in--cta">
-            <PillCta href={whatsapp.geral} size="lg">
-              Quero minha primeira aula
-            </PillCta>
+            <div className="w-hero__main">
+              <PillCta href={whatsapp.geral} size="lg">
+                Quero minha análise de gameplay
+              </PillCta>
+              <p className="w-hero__micro">Você fala direto com o Welington no WhatsApp.</p>
+            </div>
             <a className="w-hero__secondary" href="#resultados">
-              Ver resultados dos alunos
+              Ver quem já subiu de divisão
             </a>
           </div>
+          <figure className="w-hero__quote w-in w-in--cta">
+            <blockquote>
+              “Eu nunca tinha passado da segunda divisão, hoje estou na ELITE.”
+            </blockquote>
+            <figcaption>@naelsongameseinformatica</figcaption>
+          </figure>
         </div>
 
         <div className="w-hero__visual">
@@ -319,8 +320,8 @@ function About() {
           </h2>
           <p className="w-lead">
             Coach de EA SPORTS FC e jogador competitivo, com perfil verificado pela EA e mais de
-            3.500 alunos. Ele joga o mesmo modo que você, sob a mesma pressão, e ensina o que decide
-            partida dentro de campo.
+            3.500 alunos. Ele joga o mesmo modo que você, sob a mesma pressão. Não ensina teoria:
+            ensina o que decide jogo na Weekend League.
           </p>
           <dl className="w-about__stats">
             <div>
@@ -588,10 +589,10 @@ function Stuck() {
         </div>
         <div className="w-stuck__close">
           <p>
-            Se você se reconheceu em três ou mais, falta <span className="w-grad-text">método</span>{" "}
-            — não talento.
+            Marcou três ou mais? O problema não é talento. É{" "}
+            <span className="w-grad-text">método</span>. E método se treina.
           </p>
-          <PillCta href={whatsapp.geral}>Quero corrigir isso</PillCta>
+          <PillCta href={whatsapp.erros}>Quero corrigir esses erros</PillCta>
         </div>
       </div>
     </section>
@@ -731,6 +732,8 @@ function Weeks() {
             Plano de <span className="w-grad-text">4 semanas</span>
           </h2>
           <p className="w-lead">
+            {/* TODO CONFIRMAR: subtítulo deixando claro que é o plano Premium: "O que você
+                recebe no plano Premium, na ordem certa." */}
             O que você vai receber, na ordem certa. Um fundamento por semana, do bote no tempo à
             rotina de Weekend League.
           </p>
@@ -770,7 +773,7 @@ function Reasons() {
       <div className="w-wrap w-reasons__grid">
         <div className="w-reasons__head">
           <h2 className="w-h2" id="porque-title">
-            Por que treinar com o <span className="w-grad-text">Welington</span>
+            O que muda quando você treina <span className="w-grad-text">com quem joga</span>
           </h2>
           <p className="w-lead">
             Treino em cima das suas partidas, com uma meta que dá para medir: subir de divisão.
@@ -822,6 +825,10 @@ function NotFor() {
             </li>
           ))}
         </ul>
+        <p className="w-notfor__yes">
+          Agora, se você topa treinar, rever seus jogos e ouvir a verdade sobre o seu gameplay,{" "}
+          <span className="w-grad-text">esse treino é pra você.</span>
+        </p>
       </div>
     </section>
   );
@@ -856,8 +863,7 @@ function Plans() {
             Escolha seu <span className="w-grad-text">plano</span>
           </h2>
           <p className="w-lead">
-            Valor a gente fala no WhatsApp, junto com a indicação do plano que faz sentido para o
-            seu momento.
+            Me conta sua divisão no WhatsApp que eu te indico o plano certo e passo o valor na hora.
           </p>
         </div>
         <div className="w-plans__viewport">
@@ -878,16 +884,15 @@ function Plans() {
                     </li>
                   ))}
                 </ul>
+                {/* TODO CONFIRMAR: "a partir de R$ X" entra aqui, acima do botão. */}
                 <a
-                  aria-label={`Consultar valores do plano ${plan.name} no WhatsApp`}
+                  aria-label={`${plan.cta} (abre o WhatsApp)`}
                   className="w-plan__cta"
                   href={plan.href}
                   {...external}
                 >
                   <WhatsAppIcon />
-                  <span>
-                    Consultar valores<span className="w-plan__cta-more"> no WhatsApp</span>
-                  </span>
+                  <span>{plan.cta}</span>
                 </a>
               </li>
             ))}
@@ -928,7 +933,7 @@ function Faq() {
                 <p>{faq.a}</p>
                 {faq.cta ? (
                   <a className="w-faq__inline" href={whatsapp.geral} {...external}>
-                    Agendar aula
+                    Agendar minha análise
                     <ArrowIcon />
                   </a>
                 ) : null}
@@ -948,13 +953,14 @@ function FinalCta() {
       <div className="w-wrap w-final__inner">
         <Shield className="w-final__shield" />
         <h2 className="w-final__title" id="final-title">
-          Chama no WhatsApp e agenda sua <span className="w-grad-text">primeira aula</span>
+          Sua próxima <span className="w-grad-text">Weekend League</span> pode ser diferente.
         </h2>
         <p className="w-lead">
-          Manda a mensagem, conta em que divisão você está e marca sua primeira análise de gameplay.
+          Manda sua divisão no WhatsApp e marca a primeira análise. O Welington te mostra por onde
+          começar.
         </p>
         <PillCta href={whatsapp.geral} size="lg">
-          Agendar minha primeira aula
+          Mandar minha divisão no WhatsApp
         </PillCta>
       </div>
     </section>
@@ -1083,8 +1089,46 @@ function FloatingWhatsApp() {
       {...external}
     >
       <WhatsAppIcon />
-      <span className="w-float__label">Agendar aula</span>
+      <span className="w-float__label">Agendar minha análise</span>
     </a>
+  );
+}
+
+/**
+ * Phones only (CSS): a bottom bar with the main CTA. It shows once the hero
+ * is off screen and leaves when the final CTA comes into view (and stays away
+ * below it), so the page never shows the same button twice.
+ */
+function StickyCta() {
+  const [pastHero, setPastHero] = useState(false);
+  const [atEnd, setAtEnd] = useState(false);
+
+  useEffect(() => {
+    const hero = document.getElementById("topo");
+    const end = document.getElementById("agendar");
+    if (!hero || !end || !("IntersectionObserver" in window)) {
+      return;
+    }
+    const heroObserver = new IntersectionObserver(([entry]) => {
+      setPastHero(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+    });
+    const endObserver = new IntersectionObserver(([entry]) => {
+      setAtEnd(entry.isIntersecting || entry.boundingClientRect.top < 0);
+    });
+    heroObserver.observe(hero);
+    endObserver.observe(end);
+    return () => {
+      heroObserver.disconnect();
+      endObserver.disconnect();
+    };
+  }, []);
+
+  const shown = pastHero && !atEnd;
+
+  return (
+    <div className="w-sticky" data-visible={shown || undefined} inert={!shown}>
+      <PillCta href={whatsapp.geral}>Agendar minha análise</PillCta>
+    </div>
   );
 }
 
@@ -1131,6 +1175,7 @@ export function Landing() {
       </main>
       <Footer />
       <FloatingWhatsApp />
+      <StickyCta />
       <div aria-hidden="true" className="w-grain" />
     </div>
   );

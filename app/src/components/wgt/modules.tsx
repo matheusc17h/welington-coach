@@ -123,8 +123,11 @@ export function Modules() {
         </ul>
 
         <div className="w-mods__cta">
-          <p>Você começa pelo ponto de partida. O resto, o Welington monta com você.</p>
-          <PillCta href={whatsapp.geral}>Quero começar</PillCta>
+          <p>
+            Tudo começa pelo diagnóstico do seu gameplay. Na primeira call você já sai sabendo onde
+            perde jogo.
+          </p>
+          <PillCta href={whatsapp.geral}>Quero meu diagnóstico</PillCta>
         </div>
       </div>
     </section>

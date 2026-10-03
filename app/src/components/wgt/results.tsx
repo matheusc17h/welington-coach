@@ -238,8 +238,8 @@ export function Results() {
         <Prints />
         <Videos />
         <div className="w-results__cta">
-          <p>Quer ser o próximo print no grupo?</p>
-          <PillCta href={whatsapp.geral}>Agendar minha primeira aula</PillCta>
+          <p>O próximo print no grupo pode ser o seu.</p>
+          <PillCta href={whatsapp.geral}>Quero ser o próximo a subir</PillCta>
         </div>
       </div>
     </section>

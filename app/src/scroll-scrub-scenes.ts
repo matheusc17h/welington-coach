@@ -8,10 +8,7 @@
  *
  * Keep this array a module constant.
  */
-import type {
-  ScrollScrubScene,
-  ScrollScrubTheme,
-} from "@/components/scroll-scrub/scroll-scrub";
+import type { ScrollScrubScene, ScrollScrubTheme } from "@/components/scroll-scrub/scroll-scrub";
 
 export const scrollScrubTheme: ScrollScrubTheme = {
   accent: "#3fa9ff",
@@ -25,7 +22,7 @@ const world = "/assets/world";
 export const scrollScrubScenes: ScrollScrubScene[] = [
   {
     align: "left",
-    body: "No FC 27 os companheiros não dão mais bote por você. Quem defende é você.",
+    body: "No FC 27 os companheiros não dão mais bote por você. Quem defende é você. Quem aprender agora começa o FC 27 na frente de quem ainda espera a IA defender.",
     clip: `${world}/scene-01.mp4`,
     id: "controle-01",
     kicker: "01 / 04",
