@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 
 import { whatsapp } from "./content";
 import { PillCta } from "./pill";
@@ -9,151 +9,9 @@ type Shortcut = {
   body: string;
   costLabel: string;
   cost: string;
-  art: ReactNode;
+  /** 3D render (transparent WebP) that tells the card's story. */
+  art: { src: string; width: number; height: number };
 };
-
-/* Illustrations are inline SVG in the brand gradient: crisp at any size,
-   themeable and no image requests. */
-function BoostArt() {
-  return (
-    <svg aria-hidden="true" className="w-cut__art" viewBox="0 0 200 140">
-      <defs>
-        <linearGradient id="cut-g1" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="#3fa9ff" />
-          <stop offset="0.55" stopColor="#7b2ff7" />
-          <stop offset="1" stopColor="#e0218a" />
-        </linearGradient>
-      </defs>
-      {/* Someone else's profile, in front of yours. */}
-      <rect
-        fill="none"
-        height="78"
-        opacity="0.35"
-        rx="12"
-        stroke="#9aa3c7"
-        strokeDasharray="5 6"
-        strokeWidth="2"
-        width="92"
-        x="30"
-        y="30"
-      />
-      <g transform="translate(78 22)">
-        <rect
-          fill="#0c1030"
-          height="86"
-          rx="14"
-          stroke="url(#cut-g1)"
-          strokeWidth="2.5"
-          width="96"
-        />
-        <circle cx="48" cy="32" fill="url(#cut-g1)" r="14" />
-        <path
-          d="M24 70c4-12 14-18 24-18s20 6 24 18"
-          fill="none"
-          stroke="url(#cut-g1)"
-          strokeLinecap="round"
-          strokeWidth="3"
-        />
-      </g>
-      <path
-        d="M40 118c18 10 44 10 62 0"
-        fill="none"
-        stroke="#3fa9ff"
-        strokeLinecap="round"
-        strokeWidth="2.5"
-      />
-      <path
-        d="m96 112 7 6-9 3"
-        fill="none"
-        stroke="#3fa9ff"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2.5"
-      />
-    </svg>
-  );
-}
-
-function PointsArt() {
-  return (
-    <svg aria-hidden="true" className="w-cut__art" viewBox="0 0 200 140">
-      <defs>
-        <linearGradient id="cut-g2" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="#3fa9ff" />
-          <stop offset="0.55" stopColor="#7b2ff7" />
-          <stop offset="1" stopColor="#e0218a" />
-        </linearGradient>
-      </defs>
-      {/* A sealed pack: you pay first, find out later. */}
-      <g transform="rotate(-8 100 70)">
-        <rect
-          fill="#0c1030"
-          height="104"
-          rx="12"
-          stroke="url(#cut-g2)"
-          strokeWidth="2.5"
-          width="76"
-          x="62"
-          y="18"
-        />
-        <path d="M62 44h76" stroke="url(#cut-g2)" strokeWidth="2" />
-        <text
-          fill="url(#cut-g2)"
-          fontFamily="Anton, Impact, sans-serif"
-          fontSize="44"
-          textAnchor="middle"
-          x="100"
-          y="100"
-        >
-          ?
-        </text>
-      </g>
-      {[
-        [34, 96, 13],
-        [168, 40, 10],
-        [160, 108, 8],
-      ].map(([x, y, r]) => (
-        <path
-          d={`M${x} ${y - r}l${r * 0.87} ${r / 2}v${r}l${-r * 0.87} ${r / 2}l${-r * 0.87} ${-r / 2}v${-r}z`}
-          fill="none"
-          key={`${x}-${y}`}
-          stroke="#3fa9ff"
-          strokeLinejoin="round"
-          strokeWidth="2.5"
-        />
-      ))}
-    </svg>
-  );
-}
-
-function CoinsArt() {
-  return (
-    <svg aria-hidden="true" className="w-cut__art" viewBox="0 0 200 140">
-      <defs>
-        <linearGradient id="cut-g3" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="#3fa9ff" />
-          <stop offset="0.55" stopColor="#7b2ff7" />
-          <stop offset="1" stopColor="#e0218a" />
-        </linearGradient>
-      </defs>
-      {/* Coin stack under a ban sign. */}
-      {[0, 1, 2, 3].map((i) => (
-        <ellipse
-          cx="86"
-          cy={104 - i * 14}
-          fill="#0c1030"
-          key={i}
-          rx="38"
-          ry="11"
-          stroke="url(#cut-g3)"
-          strokeWidth="2.5"
-        />
-      ))}
-      <circle cx="140" cy="52" fill="#0c1030" r="30" stroke="#e0218a" strokeWidth="5" />
-      <path d="m119 73 42-42" stroke="#e0218a" strokeLinecap="round" strokeWidth="5" />
-    </svg>
-  );
-}
 
 const shortcuts: Shortcut[] = [
   {
@@ -161,21 +19,21 @@ const shortcuts: Shortcut[] = [
     body: "A divisão subiu. O seu nível ficou exatamente onde estava.",
     costLabel: "Custa",
     cost: "Sua conta na mão de outro",
-    art: <BoostArt />,
+    art: { src: "/assets/atalhos/boost.webp", width: 491, height: 640 },
   },
   {
     title: "Pack atrás de pack",
     body: "Carta boa no clube não segura contra-ataque nem vira jogo.",
     costLabel: "Retorno",
     cost: "Sorte, e ela acaba",
-    art: <PointsArt />,
+    art: { src: "/assets/atalhos/packs.webp", width: 640, height: 554 },
   },
   {
     title: "Coins de fora",
     body: "É contra as regras da EA. Um ban apaga anos de clube.",
     costLabel: "Risco",
     cost: "Banimento da conta",
-    art: <CoinsArt />,
+    art: { src: "/assets/atalhos/coins.webp", width: 640, height: 548 },
   },
 ];
 
@@ -235,7 +93,15 @@ export function Shortcuts() {
             <li className="w-cut" key={item.title} style={{ "--i": index } as CSSProperties}>
               <div className="w-cut__visual">
                 <span aria-hidden="true" className="w-cut__beam" />
-                {item.art}
+                <img
+                  alt=""
+                  className="w-cut__art"
+                  decoding="async"
+                  height={item.art.height}
+                  loading="lazy"
+                  src={item.art.src}
+                  width={item.art.width}
+                />
                 <span aria-hidden="true" className="w-cut__slash" />
                 <span aria-hidden="true" className="w-cut__stamp">
                   Não resolve

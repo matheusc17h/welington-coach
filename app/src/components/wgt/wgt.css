@@ -3514,10 +3514,14 @@ body {
   transform: skewX(-24deg);
 }
 
+/* 3D renders of mixed proportions: boxed inside the panel, never cropped. */
 .w-cut__art {
-  position: relative;
-  width: 72%;
-  height: auto;
+  position: absolute;
+  top: 7%;
+  left: 10%;
+  width: 80%;
+  height: 86%;
+  object-fit: contain;
   filter: drop-shadow(0 16px 30px rgb(31 59 255 / 0.45));
   transition: transform 0.8s var(--ease), filter 0.8s var(--ease);
 }
