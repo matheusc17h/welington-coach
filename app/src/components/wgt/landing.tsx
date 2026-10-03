@@ -227,7 +227,7 @@ function Hero() {
           <h1 className="w-hero__title" id="hero-title">
             <span className="w-line">
               <span className="w-line__in" style={{ "--i": 0 } as CSSProperties}>
-                Pare de perder no <span className="w-outline">automático.</span>
+                Pare de jogar no <span className="w-outline">automático.</span>
               </span>
             </span>
             <span className="w-line">

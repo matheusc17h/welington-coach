@@ -2824,9 +2824,12 @@ body {
     letter-spacing: 0.1em;
   }
 
+  /* Room between lines for the accents (AUTOMÁTICO, DIVISÃO) and a touch
+     of tracking so the condensed caps don't run together. */
   .w-hero__title {
     font-size: clamp(2.7rem, 13.2vw, 4.6rem);
-    line-height: 1.02;
+    line-height: 1.12;
+    letter-spacing: 0.025em;
   }
 
   .w-hero__ctas {
