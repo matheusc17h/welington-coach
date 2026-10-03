@@ -2241,6 +2241,9 @@ body {
 /* "Quem sou eu" on the light sheet: ink in the page's dark navy, the giant
    background name as a faint dark outline, the gradient cards keep white text. */
 .w-about {
+  /* The marquee above is tilted, so its low edge dips deeper on wider
+     screens: clear it by a matching amount plus a constant gap. */
+  margin-top: calc(1.6vw + 16px);
   color: var(--bg);
 }
 
@@ -2992,23 +2995,11 @@ body {
     display: none;
   }
 
-  /* Plans: swipe rail with the featured plan first in view. */
+  /* Plans: stacked, Premium (featured) keeps its place in the middle. */
   .w-plans__grid {
-    grid-auto-columns: 84%;
-    grid-auto-flow: column;
-    grid-template-columns: none;
-    align-items: stretch;
-    margin-inline: calc(var(--gutter) * -1);
-    margin-top: var(--s6);
-    padding: var(--s3) var(--gutter) var(--s3);
-    overflow-x: auto;
-    scroll-padding-inline: var(--gutter);
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-
-  .w-plan {
-    scroll-snap-align: center;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 520px;
+    margin: var(--s6) auto 0;
   }
 
   .w-plan--featured {
@@ -3216,9 +3207,6 @@ body {
     grid-column: 1 / -1;
   }
 
-  .w-plans__grid {
-    grid-auto-columns: min(84%, 400px);
-  }
 }
 
 /* Small phones: the shield alone identifies the brand, so the name steps
@@ -3234,57 +3222,12 @@ body {
   }
 }
 
-/* Scroll-driven rails. JS adds .is-scrub while GSAP pins the block and
-   slides the row sideways with the page scroll; without it the grid / swipe
-   layouts above apply. */
 .w-stuck__card {
   transition: border-color 0.4s var(--ease);
 }
 
 .w-stuck__num {
   transition: color 0.4s var(--ease);
-}
-
-@media (max-width: 860px) {
-  /* Heading and rail are pinned together: keep the pair short enough to
-     fit a phone screen. */
-  .w-plans.is-scrub .w-plans__viewport {
-    margin-top: var(--s3);
-  }
-
-  .w-plans.is-scrub .w-plans__head .w-lead {
-    margin-top: var(--s1);
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  .w-plans.is-scrub .w-plan {
-    gap: var(--s1);
-    padding: var(--s4) var(--s3) var(--s3);
-  }
-
-  .w-plans.is-scrub .w-plan--featured {
-    padding-block: var(--s5) var(--s3);
-  }
-
-  .w-plans.is-scrub .w-plan__pitch {
-    min-height: 0;
-  }
-
-  .w-plans.is-scrub .w-plan__items {
-    gap: 10px;
-    margin-block: var(--s1) var(--s2);
-    padding-top: var(--s2);
-  }
-
-  .w-plans.is-scrub .w-plans__grid {
-    grid-auto-columns: min(84vw, 400px);
-    width: max-content;
-    margin: 0;
-    padding: var(--s3) 0;
-    overflow: visible;
-    scroll-snap-type: none;
-  }
 }
 
 /* Shortcuts ("Atalhos que não resolvem"): three things players pay for,

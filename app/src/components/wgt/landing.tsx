@@ -440,114 +440,6 @@ function useCardsReveal(sectionRef: RefObject<HTMLElement | null>, cards: string
   }, [sectionRef, cards]);
 }
 
-/**
- * Scroll-driven horizontal rail: the `pin` block holds on screen while the
- * page scroll slides `track` sideways, one card after another; once the last
- * card is in, the page scrolls on normally. `section` gets `is-scrub` while it
- * runs (CSS switches the rail to a single row). Without JS, with reduced
- * motion or outside `media`, the normal swipe/grid layout stays.
- */
-function useHorizontalScrub(
-  sectionRef: RefObject<HTMLElement | null>,
-  {
-    media,
-    pin,
-    track,
-    items,
-    priority,
-  }: {
-    media: string;
-    pin: string;
-    track: string;
-    items?: string;
-    /** Higher refreshes first. Upper pins must go first, because their added
-        scroll distance moves every trigger below them. */
-    priority: number;
-  },
-) {
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) {
-      return;
-    }
-    let cleanup = () => {};
-    let cancelled = false;
-
-    void Promise.all([import("gsap"), import("gsap/ScrollTrigger"), document.fonts.ready]).then(
-      ([{ gsap }, { ScrollTrigger }]) => {
-        if (cancelled) {
-          return;
-        }
-        gsap.registerPlugin(ScrollTrigger);
-        const mm = gsap.matchMedia();
-        mm.add(`${media} and (prefers-reduced-motion: no-preference)`, () => {
-          const pinEl = section.querySelector<HTMLElement>(pin);
-          const rail = section.querySelector<HTMLElement>(track);
-          const viewport = rail?.parentElement;
-          if (!pinEl || !rail || !viewport) {
-            return;
-          }
-          section.classList.add("is-scrub");
-          const distance = () => Math.max(0, rail.scrollWidth - viewport.clientWidth);
-
-          const slide = gsap.to(rail, {
-            x: () => -distance(),
-            ease: "none",
-            scrollTrigger: {
-              trigger: pinEl,
-              pin: pinEl,
-              // Centre the block when it fits, otherwise hold it under the header.
-              start: () =>
-                pinEl.offsetHeight < window.innerHeight - 96 ? "center center" : "top 80px",
-              end: () => `+=${distance()}`,
-              scrub: 0.6,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-              refreshPriority: priority,
-            },
-          });
-
-          // Light up each card while it crosses the middle of the rail.
-          if (items) {
-            for (const item of section.querySelectorAll(items)) {
-              ScrollTrigger.create({
-                trigger: item,
-                containerAnimation: slide,
-                start: "left 72%",
-                end: "right 28%",
-                toggleClass: "is-active",
-              });
-            }
-          }
-
-          return () => section.classList.remove("is-scrub");
-        });
-        // The rails set up asynchronously and in any order: re-measure every
-        // trigger (by priority) once this one exists.
-        const frame = requestAnimationFrame(() => {
-          ScrollTrigger.sort();
-          ScrollTrigger.refresh();
-        });
-        // Fonts are awaited above; late images can still move the pins.
-        const onLoad = () => ScrollTrigger.refresh();
-        if (document.readyState !== "complete") {
-          window.addEventListener("load", onLoad, { once: true });
-        }
-        cleanup = () => {
-          cancelAnimationFrame(frame);
-          window.removeEventListener("load", onLoad);
-          mm.revert();
-        };
-      },
-    );
-
-    return () => {
-      cancelled = true;
-      cleanup();
-    };
-  }, [sectionRef, media, pin, track, items, priority]);
-}
-
 function Stuck() {
   const sectionRef = useRef<HTMLElement>(null);
   useCardsReveal(sectionRef, ".w-stuck__card");
@@ -834,24 +726,8 @@ function NotFor() {
 }
 
 function Plans() {
-  const sectionRef = useRef<HTMLElement>(null);
-  // Desktop shows the three plans side by side; the rail only exists below 861px.
-  // The heading is pinned with the rail, so the cards never slide over it.
-  // Short screens can't fit both: they keep the plain swipe rail.
-  useHorizontalScrub(sectionRef, {
-    media: "(max-width: 860px) and (min-height: 760px)",
-    pin: ".w-plans__stage",
-    track: ".w-plans__grid",
-    priority: 1,
-  });
-
   return (
-    <section
-      aria-labelledby="planos-title"
-      className="w-plans w-section"
-      id="planos"
-      ref={sectionRef}
-    >
+    <section aria-labelledby="planos-title" className="w-plans w-section" id="planos">
       <div aria-hidden="true" className="w-aurora w-aurora--mid" />
       <p aria-hidden="true" className="w-bleed w-bleed--plans">
         Elite
