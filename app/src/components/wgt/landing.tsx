@@ -267,11 +267,9 @@ function Hero() {
             className="w-hero__photo"
             decoding="async"
             fetchPriority="high"
-            height={1000}
-            sizes="(max-width: 860px) 88vw, 44vw"
-            src="/assets/brand/welington.webp"
-            srcSet="/assets/brand/welington-480.webp 480w, /assets/brand/welington.webp 800w"
-            width={800}
+            height={538}
+            src="/assets/brand/welington-hero.webp"
+            width={446}
           />
           <Shield className="w-hero__shield" eager />
           <p className="w-hero__badge">
