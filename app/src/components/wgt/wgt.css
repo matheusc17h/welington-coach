@@ -2288,6 +2288,52 @@ body {
   transform: scale(0.98);
 }
 
+/* Plans on the light sheet: white cards, the featured one stays dark. */
+.w-plans .w-bleed--plans {
+  -webkit-text-stroke-color: rgb(224 33 138 / 0.16);
+}
+
+.w-plans .w-plan {
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgb(11 14 36 / 0.06),
+    0 28px 56px -32px rgb(31 59 255 / 0.35);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.w-plans .w-plan__items svg {
+  color: var(--blue);
+}
+
+.w-plans .w-plan__cta {
+  border-color: rgb(11 14 36 / 0.16);
+  background: transparent;
+}
+
+.w-plans .w-plan__cta:hover {
+  border-color: var(--blue);
+  background: rgb(31 59 255 / 0.07);
+}
+
+.w-plans .w-plan--featured {
+  --muted: #9aa3c7;
+  --line: rgb(255 255 255 / 0.08);
+  color: var(--white);
+  background:
+    linear-gradient(#0c1030, #0c1030) padding-box,
+    var(--brand) border-box;
+}
+
+.w-plans .w-plan--featured .w-plan__items svg {
+  color: var(--blue-light);
+}
+
+.w-plans .w-plan--featured .w-plan__cta {
+  border-color: transparent;
+  background: var(--brand-h);
+}
+
 /* FAQ */
 .w-faq__grid {
   display: grid;
@@ -2300,6 +2346,12 @@ body {
   align-self: start;
   position: sticky;
   top: 120px;
+}
+
+/* The head is a narrow column: a smaller title so long words ("FREQUENTES")
+   fit it instead of being clipped by the line mask. */
+.w-faq__head .w-h2 {
+  font-size: clamp(2.6rem, 4.2vw, 4.25rem);
 }
 
 .w-faq__head .w-lead {
@@ -3645,10 +3697,11 @@ body {
   text-transform: uppercase;
 }
 
-/* Light sheet: the one bright section of the page, a rounded off-white panel
-   inset from the edges so it reads as deliberate. Text tokens are re-pointed
-   to dark ink; the illustrations and the answer strip stay dark as anchors. */
-.w-cuts {
+/* Light sheets ("Dinheiro que não vira divisão" and the plans): rounded
+   off-white panels inset from the edges so they read as deliberate. Text
+   tokens are re-pointed to dark ink; dark pieces inside stay as anchors. */
+.w-cuts,
+.w-plans {
   --ink-dark: #0b0e24;
   --muted: #4c5378;
   --line: rgb(11 14 36 / 0.09);
@@ -3663,7 +3716,8 @@ body {
     #f5f6fc;
 }
 
-.w-cuts .w-aurora {
+.w-cuts .w-aurora,
+.w-plans .w-aurora {
   display: none;
 }
 
