@@ -19,21 +19,21 @@ const shortcuts: Shortcut[] = [
     body: "A divisão subiu. O seu nível ficou exatamente onde estava.",
     costLabel: "Custa",
     cost: "Sua conta na mão de outro",
-    art: { src: "/assets/atalhos/boost.webp", width: 491, height: 640 },
+    art: { src: "/assets/atalhos/boost-cadeado.webp", width: 491, height: 640 },
   },
   {
     title: "Pack atrás de pack",
     body: "Carta boa no clube não segura contra-ataque nem vira jogo.",
     costLabel: "Retorno",
     cost: "Sorte, e ela acaba",
-    art: { src: "/assets/atalhos/packs.webp", width: 640, height: 376 },
+    art: { src: "/assets/atalhos/fc-points.webp", width: 640, height: 376 },
   },
   {
     title: "Coins de fora",
     body: "É contra as regras da EA. Um ban apaga anos de clube.",
     costLabel: "Risco",
     cost: "Banimento da conta",
-    art: { src: "/assets/atalhos/coins.webp", width: 529, height: 362 },
+    art: { src: "/assets/atalhos/coins-fut.webp", width: 529, height: 362 },
   },
 ];
 
