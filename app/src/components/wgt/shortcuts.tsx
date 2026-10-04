@@ -79,9 +79,12 @@ export function Shortcuts() {
       <div className="w-wrap">
         <div className="w-cuts__head">
           <h2 className="w-h2" id="atalhos-title">
-            Você já gastou com boost, pack e coin. E continua na mesma divisão.
+            Você já gastou com boost, pack e coin. E continua na{" "}
+            <span className="w-grad-text">mesma divisão</span>.
           </h2>
-          <p className="w-lead">Gastar não sobe divisão. Treinar sobe.</p>
+          <p className="w-lead">
+            Gastar não sobe divisão. <span className="w-grad-text">Treinar</span> sobe.
+          </p>
         </div>
 
         <ul className="w-cuts__grid">
@@ -119,7 +122,8 @@ export function Shortcuts() {
           <div>
             <p className="w-cuts__answer-kicker">O único atalho que fica</p>
             <p className="w-cuts__answer-line">
-              Treino com método. O que você aprende, ninguém tira da sua conta.
+              Treino com <span className="w-grad-text">método</span>. O que você aprende, ninguém
+              tira da sua conta.
             </p>
           </div>
           <PillCta href={whatsapp.geral}>Quero investir no meu jogo, não no clube</PillCta>

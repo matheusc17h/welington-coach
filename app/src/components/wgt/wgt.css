@@ -287,6 +287,10 @@ body {
   -webkit-text-stroke: 1.5px var(--white);
 }
 
+.w-outline--magenta {
+  -webkit-text-stroke-color: var(--magenta);
+}
+
 .w-flip {
   transform: scaleX(-1);
 }
@@ -1199,6 +1203,10 @@ body {
   visibility: hidden;
 }
 
+.w-nowrap {
+  white-space: nowrap;
+}
+
 /* Section titles (animations-text.ts): hidden from when the script starts until
    the lines are split. Visibility keeps its space, so nothing shifts. */
 .w-letters-pending {
@@ -1229,7 +1237,7 @@ body {
   transform: translateY(var(--s6));
 }
 
-.w-stuck__card:hover .w-stuck__card h3 {
+.w-stuck__card h3 {
   font-size: 1.15rem;
   font-weight: 800;
   line-height: 1.25;
@@ -3187,8 +3195,33 @@ body {
   }
 }
 
+/* Hover (pointer devices): the card lights up in the brand colours and its
+   copy goes brighter. No transform, since GSAP owns it for the reveal. */
 .w-stuck__card {
-  transition: border-color 0.4s var(--ease);
+  transition:
+    border-color 0.35s var(--ease),
+    background 0.35s var(--ease),
+    box-shadow 0.35s var(--ease);
+}
+
+.w-stuck__card p {
+  transition: color 0.35s var(--ease);
+}
+
+@media (hover: hover) {
+  .w-stuck__card:hover {
+    border-color: rgb(63 169 255 / 0.75);
+    background:
+      linear-gradient(150deg, rgb(31 59 255 / 0.32), rgb(224 33 138 / 0.2)),
+      var(--bg-2);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      0 28px 60px -24px rgb(31 59 255 / 0.85);
+  }
+
+  .w-stuck__card:hover p {
+    color: rgb(245 247 255 / 0.92);
+  }
 }
 
 /* Shortcuts ("Atalhos que não resolvem"): three things players pay for,

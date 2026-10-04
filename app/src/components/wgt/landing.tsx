@@ -314,7 +314,7 @@ function About() {
       <div className="w-wrap w-about__grid">
         <div className="w-about__intro w-rise">
           <h2 className="w-h2" id="quem-title">
-            Quem sou eu
+            Quem <span className="w-grad-text">sou eu</span>
           </h2>
           <p className="w-lead">
             Coach de EA SPORTS FC e jogador competitivo, com perfil verificado pela EA e mais de
@@ -370,9 +370,9 @@ function About() {
 }
 
 /**
- * Cards come in one at a time with the scroll: tied to the scroll on desktop,
- * played once per card on phones (stacked), alternating the side they come
- * from. Headings stay static. Cards are server-rendered and only hidden once
+ * Cards come in one at a time as they reach the screen: a staggered batch on
+ * desktop, one card per trigger on phones (stacked), alternating the side they
+ * come from. Headings stay static. Cards are server-rendered and only hidden once
  * GSAP runs, so without JS everything is visible. A card offset sideways in
  * CSS sets `--nudge-x` (percent of its width) so the offset stays responsive
  * while GSAP owns its transform.
@@ -399,19 +399,35 @@ function useCardsReveal(sectionRef: RefObject<HTMLElement | null>, cards: string
             gsap.set(card, { x: 0, xPercent: shift });
           }
         };
-        // Desktop: each card rises into place tied to the page scroll.
-        // Transform/opacity only, so it stays light.
+        // Desktop: cards that reach the screen together come in one after
+        // another (ScrollTrigger.batch + stagger), played once. Each returns
+        // to its own resting offset (the staggered grid shifts some down).
         mm.add("(min-width: 861px) and (prefers-reduced-motion: no-preference)", () => {
-          for (const card of section.querySelectorAll<HTMLElement>(cards)) {
-            nudge(card);
-            gsap.from(card, {
-              autoAlpha: 0,
-              yPercent: 35,
-              scale: 0.94,
-              ease: "none",
-              scrollTrigger: { trigger: card, start: "top 96%", end: "top 62%", scrub: 0.5 },
-            });
+          const els = [...section.querySelectorAll<HTMLElement>(cards)];
+          els.forEach(nudge);
+          const rest = new Map(els.map((el) => [el, Number(gsap.getProperty(el, "y"))]));
+          for (const el of els) {
+            gsap.set(el, { autoAlpha: 0, scale: 0.96, y: (rest.get(el) ?? 0) + 56 });
           }
+          const triggers = ScrollTrigger.batch(els, {
+            start: "top 88%",
+            once: true,
+            onEnter: (batch) =>
+              gsap.to(batch, {
+                autoAlpha: 1,
+                scale: 1,
+                y: (_index: number, el: HTMLElement) => rest.get(el) ?? 0,
+                duration: 0.8,
+                ease: "power3.out",
+                stagger: 0.18,
+                overwrite: true,
+              }),
+          });
+          return () => {
+            for (const trigger of triggers) {
+              trigger.kill();
+            }
+          };
         });
         // Phones: each card rises in on its own as it reaches the screen.
         mm.add("(max-width: 860px) and (prefers-reduced-motion: no-preference)", () => {
@@ -457,7 +473,7 @@ function Stuck() {
         <div className="w-stuck__grid">
           <div className="w-stuck__head">
             <h2 className="w-h2" id="travando-title">
-              Onde você está travando
+              Onde você está <span className="w-grad-text">travando</span>
             </h2>
             <p className="w-lead">
               Seis sinais que aparecem em quase toda call de diagnóstico. Conta quantos são seus.
@@ -475,7 +491,10 @@ function Stuck() {
           </div>
         </div>
         <div className="w-stuck__close">
-          <p>Marcou três ou mais? O problema não é talento. É método. E método se treina.</p>
+          <p>
+            Marcou três ou mais? O problema não é talento. É{" "}
+            <span className="w-grad-text">método</span>. E método se treina.
+          </p>
           <PillCta href={whatsapp.erros}>Quero corrigir esses erros</PillCta>
         </div>
       </div>
@@ -613,7 +632,7 @@ function Weeks() {
       <div className="w-wrap">
         <div className="w-weeks__head">
           <h2 className="w-h2" id="metodo-title">
-            Plano de 4 semanas
+            Plano de <span className="w-grad-text">4 semanas</span>
           </h2>
           <p className="w-lead">
             {/* TODO CONFIRMAR: subtítulo deixando claro que é o plano Premium: "O que você
@@ -661,7 +680,7 @@ function Reasons() {
       <div className="w-wrap w-reasons__grid">
         <div className="w-reasons__head">
           <h2 className="w-h2" id="porque-title">
-            O que muda quando você treina com quem joga
+            O que muda quando você treina <span className="w-grad-text">com quem joga</span>
           </h2>
           <p className="w-lead">
             Treino em cima das suas partidas, com uma meta que dá para medir: subir de divisão.
@@ -693,7 +712,7 @@ function NotFor() {
       <div className="w-wrap w-notfor__grid">
         <div className="w-notfor__head">
           <h2 className="w-h2" id="naoe-title">
-            Para quem não é
+            Para quem <span className="w-outline w-outline--magenta">não</span> é
           </h2>
           <p className="w-lead">
             Aula é treino, não atalho. Se você se encaixa em algum desses, é melhor não gastar seu
@@ -711,8 +730,8 @@ function NotFor() {
           ))}
         </ul>
         <p className="w-notfor__yes">
-          Agora, se você topa treinar, rever seus jogos e ouvir a verdade sobre o seu gameplay, esse
-          treino é pra você.
+          Agora, se você topa treinar, rever seus jogos e ouvir a verdade sobre o seu gameplay,{" "}
+          <span className="w-grad-text">esse treino é pra você.</span>
         </p>
       </div>
     </section>
@@ -729,7 +748,7 @@ function Plans() {
       <div className="w-wrap w-plans__stage">
         <div className="w-plans__head">
           <h2 className="w-h2" id="planos-title">
-            Escolha seu plano
+            Escolha seu <span className="w-grad-text">plano</span>
           </h2>
           <p className="w-lead">
             Me conta sua divisão no WhatsApp que eu te indico o plano certo e passo o valor na hora.
@@ -779,7 +798,7 @@ function Faq() {
       <div className="w-wrap w-faq__grid">
         <div className="w-faq__head">
           <h2 className="w-h2" id="duvidas-title">
-            Perguntas frequentes
+            Perguntas <span className="w-grad-text">frequentes</span>
           </h2>
           <p className="w-lead">Não achou a sua? Manda no WhatsApp.</p>
           <a className="w-faq__link" data-cta href={whatsapp.geral} {...external}>
@@ -820,7 +839,7 @@ function FinalCta() {
       <div className="w-wrap w-final__inner">
         <Shield className="w-final__shield" />
         <h2 className="w-final__title" id="final-title">
-          Sua próxima Weekend League pode ser diferente.
+          Sua próxima <span className="w-grad-text">Weekend League</span> pode ser diferente.
         </h2>
         <p className="w-lead">
           Manda sua divisão no WhatsApp e marca a primeira análise. O Welington te mostra por onde
