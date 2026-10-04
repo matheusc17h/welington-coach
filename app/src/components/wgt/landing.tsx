@@ -237,7 +237,7 @@ function Hero() {
           </h1>
           <p className="w-hero__lead">
             O Welington assiste às suas partidas, mostra exatamente onde você perde jogo e monta o
-            plano pra você corrigir. Aula individual, em cima do SEU gameplay.
+            plano pra você corrigir. Aula individual, em cima da SUA gameplay.
           </p>
           <div className="w-hero__ctas w-in w-in--cta">
             <div className="w-hero__main">
