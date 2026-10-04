@@ -141,9 +141,6 @@ function Videos() {
                     <span aria-hidden="true" className="w-video__play">
                       <PlayIcon />
                     </span>
-                    <span aria-hidden="true" className="w-video__n">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
                   </button>
                 </li>
               );
@@ -214,12 +211,7 @@ export function Results() {
       <div className="w-wrap">
         <div className="w-results__head">
           <h2 className="w-h2" id="resultados-title">
-            {/* Word and comma stay on one line, also once the title is split. */}
-            Resultado de{" "}
-            <span className="w-nowrap">
-              <span className="w-grad-text">aluno</span>,
-            </span>{" "}
-            não promessa
+            Resultado de aluno, não promessa
           </h2>
           <p className="w-lead">
             Mensagens reais do grupo e dos comentários. Divisão nova, Elite, top 200 e adversário

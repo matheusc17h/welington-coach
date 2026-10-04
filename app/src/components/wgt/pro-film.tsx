@@ -169,8 +169,7 @@ export function ProFilm() {
 
       <div className="w-pro__overlay">
         <h2 className="w-pro__title" id="pro-title">
-          Em <span className="w-grad-text">4 semanas</span>, você para de depender da IA pra
-          defender.
+          Em 4 semanas, você para de depender da IA pra defender.
         </h2>
         <PillCta href={whatsapp.plano4} size="lg">
           Quero seguir esse plano

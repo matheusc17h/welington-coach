@@ -287,10 +287,6 @@ body {
   -webkit-text-stroke: 1.5px var(--white);
 }
 
-.w-outline--magenta {
-  -webkit-text-stroke-color: var(--magenta);
-}
-
 .w-flip {
   transform: scaleX(-1);
 }
@@ -342,24 +338,6 @@ body {
     0 24px 60px -30px rgb(31 59 255 / 0.45);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-}
-
-.w-glass::after {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  content: "";
-  opacity: 0;
-  background: radial-gradient(
-    320px circle at var(--mx, 50%) var(--my, 0%),
-    rgb(63 169 255 / 0.18),
-    transparent 60%
-  );
-  transition: opacity 0.4s var(--ease);
-}
-
-.w-glass:hover::after {
-  opacity: 1;
 }
 
 /* Signature pill CTA: arrow disc slides on hover. */
@@ -564,10 +542,8 @@ body {
 
 .w-header__lockup small {
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
 .w-header__links {
@@ -740,10 +716,8 @@ body {
   border: 1px solid var(--line-top);
   border-radius: var(--r-chip);
   background: rgb(12 16 48 / 0.6);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
 .w-hero__chips li::before {
@@ -1191,10 +1165,8 @@ body {
   padding: 6px 12px;
   border-radius: 999px;
   background: rgb(6 8 26 / 0.35);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }
 
 /* Stuck */
@@ -1224,10 +1196,6 @@ body {
 
 .w-count__ghost {
   visibility: hidden;
-}
-
-.w-nowrap {
-  white-space: nowrap;
 }
 
 /* Section titles (animations-text.ts): hidden from when the script starts until
@@ -1260,22 +1228,7 @@ body {
   transform: translateY(var(--s6));
 }
 
-.w-stuck__num {
-  display: block;
-  margin-bottom: var(--s3);
-  color: transparent;
-  font-family: var(--display);
-  font-size: clamp(3.5rem, 5vw, 4.75rem);
-  line-height: 0.8;
-  -webkit-text-stroke: 1.5px var(--blue-light);
-}
-
-.w-stuck__card:hover .w-stuck__num {
-  color: var(--blue-light);
-  transition: color 0.4s var(--ease);
-}
-
-.w-stuck__card h3 {
+.w-stuck__card:hover .w-stuck__card h3 {
   font-size: 1.15rem;
   font-weight: 800;
   line-height: 1.25;
@@ -1497,8 +1450,6 @@ body {
   color: var(--blue-light);
   font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }
 
 .w-weeks__week span {
@@ -1787,11 +1738,6 @@ body {
   transform: rotate(3deg) translateY(24px);
 }
 
-.w-print:hover {
-  z-index: 2;
-  transform: rotate(0) translateY(-8px) scale(1.04);
-}
-
 .w-print figure {
   padding: 10px 10px 14px;
   border: 1px solid var(--line-top);
@@ -1910,15 +1856,6 @@ body {
 
 .w-video:hover .w-video__play {
   transform: translate(-50%, -50%) scale(1.12);
-}
-
-.w-video__n {
-  position: absolute;
-  z-index: 1;
-  bottom: 10px;
-  left: 14px;
-  font-family: var(--display);
-  font-size: 1.6rem;
 }
 
 /* The CSS reset zeroes <dialog> margins; margin:auto + inset:0 is what
@@ -2043,7 +1980,7 @@ body {
 
 .w-notfor__item {
   display: grid;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: var(--s2);
   min-height: 72px;
@@ -2070,12 +2007,6 @@ body {
 .w-notfor__x svg {
   width: 16px;
   height: 16px;
-}
-
-.w-notfor__num {
-  color: var(--muted);
-  font-family: var(--display);
-  font-size: 1.1rem;
 }
 
 /* Plans */
@@ -2136,10 +2067,8 @@ body {
   border-radius: 999px;
   background: var(--brand-h);
   box-shadow: 0 10px 24px -8px rgb(224 33 138 / 0.9);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
   white-space: nowrap;
   transform: translateX(-50%);
 }
@@ -2390,7 +2319,7 @@ body {
 
 .w-faq__item summary {
   display: grid;
-  grid-template-columns: 40px 1fr auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: var(--s2);
   min-height: 72px;
@@ -2403,12 +2332,6 @@ body {
   display: none;
 }
 
-.w-faq__n {
-  color: var(--muted);
-  font-family: var(--display);
-  font-size: 1.1rem;
-}
-
 .w-faq__q {
   font-size: clamp(1.02rem, 1.4vw, 1.2rem);
   font-weight: 700;
@@ -2418,10 +2341,6 @@ body {
 .w-faq__item summary:hover .w-faq__q,
 .w-faq__item[open] .w-faq__q {
   color: var(--white);
-}
-
-.w-faq__item[open] .w-faq__n {
-  color: var(--magenta);
 }
 
 .w-faq__icon {
@@ -2460,7 +2379,7 @@ body {
 
 .w-faq__answer {
   max-width: 62ch;
-  padding: 0 var(--s6) var(--s3) 56px;
+  padding: 0 var(--s6) var(--s3) 0;
   color: var(--muted);
 }
 
@@ -3012,10 +2931,6 @@ body {
     grid-template-columns: auto 1fr;
   }
 
-  .w-notfor__num {
-    display: none;
-  }
-
   /* Plans: stacked, Premium (featured) keeps its place in the middle. */
   .w-plans__grid {
     grid-template-columns: minmax(0, 1fr);
@@ -3028,7 +2943,7 @@ body {
   }
 
   .w-faq__answer {
-    padding: 0 0 var(--s3) 56px;
+    padding: 0 0 var(--s3);
   }
 
   .w-footer__inner {
@@ -3247,38 +3162,10 @@ body {
   transition: border-color 0.4s var(--ease);
 }
 
-.w-stuck__num {
-  transition: color 0.4s var(--ease);
-}
-
 /* Shortcuts ("Atalhos que não resolvem"): three things players pay for,
    each stamped out by a magenta slash when it scrolls in, then the answer. */
 .w-cuts__head {
   max-width: 860px;
-}
-
-.w-cuts__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: var(--s3);
-  padding: 8px 14px;
-  border: 1px solid rgb(224 33 138 / 0.45);
-  border-radius: var(--r-chip);
-  background: rgb(224 33 138 / 0.1);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.w-cuts__eyebrow::before {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  content: "";
-  background: var(--magenta);
-  box-shadow: 0 0 10px var(--magenta);
 }
 
 .w-cuts__head .w-lead {
@@ -3305,11 +3192,6 @@ body {
   transition:
     transform 0.5s var(--ease),
     border-color 0.4s var(--ease);
-}
-
-.w-cut:hover {
-  border-color: rgb(224 33 138 / 0.45);
-  transform: translateY(-4px);
 }
 
 .w-cut__visual {
@@ -3344,10 +3226,6 @@ body {
   object-fit: contain;
   filter: drop-shadow(0 16px 30px rgb(31 59 255 / 0.45));
   transition: transform 0.8s var(--ease), filter 0.8s var(--ease);
-}
-
-.w-cut:hover .w-cut__art {
-  transform: scale(1.04) rotate(-1.5deg);
 }
 
 /* The strike: a magenta slash across the art, plus a stamped label. */
@@ -3407,10 +3285,8 @@ body {
 
 .w-cut__cost span {
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
 .w-cut__cost strong {
@@ -3442,10 +3318,8 @@ body {
 
 .w-cuts__answer-kicker {
   color: var(--blue-light);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
 .w-cuts__answer-line {
@@ -3485,10 +3359,6 @@ body {
   display: none;
 }
 
-.w-cuts__eyebrow {
-  color: #b0126a;
-}
-
 .w-cuts .w-cut {
   background: #fff;
   box-shadow:
@@ -3521,10 +3391,6 @@ body {
   .w-cuts.is-armed .w-cuts__answer.is-in {
     opacity: 1;
     transform: none;
-  }
-
-  .w-cuts.is-armed .w-cut.is-in:hover {
-    transform: translateY(-4px);
   }
 
   .w-cuts.is-armed .w-cut__slash {

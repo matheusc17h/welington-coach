@@ -160,7 +160,7 @@ function Header() {
           <Shield className="w-header__shield" eager />
           <span aria-hidden="true" className="w-header__lockup">
             <strong>Welington Rodrigues</strong>
-            <small>Coach EA FC · WGT</small>
+            <small>Coach de EA FC</small>
           </span>
         </a>
         <ul className="w-header__links">
@@ -314,7 +314,7 @@ function About() {
       <div className="w-wrap w-about__grid">
         <div className="w-about__intro w-rise">
           <h2 className="w-h2" id="quem-title">
-            Quem <span className="w-grad-text">sou eu</span>
+            Quem sou eu
           </h2>
           <p className="w-lead">
             Coach de EA SPORTS FC e jogador competitivo, com perfil verificado pela EA e mais de
@@ -457,7 +457,7 @@ function Stuck() {
         <div className="w-stuck__grid">
           <div className="w-stuck__head">
             <h2 className="w-h2" id="travando-title">
-              Onde você está <span className="w-grad-text">travando</span>
+              Onde você está travando
             </h2>
             <p className="w-lead">
               Seis sinais que aparecem em quase toda call de diagnóstico. Conta quantos são seus.
@@ -467,9 +467,6 @@ function Stuck() {
             <ol className="w-stuck__list">
               {stuckPoints.map((point, index) => (
                 <li className="w-glass w-stuck__card" key={point.title}>
-                  <span aria-hidden="true" className="w-stuck__num">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
                   <h3>{point.title}</h3>
                   <p>{point.body}</p>
                 </li>
@@ -478,10 +475,7 @@ function Stuck() {
           </div>
         </div>
         <div className="w-stuck__close">
-          <p>
-            Marcou três ou mais? O problema não é talento. É{" "}
-            <span className="w-grad-text">método</span>. E método se treina.
-          </p>
+          <p>Marcou três ou mais? O problema não é talento. É método. E método se treina.</p>
           <PillCta href={whatsapp.erros}>Quero corrigir esses erros</PillCta>
         </div>
       </div>
@@ -619,7 +613,7 @@ function Weeks() {
       <div className="w-wrap">
         <div className="w-weeks__head">
           <h2 className="w-h2" id="metodo-title">
-            Plano de <span className="w-grad-text">4 semanas</span>
+            Plano de 4 semanas
           </h2>
           <p className="w-lead">
             {/* TODO CONFIRMAR: subtítulo deixando claro que é o plano Premium: "O que você
@@ -667,7 +661,7 @@ function Reasons() {
       <div className="w-wrap w-reasons__grid">
         <div className="w-reasons__head">
           <h2 className="w-h2" id="porque-title">
-            O que muda quando você treina <span className="w-grad-text">com quem joga</span>
+            O que muda quando você treina com quem joga
           </h2>
           <p className="w-lead">
             Treino em cima das suas partidas, com uma meta que dá para medir: subir de divisão.
@@ -699,7 +693,7 @@ function NotFor() {
       <div className="w-wrap w-notfor__grid">
         <div className="w-notfor__head">
           <h2 className="w-h2" id="naoe-title">
-            Para quem <span className="w-outline w-outline--magenta">não</span> é
+            Para quem não é
           </h2>
           <p className="w-lead">
             Aula é treino, não atalho. Se você se encaixa em algum desses, é melhor não gastar seu
@@ -712,16 +706,13 @@ function NotFor() {
               <span aria-hidden="true" className="w-notfor__x">
                 <CrossIcon />
               </span>
-              <span className="w-notfor__num" aria-hidden="true">
-                {String(index + 1).padStart(2, "0")}
-              </span>
               {item}
             </li>
           ))}
         </ul>
         <p className="w-notfor__yes">
-          Agora, se você topa treinar, rever seus jogos e ouvir a verdade sobre o seu gameplay,{" "}
-          <span className="w-grad-text">esse treino é pra você.</span>
+          Agora, se você topa treinar, rever seus jogos e ouvir a verdade sobre o seu gameplay, esse
+          treino é pra você.
         </p>
       </div>
     </section>
@@ -738,7 +729,7 @@ function Plans() {
       <div className="w-wrap w-plans__stage">
         <div className="w-plans__head">
           <h2 className="w-h2" id="planos-title">
-            Escolha seu <span className="w-grad-text">plano</span>
+            Escolha seu plano
           </h2>
           <p className="w-lead">
             Me conta sua divisão no WhatsApp que eu te indico o plano certo e passo o valor na hora.
@@ -788,7 +779,7 @@ function Faq() {
       <div className="w-wrap w-faq__grid">
         <div className="w-faq__head">
           <h2 className="w-h2" id="duvidas-title">
-            Perguntas <span className="w-grad-text">frequentes</span>
+            Perguntas frequentes
           </h2>
           <p className="w-lead">Não achou a sua? Manda no WhatsApp.</p>
           <a className="w-faq__link" data-cta href={whatsapp.geral} {...external}>
@@ -800,9 +791,6 @@ function Faq() {
           {faqs.map((faq, index) => (
             <details className="w-faq__item" key={faq.q} name="faq" open={index === 0}>
               <summary>
-                <span className="w-faq__n" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
                 <span className="w-faq__q">{faq.q}</span>
                 <span aria-hidden="true" className="w-faq__icon">
                   <PlusIcon />
@@ -832,7 +820,7 @@ function FinalCta() {
       <div className="w-wrap w-final__inner">
         <Shield className="w-final__shield" />
         <h2 className="w-final__title" id="final-title">
-          Sua próxima <span className="w-grad-text">Weekend League</span> pode ser diferente.
+          Sua próxima Weekend League pode ser diferente.
         </h2>
         <p className="w-lead">
           Manda sua divisão no WhatsApp e marca a primeira análise. O Welington te mostra por onde
@@ -1017,25 +1005,11 @@ function StickyCta() {
   );
 }
 
-/** Glass cards: a soft light follows the pointer (CSS vars, no React state). */
-function trackGlow(event: PointerEvent<HTMLDivElement>) {
-  if (event.pointerType !== "mouse") {
-    return;
-  }
-  const card = (event.target as HTMLElement).closest<HTMLElement>(".w-glass");
-  if (!card) {
-    return;
-  }
-  const rect = card.getBoundingClientRect();
-  card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
-  card.style.setProperty("--my", `${event.clientY - rect.top}px`);
-}
-
 export function Landing() {
   useTextAnimations();
   useCounters();
   return (
-    <div className="wgt" lang="pt-BR" onPointerMove={trackGlow}>
+    <div className="wgt" lang="pt-BR">
       <a className="w-skip" href="#conteudo">
         Pular para o conteúdo
       </a>
