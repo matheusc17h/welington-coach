@@ -1401,6 +1401,14 @@ body {
   grid-column: 8 / -1;
 }
 
+/* Closing line under the timeline (the CTA follows in the film below). */
+.w-weeks__note {
+  max-width: 46ch;
+  margin-top: var(--s8);
+  color: var(--muted);
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+}
+
 .w-weeks__line {
   position: relative;
   display: grid;
@@ -2636,20 +2644,30 @@ body {
     display: block;
     padding: var(--s2) var(--gutter) max(var(--s2), env(safe-area-inset-bottom));
     background: linear-gradient(to top, rgb(6 8 26 / 0.96) 55%, rgb(6 8 26 / 0));
+    /* Hidden: fade and drop 16px, then visibility flips once it is gone. */
     visibility: hidden;
     opacity: 0;
-    transform: translateY(100%);
+    pointer-events: none;
+    transform: translateY(16px);
     transition:
-      opacity 0.35s var(--ease),
-      transform 0.45s var(--ease),
-      visibility 0s linear 0.45s;
+      opacity 0.25s ease-out,
+      transform 0.25s ease-out,
+      visibility 0s linear 0.25s;
   }
 
   .w-sticky[data-visible] {
     visibility: visible;
     opacity: 1;
+    pointer-events: auto;
     transform: none;
     transition-delay: 0s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .w-sticky,
+    .w-sticky[data-visible] {
+      transform: none;
+    }
   }
 
   .w-sticky .w-pill {
@@ -3570,226 +3588,5 @@ body {
   .w-cuts__answer .w-pill {
     width: 100%;
     justify-content: space-between;
-  }
-}
-
-/* Modules ("O que você vai treinar"): a horizontal accordion. Closed
-   panels are slim strips with a vertical label; the open one takes the room
-   and shows its title over the image. Phones stack all panels open. */
-.w-mods__head {
-  max-width: 760px;
-}
-
-.w-mods__head .w-lead {
-  margin-top: var(--s3);
-}
-
-.w-acc {
-  display: flex;
-  gap: 12px;
-  height: clamp(440px, 62vh, 600px);
-  margin-top: var(--s8);
-}
-
-.w-acc__panel {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--r-card);
-  background: var(--bg-2);
-  transition:
-    flex-grow 0.8s var(--ease),
-    border-color 0.4s var(--ease);
-}
-
-.w-acc__panel[data-open] {
-  flex-grow: 6;
-  border-color: rgb(63 169 255 / 0.45);
-}
-
-.w-acc__img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: saturate(0.6) brightness(0.55);
-  transform: scale(1.08);
-  transition:
-    filter 0.8s var(--ease),
-    transform 1.2s var(--ease);
-}
-
-.w-acc__panel[data-open] .w-acc__img {
-  filter: none;
-  transform: none;
-}
-
-/* Brand tint + bottom fade so the copy reads. */
-.w-acc__panel::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  background:
-    linear-gradient(0deg, rgb(6 8 26 / 0.95) 0%, rgb(6 8 26 / 0.4) 42%, transparent 70%),
-    linear-gradient(135deg, rgb(31 59 255 / 0.25), transparent 50%, rgb(224 33 138 / 0.22));
-  pointer-events: none;
-}
-
-.w-acc__toggle {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--s3) 0;
-  border: 0;
-  color: var(--white);
-  background: transparent;
-  cursor: pointer;
-  transition: opacity 0.4s var(--ease);
-}
-
-.w-acc__toggle:focus-visible {
-  outline: 2px solid var(--blue-light);
-  outline-offset: -4px;
-  border-radius: var(--r-card);
-}
-
-.w-acc__num {
-  font-family: var(--display);
-  font-size: 1.6rem;
-  line-height: 1;
-}
-
-.w-acc__label {
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-
-.w-acc__panel[data-open] .w-acc__toggle {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.w-acc__copy {
-  position: absolute;
-  z-index: 2;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: grid;
-  gap: var(--s1);
-  max-width: 560px;
-  padding: var(--s4);
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.4s var(--ease),
-    transform 0.6s var(--ease);
-  pointer-events: none;
-}
-
-.w-acc__panel[data-open] .w-acc__copy {
-  opacity: 1;
-  transform: none;
-  transition-delay: 0.25s;
-}
-
-.w-acc__tag {
-  justify-self: start;
-  padding: 6px 12px;
-  border: 1px solid rgb(63 169 255 / 0.5);
-  border-radius: var(--r-chip);
-  color: var(--blue-light);
-  background: rgb(6 8 26 / 0.6);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.w-acc__title {
-  margin-top: var(--s1);
-  font-family: var(--display);
-  font-size: clamp(2rem, 3.6vw, 3.2rem);
-  font-weight: 400;
-  line-height: var(--lh-title);
-  text-transform: uppercase;
-}
-
-.w-acc__body {
-  color: rgb(245 247 255 / 0.85);
-}
-
-.w-mods__cta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s3);
-  margin-top: var(--s4);
-}
-
-.w-mods__cta p {
-  max-width: 46ch;
-  color: var(--muted);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .w-acc__panel,
-  .w-acc__img,
-  .w-acc__copy {
-    transition: none;
-  }
-}
-
-/* Phones/tablets: stacked cards, every panel open. */
-@media (max-width: 860px) {
-  .w-acc {
-    flex-direction: column;
-    height: auto;
-    margin-top: var(--s6);
-  }
-
-  .w-acc__panel,
-  .w-acc__panel[data-open] {
-    flex: none;
-    min-height: 0;
-    aspect-ratio: 4 / 5;
-  }
-
-  .w-acc__img {
-    filter: none;
-    transform: none;
-  }
-
-  .w-acc__toggle {
-    display: none;
-  }
-
-  .w-acc__copy {
-    padding: var(--s3);
-    opacity: 1;
-    transform: none;
-  }
-
-  .w-mods__cta .w-pill {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-
-@media (min-width: 600px) and (max-width: 860px) {
-  .w-acc__panel {
-    aspect-ratio: 16 / 10;
   }
 }

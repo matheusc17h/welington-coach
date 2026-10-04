@@ -37,7 +37,6 @@ import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
 import { ProFilm } from "./pro-film";
 import { Results } from "./results";
-import { Modules } from "./modules";
 import { Shortcuts } from "./shortcuts";
 
 import "./wgt.css";
@@ -247,7 +246,7 @@ function Hero() {
               </PillCta>
               <p className="w-hero__micro">Você fala direto com o Welington no WhatsApp.</p>
             </div>
-            <a className="w-hero__secondary" href="#resultados">
+            <a className="w-hero__secondary" data-cta href="#resultados">
               Ver quem já subiu de divisão
             </a>
           </div>
@@ -645,6 +644,10 @@ function Weeks() {
             </li>
           ))}
         </ol>
+        <p className="w-weeks__note">
+          Tudo começa pelo diagnóstico do seu gameplay. Na primeira call você já sai sabendo onde
+          perde jogo.
+        </p>
       </div>
     </section>
   );
@@ -763,6 +766,7 @@ function Plans() {
                 <a
                   aria-label={`${plan.cta} (abre o WhatsApp)`}
                   className="w-plan__cta"
+                  data-cta
                   href={plan.href}
                   {...external}
                 >
@@ -787,7 +791,7 @@ function Faq() {
             Perguntas <span className="w-grad-text">frequentes</span>
           </h2>
           <p className="w-lead">Não achou a sua? Manda no WhatsApp.</p>
-          <a className="w-faq__link" href={whatsapp.geral} {...external}>
+          <a className="w-faq__link" data-cta href={whatsapp.geral} {...external}>
             Tirar dúvida no WhatsApp
             <ArrowIcon />
           </a>
@@ -807,7 +811,7 @@ function Faq() {
               <div className="w-faq__answer">
                 <p>{faq.a}</p>
                 {faq.cta ? (
-                  <a className="w-faq__inline" href={whatsapp.geral} {...external}>
+                  <a className="w-faq__inline" data-cta href={whatsapp.geral} {...external}>
                     Agendar minha análise
                     <ArrowIcon />
                   </a>
@@ -969,40 +973,46 @@ function FloatingWhatsApp() {
   );
 }
 
+/** On screen, the mobile sticky bar steps aside: the hero, the final CTA,
+    every section CTA (`data-cta`) and the other tappable bits it would cover
+    (the student video row, the film's sound toggle). */
+const STICKY_AVOID = "#topo, #agendar, [data-cta], .w-videos__viewport, .w-pro__sound";
+
 /**
- * Phones only (CSS): a bottom bar with the main CTA. It shows once the hero
- * is off screen and leaves when the final CTA comes into view (and stays away
- * below it), so the page never shows the same button twice.
+ * Phones only (CSS): a bottom bar with the main CTA. It hides while the hero,
+ * the final section or any section CTA is in the viewport, so it never sits
+ * on top of another button, and comes back once none is. One
+ * IntersectionObserver, no scroll listener. While hidden it is `inert`.
  */
 function StickyCta() {
-  const [pastHero, setPastHero] = useState(false);
-  const [atEnd, setAtEnd] = useState(false);
+  const [shown, setShown] = useState(false);
 
   useEffect(() => {
-    const hero = document.getElementById("topo");
-    const end = document.getElementById("agendar");
-    if (!hero || !end || !("IntersectionObserver" in window)) {
+    if (!("IntersectionObserver" in window)) {
       return;
     }
-    const heroObserver = new IntersectionObserver(([entry]) => {
-      setPastHero(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+    const onScreen = new Set<Element>();
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          onScreen.add(entry.target);
+        } else {
+          onScreen.delete(entry.target);
+        }
+      }
+      setShown(onScreen.size === 0);
     });
-    const endObserver = new IntersectionObserver(([entry]) => {
-      setAtEnd(entry.isIntersecting || entry.boundingClientRect.top < 0);
-    });
-    heroObserver.observe(hero);
-    endObserver.observe(end);
-    return () => {
-      heroObserver.disconnect();
-      endObserver.disconnect();
-    };
+    for (const el of document.querySelectorAll(STICKY_AVOID)) {
+      observer.observe(el);
+    }
+    return () => observer.disconnect();
   }, []);
-
-  const shown = pastHero && !atEnd;
 
   return (
     <div className="w-sticky" data-visible={shown || undefined} inert={!shown}>
-      <PillCta href={whatsapp.geral}>Agendar minha análise</PillCta>
+      <PillCta href={whatsapp.geral} section={false}>
+        Agendar minha análise
+      </PillCta>
     </div>
   );
 }
@@ -1037,7 +1047,6 @@ export function Landing() {
         <Stuck />
         <Shortcuts />
         <Film />
-        <Modules />
         <Weeks />
         <ProFilm />
         <Reasons />

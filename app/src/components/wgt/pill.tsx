@@ -7,13 +7,22 @@ export function PillCta({
   href,
   children,
   size = "md",
+  section = true,
 }: {
   href: string;
   children: string;
   size?: "md" | "lg";
+  /** A section CTA (`data-cta`): the mobile sticky bar steps aside for it.
+      False for the sticky bar's own button. */
+  section?: boolean;
 }) {
   return (
-    <a className={`w-pill w-pill--${size}`} href={href} {...external}>
+    <a
+      className={`w-pill w-pill--${size}`}
+      data-cta={section || undefined}
+      href={href}
+      {...external}
+    >
       <span className="w-pill__label">{children}</span>
       <span aria-hidden="true" className="w-pill__disc">
         <ArrowIcon className="w-pill__arrow" />
