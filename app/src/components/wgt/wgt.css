@@ -317,8 +317,9 @@ body {
   font-size: clamp(6rem, 19vw, 18rem);
 }
 
+/* Low enough that the tilde of "DIVISÃO" stays inside the panel. */
 .w-bleed--plans {
-  top: clamp(32px, 6vw, 80px);
+  top: clamp(56px, 9vw, 136px);
   left: 50%;
   font-size: clamp(8rem, 26vw, 24rem);
   transform: translateX(-50%);
@@ -2429,6 +2430,34 @@ body {
 
 .w-final .w-pill {
   margin-top: var(--s2);
+}
+
+/* Desktop: the closing call fits one screen. Title sized by the viewport
+   height and wide enough to set in two lines; room on top for the header. */
+@media (min-width: 861px) {
+  .w-final {
+    display: grid;
+    align-content: center;
+    min-height: 100svh;
+    padding-block: clamp(88px, 12svh, 128px) clamp(40px, 7svh, 88px);
+  }
+
+  .w-final__inner {
+    gap: clamp(12px, 2.2svh, 24px);
+  }
+
+  .w-final__shield {
+    width: clamp(56px, 9svh, 104px);
+  }
+
+  .w-final__title {
+    max-width: 22ch;
+    font-size: clamp(2.6rem, min(5.6vw, 10svh), 6.5rem);
+  }
+
+  .w-final .w-pill {
+    margin-top: 0;
+  }
 }
 
 /* Footer */

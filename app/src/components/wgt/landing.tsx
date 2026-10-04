@@ -724,7 +724,7 @@ function Plans() {
     <section aria-labelledby="planos-title" className="w-plans w-section" id="planos">
       <div aria-hidden="true" className="w-aurora w-aurora--mid" />
       <p aria-hidden="true" className="w-bleed w-bleed--plans">
-        Elite
+        Divisão
       </p>
       <div className="w-wrap w-plans__stage">
         <div className="w-plans__head">
