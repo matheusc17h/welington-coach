@@ -209,7 +209,55 @@ function Header() {
   );
 }
 
+/**
+ * The circle behind the hero photo idles: the gradient turns inside the disc,
+ * the disc breathes, the glow pulses and the ring turns the other way. The
+ * photo itself never moves. Nothing runs with reduced motion.
+ */
+function useHeroHalo(visualRef: RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const visual = visualRef.current;
+    if (!visual) {
+      return;
+    }
+    let cleanup = () => {};
+    let cancelled = false;
+
+    void import("gsap").then(({ gsap }) => {
+      if (cancelled) {
+        return;
+      }
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const q = gsap.utils.selector(visual);
+        gsap.to(q(".w-hero__halo-fill"), { rotation: 360, duration: 20, ease: "none", repeat: -1 });
+        gsap.to(q(".w-hero__halo-disc"), {
+          scale: 1.03,
+          duration: 3,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+        });
+        gsap.fromTo(
+          q(".w-hero__halo-glow"),
+          { opacity: 0.6 },
+          { opacity: 1, duration: 4, ease: "sine.inOut", repeat: -1, yoyo: true },
+        );
+        gsap.to(q(".w-hero__ring-line"), { rotation: -360, duration: 40, ease: "none", repeat: -1 });
+      });
+      cleanup = () => mm.revert();
+    });
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, [visualRef]);
+}
+
 function Hero() {
+  const visualRef = useRef<HTMLDivElement>(null);
+  useHeroHalo(visualRef);
   return (
     <section aria-labelledby="hero-title" className="w-hero" id="topo">
       <div aria-hidden="true" className="w-aurora w-aurora--hero" />
@@ -258,17 +306,24 @@ function Hero() {
           </figure>
         </div>
 
-        <div className="w-hero__visual">
-          <div aria-hidden="true" className="w-hero__halo" />
-          <div aria-hidden="true" className="w-hero__ring" />
+        <div className="w-hero__visual" ref={visualRef}>
+          <div aria-hidden="true" className="w-hero__halo">
+            <span className="w-hero__halo-glow" />
+            <span className="w-hero__halo-disc">
+              <span className="w-hero__halo-fill" />
+            </span>
+          </div>
+          <div aria-hidden="true" className="w-hero__ring">
+            <span className="w-hero__ring-line" />
+          </div>
           <img
             alt="Welington Rodrigues, coach de EA SPORTS FC, de headset e controle na mão"
             className="w-hero__photo"
             decoding="async"
             fetchPriority="high"
-            height={538}
-            src="/assets/brand/welington-hero.webp"
-            width={446}
+            height={1307}
+            src="/assets/brand/welington-hero-v2.webp"
+            width={1320}
           />
           <Shield className="w-hero__shield" eager />
           <p className="w-hero__badge">
