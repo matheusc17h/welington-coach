@@ -300,7 +300,7 @@ function Hero() {
           </div>
           <figure className="w-hero__quote w-in w-in--cta">
             <blockquote>
-              “Eu nunca tinha passado da segunda divisão, hoje estou na ELITE.”
+              Eu nunca tinha passado da segunda divisão, hoje estou na ELITE.
             </blockquote>
             <figcaption>@naelsongameseinformatica</figcaption>
           </figure>
@@ -372,9 +372,9 @@ function About() {
             Quem <span className="w-grad-text">sou eu</span>
           </h2>
           <p className="w-lead">
-            Coach de EA SPORTS FC e jogador competitivo, com perfil verificado pela EA e mais de
-            3.500 alunos. Ele joga o mesmo modo que você, sob a mesma pressão. Não ensina teoria:
-            ensina o que decide jogo na Weekend League.
+            Sou coach de EA SPORTS FC e jogador competitivo, com perfil verificado pela EA e mais
+            de 3.500 alunos. Jogo o mesmo modo que você, sob a mesma pressão. Não ensino teoria:
+            ensino o que decide jogo na Weekend League.
           </p>
           <dl className="w-about__stats">
             <div>
@@ -721,9 +721,128 @@ function Weeks() {
   );
 }
 
+/** Bento slot of each reason card, in content order. Drives size and entrance. */
+const reasonSlots = ["lead", "tactic", "mind", "routine", "group", "goal"] as const;
+
+/**
+ * Reasons bento entrance. Each card arrives its own way, all quiet:
+ * lead (dark) wipes up, tactic slides from the left, mind settles from a
+ * slight scale, routine rises, group comes out of a blur, goal slides from the
+ * right and its tint lights last. Icons pop in just after their card.
+ * Desktop plays it as one sequence when the section is ~20% in view; phones
+ * play each card as it arrives (one column is too tall for a single trigger).
+ * Only transform, opacity, filter and clip-path move: no layout shift.
+ */
+function useReasonsReveal(sectionRef: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) {
+      return;
+    }
+    let cleanup = () => {};
+    let cancelled = false;
+
+    // Timings (seconds)
+    const CARD = 0.9; // card entrance
+    const LEAD = 1.1; // dark card wipe
+    const ICON = 0.6; // icon pop
+    const ICON_DELAY = 0.25; // icon starts this long after its card
+    const STAGGER = 0.12; // gap between cards
+    const TINT = 1; // goal card gradient fade
+
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        if (cancelled) {
+          return;
+        }
+        gsap.registerPlugin(ScrollTrigger);
+        const mm = gsap.matchMedia();
+        const q = gsap.utils.selector(section);
+        const card = (slot: (typeof reasonSlots)[number]) =>
+          q(`.w-reasons__card--${slot}`)[0] as HTMLElement;
+
+        // Start pose of each card. `transition: none` keeps the CSS hover
+        // transition from smoothing every GSAP frame; it is cleared at the end.
+        const from: Record<(typeof reasonSlots)[number], gsap.TweenVars> = {
+          lead: { clipPath: "inset(100% 0% 0% 0%)" },
+          tactic: { autoAlpha: 0, x: -40 },
+          mind: { autoAlpha: 0, scale: 0.94 },
+          routine: { autoAlpha: 0, y: 40 },
+          group: { autoAlpha: 0, filter: "blur(8px)" },
+          goal: { autoAlpha: 0, x: 40 },
+        };
+        const rest = { autoAlpha: 1, x: 0, y: 0, scale: 1, filter: "blur(0px)" };
+        const clear = "transform,opacity,visibility,filter,clip-path,transition";
+
+        // Adds one card (and its icon, lead text, goal tint) to a timeline at `at`.
+        const addCard = (
+          tl: gsap.core.Timeline,
+          slot: (typeof reasonSlots)[number],
+          at: number | string,
+        ) => {
+          const el = card(slot);
+          const icon = el.querySelector(".w-reasons__check");
+          gsap.set(el, { ...from[slot], transition: "none" });
+          gsap.set(icon, { scale: 0.6, autoAlpha: 0 });
+
+          if (slot === "lead") {
+            const inner = el.querySelectorAll("h3, p");
+            gsap.set(inner, { autoAlpha: 0, y: 20 });
+            tl.to(el, { clipPath: "inset(0% 0% 0% 0%)", duration: LEAD, ease: "expo.out" }, at)
+              .to(inner, { autoAlpha: 1, y: 0, duration: CARD, ease: "power3.out", stagger: 0.08 }, "<0.35")
+              .set(inner, { clearProps: "transform,opacity,visibility" });
+          } else {
+            tl.to(el, { ...rest, duration: CARD, ease: "power3.out" }, at);
+          }
+          tl.to(
+            icon,
+            { scale: 1, autoAlpha: 1, duration: ICON, ease: "back.out(1.7)" },
+            typeof at === "number" ? at + ICON_DELAY : `<${ICON_DELAY}`,
+          );
+
+          if (slot === "goal") {
+            const tint = el.querySelector(".w-reasons__tint");
+            gsap.set(tint, { opacity: 0 });
+            tl.to(tint, { opacity: 1, duration: TINT, ease: "power2.out" }, ">-0.1");
+          }
+          tl.set([el, icon], { clearProps: clear });
+        };
+
+        // Desktop and tablet: one sequence, lead first, then the bento left to
+        // right, top to bottom.
+        mm.add("(min-width: 861px) and (prefers-reduced-motion: no-preference)", () => {
+          const tl = gsap.timeline({
+            scrollTrigger: { trigger: section, start: "top 80%", once: true },
+          });
+          addCard(tl, "lead", 0);
+          (["tactic", "mind", "routine", "group", "goal"] as const).forEach((slot, i) =>
+            addCard(tl, slot, 0.45 + i * STAGGER),
+          );
+        });
+
+        // Phones (one column): each card plays as it reaches the screen.
+        mm.add("(max-width: 860px) and (prefers-reduced-motion: no-preference)", () => {
+          for (const slot of reasonSlots) {
+            const tl = gsap.timeline({
+              scrollTrigger: { trigger: card(slot), start: "top 85%", once: true },
+            });
+            addCard(tl, slot, 0);
+          }
+        });
+        cleanup = () => mm.revert();
+      },
+    );
+
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, [sectionRef]);
+}
+
 function Reasons() {
   const sectionRef = useRef<HTMLElement>(null);
-  useCardsReveal(sectionRef, ".w-reasons__card");
+  useReasonsReveal(sectionRef);
   return (
     <section
       aria-labelledby="porque-title"
@@ -745,9 +864,12 @@ function Reasons() {
           const Icon = reasonIcons[index] ?? CheckIcon;
           return (
             <article
-              className={`w-glass w-reasons__card${index === 0 ? " w-reasons__card--wide" : ""}`}
+              className={`w-glass w-reasons__card w-reasons__card--${reasonSlots[index]}${index === 0 ? " w-reasons__card--wide" : ""}`}
               key={reason.title}
             >
+              {index === reasons.length - 1 && (
+                <span aria-hidden="true" className="w-reasons__tint" />
+              )}
               <span aria-hidden="true" className="w-reasons__check">
                 <Icon />
               </span>
@@ -803,7 +925,7 @@ function Plans() {
       <div className="w-wrap w-plans__stage">
         <div className="w-plans__head">
           <h2 className="w-h2" id="planos-title">
-            Escolha seu <span className="w-grad-text">plano</span>
+            Do Intermediário ao <span className="w-grad-text">Elite</span>
           </h2>
           <p className="w-lead">
             Me conta sua divisão no WhatsApp que eu te indico o plano certo e passo o valor na hora.
@@ -816,6 +938,8 @@ function Plans() {
                 className={`w-plan w-rise${plan.featured ? " w-plan--featured" : ""}`}
                 key={plan.name}
               >
+                {/* TODO CONFIRMAR: "Mais escolhido" precisa ser verdade (o Premium é mesmo o
+                    plano que mais vende?). Se não for, trocar por "O plano de 4 semanas". */}
                 {plan.featured ? <p className="w-plan__seal">Mais escolhido</p> : null}
                 <h3 className="w-plan__name">{plan.name}</h3>
                 <p className="w-plan__pitch">{plan.pitch}</p>
@@ -853,7 +977,7 @@ function Faq() {
       <div className="w-wrap w-faq__grid">
         <div className="w-faq__head">
           <h2 className="w-h2" id="duvidas-title">
-            Perguntas <span className="w-grad-text">frequentes</span>
+            Antes da <span className="w-grad-text">primeira call</span>
           </h2>
           <p className="w-lead">Não achou a sua? Manda no WhatsApp.</p>
           <a className="w-faq__link" data-cta href={whatsapp.geral} {...external}>

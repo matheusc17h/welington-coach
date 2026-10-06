@@ -812,12 +812,23 @@ body {
   font-size: 0.82rem;
 }
 
-/* One short student quote under the CTAs. */
+/* One short student quote under the CTAs, hung on a display-face quote mark. */
 .w-hero__quote {
+  position: relative;
   max-width: 46ch;
   margin-top: var(--s4);
-  padding-left: var(--s2);
-  border-left: 2px solid var(--magenta);
+  padding-left: 2.2rem;
+}
+
+.w-hero__quote::before {
+  content: "\201C";
+  position: absolute;
+  top: -0.12em;
+  left: 0;
+  color: var(--magenta);
+  font-family: var(--display);
+  font-size: 3.4rem;
+  line-height: 1;
 }
 
 .w-hero__quote blockquote {
@@ -1586,30 +1597,94 @@ body {
   font-size: 0.95rem;
 }
 
+/* Bare icon in the card's top corner, no tile: the title opens the card. */
+.w-reasons__card {
+  position: relative;
+}
+
+.w-reasons__card h3 {
+  padding-right: 44px;
+}
+
 .w-reasons__check {
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  margin-bottom: var(--s2);
-  border-radius: 12px;
+  position: absolute;
+  top: var(--s3);
+  right: var(--s3);
+  color: var(--magenta);
+}
+
+.w-reasons__card--wide .w-reasons__check {
   color: var(--white);
-  background: var(--brand);
-  box-shadow: 0 10px 24px -8px rgb(224 33 138 / 0.8);
 }
 
 .w-reasons__check svg {
-  width: 28px;
-  height: 28px;
+  display: block;
+  width: 32px;
+  height: 32px;
 }
 
-/* Desktop: wide card beside the heading, then 3 + 2 (no orphan). */
-.w-reasons__card:nth-of-type(n + 2) {
+/* Desktop bento: wide card beside the heading, then 5 + 7 and 4 + 4 + 4.
+   Rows line up at the top; the goal card runs a little taller as the end
+   point. The two larger cards get more breathing room. */
+.w-reasons__card--tactic {
+  grid-column: span 5;
+}
+
+.w-reasons__card--mind {
+  grid-column: span 7;
+}
+
+.w-reasons__card--tactic,
+.w-reasons__card--mind {
+  padding: var(--s4);
+}
+
+.w-reasons__card--routine,
+.w-reasons__card--group,
+.w-reasons__card--goal {
   grid-column: span 4;
 }
 
-.w-reasons__card:nth-of-type(n + 5) {
-  grid-column: span 6;
+.w-reasons__card--routine,
+.w-reasons__card--group {
+  align-self: start;
+}
+
+.w-reasons__card--goal {
+  position: relative;
+  isolation: isolate;
+  padding-bottom: calc(var(--s3) + var(--s3));
+}
+
+/* Soft brand tint behind the goal card; GSAP lights it last. */
+.w-reasons__tint {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgb(59 43 255 / 0.1),
+    rgb(123 47 247 / 0.08) 50%,
+    rgb(224 33 138 / 0.12)
+  );
+  pointer-events: none;
+}
+
+/* White cards lift a little on hover. */
+.w-reasons__card:not(.w-reasons__card--wide) {
+  transition:
+    transform 0.35s var(--ease),
+    box-shadow 0.35s var(--ease);
+}
+
+@media (hover: hover) {
+  .w-reasons .w-reasons__card:not(.w-reasons__card--wide):hover {
+    box-shadow:
+      0 2px 4px rgb(11 14 36 / 0.07),
+      0 36px 64px -32px rgb(31 59 255 / 0.45);
+    transform: translateY(-4px);
+  }
 }
 
 /* Results */
@@ -2730,16 +2805,9 @@ body {
     display: none;
   }
 
-  .w-reasons__card,
-  .w-reasons__card:nth-of-type(n + 2),
-  .w-reasons__card:nth-of-type(n + 5) {
+  .w-reasons__card--tactic,
+  .w-reasons__card--mind {
     grid-column: span 6;
-  }
-
-  .w-reasons__card--wide,
-  .w-reasons__head,
-  .w-reasons__card:last-of-type {
-    grid-column: 1 / -1;
   }
 }
 
@@ -2991,6 +3059,17 @@ body {
     gap: 12px;
   }
 
+  /* One column: every card full width, same padding as the rest. */
+  .w-reasons__card--routine,
+  .w-reasons__card--group {
+    align-self: stretch;
+  }
+
+  .w-reasons__card--tactic,
+  .w-reasons__card--mind {
+    padding: var(--s3);
+  }
+
   .w-reasons__head {
     padding: 0 0 var(--s2);
   }
@@ -3219,13 +3298,15 @@ body {
     grid-column: 1 / -1;
   }
 
-  .w-reasons__card,
-  .w-reasons__card:nth-of-type(n + 2),
-  .w-reasons__card:nth-of-type(n + 5) {
+  .w-reasons__card--tactic,
+  .w-reasons__card--mind,
+  .w-reasons__card--routine,
+  .w-reasons__card--group {
     grid-column: auto;
+    padding: var(--s3);
   }
 
-  .w-reasons__card:last-of-type {
+  .w-reasons__card--goal {
     grid-column: 1 / -1;
   }
 
