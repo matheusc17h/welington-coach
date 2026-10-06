@@ -761,7 +761,7 @@ function useReasonsReveal(sectionRef: RefObject<HTMLElement | null>) {
         const card = (slot: (typeof reasonSlots)[number]) =>
           q(`.w-reasons__card--${slot}`)[0] as HTMLElement;
 
-        // Start pose of each card. `transition: none` keeps the CSS hover
+        // Start pose of each card. `transition: none` keeps any CSS
         // transition from smoothing every GSAP frame; it is cleared at the end.
         const from: Record<(typeof reasonSlots)[number], gsap.TweenVars> = {
           lead: { clipPath: "inset(100% 0% 0% 0%)" },

@@ -1671,22 +1671,6 @@ body {
   pointer-events: none;
 }
 
-/* White cards lift a little on hover. */
-.w-reasons__card:not(.w-reasons__card--wide) {
-  transition:
-    transform 0.35s var(--ease),
-    box-shadow 0.35s var(--ease);
-}
-
-@media (hover: hover) {
-  .w-reasons .w-reasons__card:not(.w-reasons__card--wide):hover {
-    box-shadow:
-      0 2px 4px rgb(11 14 36 / 0.07),
-      0 36px 64px -32px rgb(31 59 255 / 0.45);
-    transform: translateY(-4px);
-  }
-}
-
 /* Results */
 .w-results__head {
   display: grid;
