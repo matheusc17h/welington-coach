@@ -37,6 +37,7 @@ import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
 import { ProFilm } from "./pro-film";
 import { Results } from "./results";
+import { Satin } from "./satin";
 import { Shortcuts } from "./shortcuts";
 
 import "./wgt.css";
@@ -260,7 +261,7 @@ function Hero() {
   useHeroHalo(visualRef);
   return (
     <section aria-labelledby="hero-title" className="w-hero" id="topo">
-      <div aria-hidden="true" className="w-aurora w-aurora--hero" />
+      <Satin />
       <div className="w-hero__grid w-wrap">
         <div className="w-hero__copy">
           <ul aria-label="Credenciais" className="w-hero__chips">
