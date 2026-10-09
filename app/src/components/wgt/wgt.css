@@ -3643,3 +3643,47 @@ body {
     justify-content: space-between;
   }
 }
+
+/* Scroll stack (stack.ts): sections pin with their bottom at the viewport
+   bottom and the next one slides over; the covered one shrinks and fades.
+   Light sheets keep their own panel; dark sections get an opaque navy base
+   and a rounded, lit top edge so each reads as a card arriving. */
+.w-stack > section:not(.w-marquee) {
+  position: sticky;
+  z-index: 1;
+  opacity: calc(1 - var(--stack, 0) * 0.75);
+  transform: scale(calc(1 - var(--stack, 0) * 0.08));
+  transform-origin: 50% calc(100% - 50vh);
+}
+
+.w-stack > section:not(.w-marquee, .w-about, .w-cuts, .w-reasons, .w-plans) {
+  background-color: var(--bg);
+}
+
+.w-stack > section:not(:first-child, .w-marquee, .w-about, .w-cuts, .w-reasons, .w-plans) {
+  border-radius: clamp(28px, 4vw, 56px) clamp(28px, 4vw, 56px) 0 0;
+  box-shadow:
+    inset 0 1px 0 var(--line-top),
+    0 -40px 80px -40px rgb(0 0 0 / 0.7);
+}
+
+.w-stack > section:not(.w-marquee, .w-about, .w-cuts, .w-reasons, .w-plans):first-child {
+  box-shadow: none;
+}
+
+.w-stack > section.w-about,
+.w-stack > section.w-cuts,
+.w-stack > section.w-reasons,
+.w-stack > section.w-plans {
+  box-shadow: 0 -40px 80px -40px rgb(0 0 0 / 0.7);
+}
+
+/* Fully covered: off screen and hidden, so observers treat it as gone. */
+.w-stack > section[data-covered] {
+  visibility: hidden;
+  translate: 0 -300vh;
+}
+
+.w-stack > .w-marquee {
+  background-color: var(--bg);
+}

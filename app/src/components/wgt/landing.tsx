@@ -38,6 +38,7 @@ import { external, PillCta } from "./pill";
 import { ProFilm } from "./pro-film";
 import { Results } from "./results";
 import { Satin } from "./satin";
+import { useStack } from "./stack";
 import { Shortcuts } from "./shortcuts";
 
 import "./wgt.css";
@@ -1207,6 +1208,7 @@ function StickyCta() {
 export function Landing() {
   useTextAnimations();
   useCounters();
+  useStack();
   return (
     <div className="wgt" lang="pt-BR">
       <a className="w-skip" href="#conteudo">
