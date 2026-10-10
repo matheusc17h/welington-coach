@@ -50,11 +50,14 @@ export function useTextAnimations() {
         const split = SplitText.create(el, {
           type: "lines",
           mask: "lines",
+          // Masks get "w-line-mask": padded in wgt.css so accents on
+          // capitals (Ó, Á, Ã, Ê) and descenders aren't clipped.
+          linesClass: "w-line",
           autoSplit: true,
           // Roda de novo se a largura mudar; a animação retornada mantém o progresso.
           onSplit: (self) =>
             gsap.from(self.lines, {
-              yPercent: 110,
+              yPercent: 130,
               duration: 0.7,
               ease: "power4.out",
               stagger: 0.08,

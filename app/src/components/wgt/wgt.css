@@ -4045,3 +4045,11 @@ body {
     text-align: center;
   }
 }
+
+/* Title line masks (SplitText, animations-text): room above for accents on
+   capitals and below for descenders, cancelled by negative margins so the
+   line spacing doesn't change. */
+.w-line-mask {
+  margin-block: -0.22em -0.12em;
+  padding-block: 0.22em 0.12em;
+}
