@@ -2883,6 +2883,7 @@ body {
   /* All three chips on one line: text and padding shrink with the screen. */
   .w-hero__chips {
     flex-wrap: nowrap;
+    justify-content: space-between;
     gap: 6px;
   }
 
@@ -2908,8 +2909,22 @@ body {
     align-items: stretch;
   }
 
+  /* Main CTA on one line, label centred in the space left of the arrow. */
   .w-hero__ctas .w-pill {
     justify-content: space-between;
+    gap: 12px;
+    padding-left: 20px;
+    font-size: clamp(0.85rem, 3.9vw, 1.075rem);
+  }
+
+  .w-hero__ctas .w-pill__label {
+    flex: 1;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .w-hero__micro {
+    text-align: center;
   }
 
   .w-hero__secondary {
