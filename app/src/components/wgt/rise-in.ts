@@ -35,16 +35,25 @@ export function useRiseIn() {
               // querySelectorAll returns document order: the order they appear.
               const pieces = el.querySelectorAll<HTMLElement>(items);
               if (!pieces.length) continue;
-              gsap.from(pieces, {
-                autoAlpha: 0,
-                y: 80,
-                duration: 0.9,
-                ease: "power3.out",
-                stagger: 0.18,
-                // After the block's title, which fires at the same point.
-                delay: 0.3,
-                scrollTrigger: { trigger: el, start: "clamp(top 50%)", once: true },
-              });
+              // fromTo with an explicit end, and the pieces' own CSS
+              // transitions off while GSAP drives them: the CTA pill has a
+              // transform transition (hover), and with from() GSAP read its
+              // end position mid-transition and left it parked 80px low.
+              gsap.fromTo(
+                pieces,
+                { autoAlpha: 0, y: 80, transition: "none" },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  duration: 0.9,
+                  ease: "power3.out",
+                  stagger: 0.18,
+                  // After the block's title, which fires at the same point.
+                  delay: 0.3,
+                  clearProps: "transform,opacity,visibility,transition",
+                  scrollTrigger: { trigger: el, start: "clamp(top 50%)", once: true },
+                },
+              );
             }
           }
         });
