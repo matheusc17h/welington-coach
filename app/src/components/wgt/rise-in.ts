@@ -1,23 +1,22 @@
 import { useEffect } from "react";
 
 /**
- * Section copy that rises in from below (GSAP), each piece on its own, once,
- * when its top reaches the middle of the screen. `clamp()` keeps the trigger
- * reachable for copy near the end of the page. Visible without JS and under
- * reduced motion. Titles have their own line-by-line reveal
- * (animations-text), so this covers the text around them.
+ * Section copy rising in from below (GSAP), once, when its block reaches the
+ * middle of the screen. Inside each block the pieces come in one after
+ * another in page order (stagger), so the reading order is kept: the title
+ * first (its own line-by-line reveal, animations-text, fires earlier), then
+ * the text, then the button. `clamp()` keeps the trigger reachable near the
+ * end of the page. Visible without JS and under reduced motion.
  */
-const RISE = [
-  ".w-stuck__close p",
-  ".w-cuts__head .w-lead",
-  ".w-weeks__head .w-lead",
-  ".w-results__head .w-lead",
-  ".w-plans__head .w-lead",
-  ".w-faq__head .w-lead",
-  ".w-faq__link",
-  ".w-final .w-lead",
-  ".w-final .w-pill",
-].join(", ");
+const GROUPS: { block: string; items: string }[] = [
+  { block: ".w-stuck__close", items: "p, .w-pill" },
+  { block: ".w-cuts__head", items: ".w-lead" },
+  { block: ".w-weeks__head", items: ".w-lead" },
+  { block: ".w-results__head", items: ".w-lead" },
+  { block: ".w-plans__head", items: ".w-lead" },
+  { block: ".w-faq__head", items: ".w-lead, .w-faq__link" },
+  { block: ".w-final__inner", items: ".w-lead, .w-pill" },
+];
 
 export function useRiseIn() {
   useEffect(() => {
@@ -31,14 +30,20 @@ export function useRiseIn() {
         if (cancelled) return;
         gsap.registerPlugin(ScrollTrigger);
         const ctx = gsap.context(() => {
-          for (const el of document.querySelectorAll<HTMLElement>(RISE)) {
-            gsap.from(el, {
-              autoAlpha: 0,
-              y: 80,
-              duration: 1,
-              ease: "power3.out",
-              scrollTrigger: { trigger: el, start: "clamp(top 50%)", once: true },
-            });
+          for (const { block, items } of GROUPS) {
+            for (const el of document.querySelectorAll<HTMLElement>(block)) {
+              // querySelectorAll returns document order: the order they appear.
+              const pieces = el.querySelectorAll<HTMLElement>(items);
+              if (!pieces.length) continue;
+              gsap.from(pieces, {
+                autoAlpha: 0,
+                y: 80,
+                duration: 0.9,
+                ease: "power3.out",
+                stagger: 0.18,
+                scrollTrigger: { trigger: el, start: "clamp(top 50%)", once: true },
+              });
+            }
           }
         });
         cleanup = () => ctx.revert();
