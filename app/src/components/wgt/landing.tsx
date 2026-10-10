@@ -930,21 +930,76 @@ function Footer() {
   );
 }
 
-/** Always on, bottom right, on every screen size; fades in after mount. */
+/** The big CTA buttons in the page; the float steps aside while one passes under it. */
+const FLOAT_AVOID = "main .w-pill, main .w-plan__cta";
+
+/**
+ * Bottom right on every screen size, fading in after mount. It only hides
+ * while one of the page's big CTA buttons is under it, so it never covers
+ * a button's label or arrow.
+ */
 function FloatingWhatsApp() {
-  const [shown, setShown] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [covering, setCovering] = useState(false);
+  const floatRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => setShown(true));
+    const frame = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  useEffect(() => {
+    const float = floatRef.current;
+    if (!float) {
+      return;
+    }
+    let frame = 0;
+    const check = () => {
+      frame = 0;
+      const zone = float.getBoundingClientRect();
+      const pad = 8;
+      let hit = false;
+      for (const el of document.querySelectorAll(FLOAT_AVOID)) {
+        const r = el.getBoundingClientRect();
+        if (
+          r.width > 0 &&
+          r.left < zone.right + pad &&
+          r.right > zone.left - pad &&
+          r.top < zone.bottom + pad &&
+          r.bottom > zone.top - pad
+        ) {
+          hit = true;
+          break;
+        }
+      }
+      setCovering(hit);
+    };
+    const schedule = () => {
+      if (!frame) {
+        frame = requestAnimationFrame(check);
+      }
+    };
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  const shown = mounted && !covering;
+
   return (
     <a
+      aria-hidden={shown ? undefined : true}
       aria-label="Chamar o Welington no WhatsApp"
       className="w-float"
       data-visible={shown || undefined}
       href={whatsapp.geral}
+      ref={floatRef}
+      tabIndex={shown ? undefined : -1}
       {...external}
     >
       <WhatsAppIcon />
