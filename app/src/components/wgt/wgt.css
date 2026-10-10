@@ -3924,6 +3924,11 @@ body {
     box-shadow 0.35s var(--ease);
 }
 
+/* BorderGlow draws outside the card; glass would clip it. */
+.w-glass.border-glow {
+  overflow: visible;
+}
+
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .w-grow:hover {
     z-index: 2;

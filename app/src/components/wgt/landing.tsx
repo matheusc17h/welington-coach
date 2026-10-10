@@ -27,6 +27,12 @@ import {
 
 /** One icon per reason in the weeks section, in content order. */
 const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon];
+/** BorderGlow on the cards: the brand ramp on the edge, a violet glow
+    (lighter on dark cards, deeper on the plans' light sheet). */
+const GLOW_COLORS = ["#3fa9ff", "#7b2ff7", "#e0218a"];
+const GLOW_DARK = "265 95 75";
+const GLOW_LIGHT = "262 85 58";
+import { BorderGlow } from "./border-glow";
 import { Counter, useCounters, withCounter } from "./counter";
 import { TextLoop } from "./text-loop";
 import { useTextAnimations } from "./animations-text";
@@ -529,10 +535,16 @@ function Stuck() {
           <div className="w-stuck__viewport">
             <ol className="w-stuck__list">
               {stuckPoints.map((point) => (
-                <li className="w-glass w-grow w-stuck__card" key={point.title}>
+                <BorderGlow
+                  as="li"
+                  className="w-glass w-grow w-stuck__card"
+                  colors={GLOW_COLORS}
+                  glowColor={GLOW_DARK}
+                  key={point.title}
+                >
                   <h3>{point.title}</h3>
                   <p>{point.body}</p>
-                </li>
+                </BorderGlow>
               ))}
             </ol>
           </div>
@@ -714,13 +726,19 @@ function Weeks() {
           {reasons.map((reason, index) => {
             const Icon = reasonIcons[index] ?? CheckIcon;
             return (
-              <li className="w-glass w-grow w-weeks__gain w-rise" key={reason.title}>
+              <BorderGlow
+                as="li"
+                className="w-glass w-grow w-weeks__gain w-rise"
+                colors={GLOW_COLORS}
+                glowColor={GLOW_DARK}
+                key={reason.title}
+              >
                 <span aria-hidden="true" className="w-weeks__gain-icon">
                   <Icon />
                 </span>
                 <h3>{reason.title}</h3>
                 <p>{reason.body}</p>
-              </li>
+              </BorderGlow>
             );
           })}
         </ul>
@@ -748,7 +766,14 @@ function Plans() {
         <div className="w-plans__viewport">
           <ul className="w-plans__grid">
             {plans.map((plan) => (
-              <li className={`w-plan w-grow w-rise${plan.featured ? " w-plan--featured" : ""}`} key={plan.name}>
+              <BorderGlow
+                as="li"
+                className={`w-plan w-grow w-rise${plan.featured ? " w-plan--featured" : ""}`}
+                colors={GLOW_COLORS}
+                glowColor={plan.featured ? GLOW_DARK : GLOW_LIGHT}
+                key={plan.name}
+                light={!plan.featured}
+              >
                 {/* TODO CONFIRMAR: "Mais escolhido" precisa ser verdade (o Premium é mesmo o
                     plano que mais vende?). Se não for, trocar por "O plano de 4 semanas". */}
                 {plan.featured ? <p className="w-plan__seal">Mais escolhido</p> : null}
@@ -773,7 +798,7 @@ function Plans() {
                   <WhatsAppIcon />
                   <span>{plan.cta}</span>
                 </a>
-              </li>
+              </BorderGlow>
             ))}
           </ul>
         </div>
