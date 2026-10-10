@@ -629,46 +629,68 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
             const axis = vertical ? "scaleY" : "scaleX";
             gsap.set(fill, { [axis]: 0 });
 
-            // Tied to the scrollbar: each week lights up as the line scrolls
-            // through the screen, and goes back when scrolling up.
-            const tl = gsap.timeline({
-              defaults: { ease: "power3.out" },
-              scrollTrigger: {
-                trigger: line,
-                // Desktop: complete (all 4 weeks) by the time the line
-                // reaches the middle of the screen.
-                start: vertical ? "top 80%" : "top 92%",
-                end: vertical ? "bottom 60%" : "top 52%",
-                scrub: 0.6,
-                invalidateOnRefresh: true,
-              },
-            });
-            steps.forEach((step, i) => {
+            // Not tied to the scrollbar: once the line reaches the screen the
+            // weeks play on their own, slowly, with a pause on each so it can
+            // be read (week 1, pause, week 2, …). Scrolling on doesn't
+            // rush or rewind it.
+            const READ = 1.1; // pause on each week, in seconds
+            const reveal = (tl: gsap.core.Timeline, i: number) => {
               const dot = dots[i];
-              const text = step.querySelectorAll(".w-weeks__week, h3, p");
-              if (i > 0) {
-                // Draw the connection up to this week's dot.
-                tl.to(fill, { [axis]: () => at(i), duration: 0.7, ease: "power2.inOut" });
-              } else {
-                tl.to(fill, { [axis]: () => at(0), duration: 0.3, ease: "power2.out" });
-              }
+              const text = step(i).querySelectorAll(".w-weeks__week, h3, p");
+              tl.to(fill, {
+                [axis]: () => at(i),
+                duration: i === 0 ? 0.6 : 1.1,
+                ease: i === 0 ? "power2.out" : "power2.inOut",
+              });
               if (dot) {
                 tl.fromTo(
                   dot,
                   { scale: 0, autoAlpha: 0 },
-                  { scale: 1, autoAlpha: 1, duration: 0.55, ease: "back.out(2.6)" },
-                  "-=0.1",
+                  { scale: 1, autoAlpha: 1, duration: 0.7, ease: "back.out(2.2)" },
+                  "-=0.15",
                 ).fromTo(
                   dot,
                   { "--glow": 0 },
-                  { "--glow": 1, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut" },
-                  "<0.15",
+                  { "--glow": 1, duration: 0.4, yoyo: true, repeat: 1, ease: "sine.inOut" },
+                  "<0.2",
                 );
               }
-              tl.from(text, { autoAlpha: 0, y: 22, duration: 0.6, stagger: 0.08 }, "<");
-            });
-            // Finish the line to its end after the last week.
-            tl.to(fill, { [axis]: 1, duration: 0.5, ease: "power2.inOut" });
+              tl.from(text, { autoAlpha: 0, y: 26, duration: 0.9, stagger: 0.15 }, "<");
+            };
+            const step = (i: number) => steps[i];
+            if (vertical) {
+              // Phones (stacked): each week plays as it reaches the screen,
+              // so the later weeks aren't animating out of view.
+              steps.forEach((el, i) => {
+                const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+                reveal(tl, i);
+                if (i === steps.length - 1) {
+                  tl.to(fill, { [axis]: 1, duration: 0.6, ease: "power2.inOut" });
+                }
+                ScrollTrigger.create({
+                  trigger: el,
+                  start: "clamp(top 70%)",
+                  once: true,
+                  onEnter: () => tl.play(),
+                });
+              });
+            } else {
+              const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+              steps.forEach((_, i) => {
+                reveal(tl, i);
+                if (i < steps.length - 1) {
+                  tl.to({}, { duration: READ });
+                }
+              });
+              // Finish the line to its end after the last week.
+              tl.to(fill, { [axis]: 1, duration: 0.7, ease: "power2.inOut" });
+              ScrollTrigger.create({
+                trigger: line,
+                start: "clamp(top 70%)",
+                once: true,
+                onEnter: () => tl.play(),
+              });
+            }
 
             // The note and the three benefit cards ride the scroll too: one
             // after another along the row on desktop, each on its own as it
@@ -704,8 +726,8 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
                 },
               });
             }
+            // Timelines and triggers made here are reverted by mm.revert().
             return () => {
-              tl.kill();
               gsap.set(fill, { clearProps: "transform" });
             };
           },
