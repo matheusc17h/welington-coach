@@ -40,6 +40,7 @@ import { external, PillCta } from "./pill";
 import { Results } from "./results";
 import { Satin } from "./satin";
 import { Shortcuts } from "./shortcuts";
+import { useSmoothScroll } from "./smooth-scroll";
 
 import "./wgt.css";
 
@@ -632,8 +633,10 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
               defaults: { ease: "power3.out" },
               scrollTrigger: {
                 trigger: line,
-                start: vertical ? "top 80%" : "top 85%",
-                end: vertical ? "bottom 60%" : "bottom 40%",
+                // Desktop: complete (all 4 weeks) by the time the line
+                // reaches the middle of the screen.
+                start: vertical ? "top 80%" : "top 92%",
+                end: vertical ? "bottom 60%" : "top 52%",
                 scrub: 0.6,
                 invalidateOnRefresh: true,
               },
@@ -1061,6 +1064,7 @@ function StickyCta() {
 }
 
 export function Landing() {
+  useSmoothScroll();
   useTextAnimations();
   useCounters();
   return (

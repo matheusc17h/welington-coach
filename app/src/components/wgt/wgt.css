@@ -53,6 +53,25 @@
   text-rendering: optimizeLegibility;
 }
 
+/* Lenis (smooth-scroll.ts, desktop): it owns the easing, so the native
+   smooth behaviour steps aside while it runs. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 96px;
