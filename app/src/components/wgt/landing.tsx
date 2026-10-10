@@ -37,6 +37,7 @@ import { Counter, useCounters, withCounter } from "./counter";
 import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
 import { Results } from "./results";
+import { useRiseIn } from "./rise-in";
 import { Satin } from "./satin";
 import { Shortcuts } from "./shortcuts";
 import { useInitialScroll, useSmoothScroll } from "./smooth-scroll";
@@ -512,42 +513,9 @@ function useCardsReveal(sectionRef: RefObject<HTMLElement | null>, cards: string
   }, [sectionRef, cards]);
 }
 
-/**
- * One element rises in from below (GSAP), once, when its top reaches 60% of
- * the screen height. Visible without JS and under reduced motion.
- */
-function useRiseIn(sectionRef: RefObject<HTMLElement | null>, selector: string) {
-  useEffect(() => {
-    const el = sectionRef.current?.querySelector<HTMLElement>(selector);
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
-    let tween: { kill: () => void } | null = null;
-    let cancelled = false;
-    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
-      ([{ gsap }, { ScrollTrigger }]) => {
-        if (cancelled) return;
-        gsap.registerPlugin(ScrollTrigger);
-        tween = gsap.from(el, {
-          autoAlpha: 0,
-          y: 80,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: { trigger: el, start: "top 60%", once: true },
-        });
-      },
-    );
-    return () => {
-      cancelled = true;
-      tween?.kill();
-    };
-  }, [sectionRef, selector]);
-}
-
 function Stuck() {
   const sectionRef = useRef<HTMLElement>(null);
   useCardsReveal(sectionRef, ".w-stuck__card");
-  useRiseIn(sectionRef, ".w-stuck__close p");
 
   return (
     <section
@@ -1099,6 +1067,7 @@ function StickyCta() {
 export function Landing() {
   useInitialScroll();
   useSmoothScroll();
+  useRiseIn();
   useTextAnimations();
   useCounters();
   return (
