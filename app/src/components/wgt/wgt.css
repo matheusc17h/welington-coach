@@ -3608,12 +3608,8 @@ body {
   margin-top: var(--s6);
 }
 
-/* Electric border cards: the bolt is drawn outside the box, so no clipping;
-   the faint glass line steps back for the electric one. */
 .w-weeks__gain {
-  overflow: visible;
   padding: var(--s4);
-  border-color: transparent;
 }
 
 .w-weeks__gain-body {
@@ -3922,4 +3918,50 @@ body {
   .w-plan__cta {
     min-height: clamp(46px, 6svh, 56px);
   }
+}
+
+/* Electric border cards (electric-border.tsx): the bolt is drawn outside the
+   box, so no clipping, and the faint glass line steps back for it. On hover
+   they grow a little; `scale` is its own property, so it stacks on the
+   transform GSAP and the scroll rise own instead of fighting them. */
+.w-electric.w-glass {
+  overflow: visible;
+  border-color: transparent;
+}
+
+.w-electric {
+  transition:
+    scale 0.45s var(--ease),
+    border-color 0.35s var(--ease),
+    background 0.35s var(--ease),
+    box-shadow 0.35s var(--ease);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .w-electric:hover {
+    z-index: 2;
+    scale: 1.04;
+  }
+}
+
+@media (hover: hover) {
+  .w-stuck__card.w-electric:hover {
+    border-color: transparent;
+  }
+}
+
+/* Plans with the electric border: the bolt replaces the hairline (the
+   featured card keeps its gradient edge). The content wrapper stays static
+   so the "Mais escolhido" seal still pins to the card, and it stretches so
+   the CTA keeps sitting at the bottom. */
+.w-plan.w-electric:not(.w-plan--featured) {
+  border-color: transparent;
+}
+
+.w-plan > .eb-content {
+  position: static;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: inherit;
 }

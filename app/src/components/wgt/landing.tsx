@@ -27,8 +27,10 @@ import {
 
 /** One icon per reason in the weeks section, in content order. */
 const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon];
-/** Electric border per reason: the brand ramp, blue to magenta. */
+/** Electric border colours, cycled per card: the brand ramp, blue to magenta. */
 const GAIN_COLORS = ["#3fa9ff", "#9b5cff", "#e0218a"];
+/** Same ramp, deeper blue so it reads on the plans' light sheet. */
+const PLAN_COLORS = ["#1f3bff", "#7b2ff7", "#e0218a"];
 import { CAROUSEL_QUERY, CarouselDots, useMedia } from "./carousel";
 import { Counter, useCounters, withCounter } from "./counter";
 import { ElectricBorder } from "./electric-border";
@@ -533,10 +535,18 @@ function Stuck() {
           <div className="w-stuck__viewport">
             <ol className="w-stuck__list">
               {stuckPoints.map((point, index) => (
-                <li className="w-glass w-stuck__card" key={point.title}>
+                <ElectricBorder
+                  as="li"
+                  borderRadius={20}
+                  chaos={0.08}
+                  className="w-glass w-electric w-stuck__card"
+                  color={GAIN_COLORS[index % GAIN_COLORS.length]}
+                  key={point.title}
+                  speed={0.8}
+                >
                   <h3>{point.title}</h3>
                   <p>{point.body}</p>
-                </li>
+                </ElectricBorder>
               ))}
             </ol>
           </div>
@@ -723,7 +733,7 @@ function Weeks() {
                 as="li"
                 borderRadius={20}
                 chaos={0.08}
-                className="w-glass w-weeks__gain w-rise"
+                className="w-glass w-electric w-weeks__gain w-rise"
                 color={GAIN_COLORS[index % GAIN_COLORS.length]}
                 contentClassName="w-weeks__gain-body"
                 key={reason.title}
@@ -777,9 +787,13 @@ function Plans() {
         </div>
         <div className="w-plans__viewport">
           <ul className="w-plans__grid w-carousel" ref={trackRef}>
-            {plans.map((plan) => (
-              <li
-                className={`w-plan w-rise${plan.featured ? " w-plan--featured" : ""}`}
+            {plans.map((plan, index) => (
+              <ElectricBorder
+                as="li"
+                borderRadius={28}
+                chaos={0.08}
+                className={`w-plan w-electric w-rise${plan.featured ? " w-plan--featured" : ""}`}
+                color={PLAN_COLORS[index % PLAN_COLORS.length]}
                 key={plan.name}
               >
                 {/* TODO CONFIRMAR: "Mais escolhido" precisa ser verdade (o Premium é mesmo o
@@ -806,7 +820,7 @@ function Plans() {
                   <WhatsAppIcon />
                   <span>{plan.cta}</span>
                 </a>
-              </li>
+              </ElectricBorder>
             ))}
           </ul>
           <CarouselDots align="center" count={plans.length} label="Planos" track={trackRef} />
