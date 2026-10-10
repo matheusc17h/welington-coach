@@ -633,13 +633,13 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
             // weeks play on their own, slowly, with a pause on each so it can
             // be read (week 1, pause, week 2, …). Scrolling on doesn't
             // rush or rewind it.
-            const READ = 0.15; // pause on each week, in seconds
+            const READ = 0; // pause on each week, in seconds (0 = none)
             const reveal = (tl: gsap.core.Timeline, i: number) => {
               const dot = dots[i];
               const text = step(i).querySelectorAll(".w-weeks__week, h3, p");
               tl.to(fill, {
                 [axis]: () => at(i),
-                duration: i === 0 ? 0.6 : 0.7,
+                duration: i === 0 ? 0.5 : 0.55,
                 ease: i === 0 ? "power2.out" : "power2.inOut",
               });
               if (dot) {
@@ -678,7 +678,7 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
               const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
               steps.forEach((_, i) => {
                 reveal(tl, i);
-                if (i < steps.length - 1) {
+                if (READ > 0 && i < steps.length - 1) {
                   tl.to({}, { duration: READ });
                 }
               });
