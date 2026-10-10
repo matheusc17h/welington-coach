@@ -2608,6 +2608,11 @@ body {
   font-size: 0.82rem;
 }
 
+/* Shown only on phones (see the max-width: 860px block). */
+.w-only-phone {
+  display: none;
+}
+
 /* Floating WhatsApp */
 .w-float {
   position: fixed;
@@ -3101,17 +3106,49 @@ body {
     padding: 0 0 var(--s3);
   }
 
+  /* Footer: shield, link and legal line, all centred. */
   .w-footer__inner {
     grid-template-columns: 1fr;
+    justify-items: center;
+    gap: var(--s2);
+    text-align: center;
   }
 
   .w-footer__links {
-    justify-content: flex-start;
+    justify-content: center;
   }
 
-  /* Keep the last line clear of the round WhatsApp button. */
+  /* Side room keeps the centred line clear of the round WhatsApp button. */
   .w-footer__legal {
-    padding-right: 72px;
+    width: 100%;
+    padding-inline: 64px;
+  }
+
+  /* "Onde você está / travando?": centred, the accent on its own line with
+     the question mark (phones only). */
+  .w-stuck__head {
+    text-align: center;
+  }
+
+  .w-stuck__head .w-grad-text {
+    display: block;
+  }
+
+  .w-only-phone {
+    display: inline;
+  }
+
+  .w-stuck__head .w-lead {
+    margin-inline: auto;
+  }
+
+  .w-stuck__close {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .w-stuck__close p {
+    max-width: none;
   }
 
   /* A compact round button: the header already carries the labelled CTA,

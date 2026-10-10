@@ -526,7 +526,10 @@ function Stuck() {
         <div className="w-stuck__grid">
           <div className="w-stuck__head">
             <h2 className="w-h2" id="travando-title">
-              Onde você está <span className="w-grad-text">travando</span>
+              Onde você está{" "}
+              <span className="w-grad-text">
+                travando<span className="w-only-phone">?</span>
+              </span>
             </h2>
             <p className="w-lead">
               Seis sinais que aparecem em quase toda call de diagnóstico. Conta quantos são seus.
@@ -623,9 +626,17 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
             const axis = vertical ? "scaleY" : "scaleX";
             gsap.set(fill, { [axis]: 0 });
 
+            // Tied to the scrollbar: each week lights up as the line scrolls
+            // through the screen, and goes back when scrolling up.
             const tl = gsap.timeline({
-              paused: true,
               defaults: { ease: "power3.out" },
+              scrollTrigger: {
+                trigger: line,
+                start: vertical ? "top 80%" : "top 85%",
+                end: vertical ? "bottom 60%" : "bottom 40%",
+                scrub: 0.6,
+                invalidateOnRefresh: true,
+              },
             });
             steps.forEach((step, i) => {
               const dot = dots[i];
@@ -654,12 +665,40 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
             // Finish the line to its end after the last week.
             tl.to(fill, { [axis]: 1, duration: 0.5, ease: "power2.inOut" });
 
-            ScrollTrigger.create({
-              trigger: section,
-              start: "top 45%",
-              once: true,
-              onEnter: () => tl.play(),
-            });
+            // The note and the three benefit cards ride the scroll too: one
+            // after another along the row on desktop, each on its own as it
+            // enters on phones (stacked).
+            const note = section.querySelector<HTMLElement>(".w-weeks__note");
+            const gains = [...section.querySelectorAll<HTMLElement>(".w-weeks__gain")];
+            const from = { autoAlpha: 0, y: 70, scale: 0.94 };
+            const to = { autoAlpha: 1, y: 0, scale: 1, ease: "none" };
+            if (note) {
+              gsap.fromTo(note, { autoAlpha: 0, y: 30 }, {
+                autoAlpha: 1,
+                y: 0,
+                ease: "none",
+                scrollTrigger: { trigger: note, start: "top 95%", end: "top 70%", scrub: 0.6 },
+              });
+            }
+            if (vertical) {
+              for (const gain of gains) {
+                gsap.fromTo(gain, from, {
+                  ...to,
+                  scrollTrigger: { trigger: gain, start: "top 98%", end: "top 65%", scrub: 0.6 },
+                });
+              }
+            } else if (gains.length) {
+              gsap.fromTo(gains, from, {
+                ...to,
+                stagger: 0.25,
+                scrollTrigger: {
+                  trigger: gains[0].parentElement,
+                  start: "top 95%",
+                  end: "top 45%",
+                  scrub: 0.6,
+                },
+              });
+            }
             return () => {
               tl.kill();
               gsap.set(fill, { clearProps: "transform" });
@@ -728,7 +767,7 @@ function Weeks() {
             return (
               <BorderGlow
                 as="li"
-                className="w-glass w-grow w-weeks__gain w-rise"
+                className="w-glass w-grow w-weeks__gain"
                 colors={GLOW_COLORS}
                 glowColor={GLOW_DARK}
                 key={reason.title}
