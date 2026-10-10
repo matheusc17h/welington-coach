@@ -32,6 +32,7 @@ const GAIN_COLORS = ["#3fa9ff", "#9b5cff", "#e0218a"];
 import { CAROUSEL_QUERY, CarouselDots, useMedia } from "./carousel";
 import { Counter, useCounters, withCounter } from "./counter";
 import { ElectricBorder } from "./electric-border";
+import { TextLoop } from "./text-loop";
 import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
 import { Results } from "./results";
@@ -340,19 +341,15 @@ function Hero() {
   );
 }
 
+/** Social proof riding a brand-gradient wave (TextLoop). */
 function Marquee() {
-  const row = [...proofMarquee, ...proofMarquee];
   return (
     <section aria-label="Prova social" className="w-marquee">
       <p className="w-sr">{proofMarquee.join(" · ")}</p>
-      <div aria-hidden="true" className="w-marquee__track">
-        {row.map((item, index) => (
-          <span className="w-marquee__item" key={`${item}-${index}`}>
-            {item}
-            <i className="w-marquee__star" />
-          </span>
-        ))}
-      </div>
+      <TextLoop
+        ribbonStops={["#1f3bff", "#7b2ff7", "#e0218a"]}
+        text={proofMarquee.join(" ✦ ")}
+      />
     </section>
   );
 }

@@ -1,0 +1,26 @@
+.text-loop {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Phones: the wave runs wider than the screen so the words stay readable. */
+.text-loop-svg {
+  display: block;
+  width: max(100%, 860px);
+  height: auto;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.text-loop-text,
+.text-loop-measure {
+  font-family: var(--display);
+  font-weight: 400;
+  user-select: none;
+}
+
+.text-loop-measure {
+  visibility: hidden;
+  pointer-events: none;
+}
