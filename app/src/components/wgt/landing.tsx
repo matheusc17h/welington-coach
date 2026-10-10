@@ -27,12 +27,7 @@ import {
 
 /** One icon per reason in the weeks section, in content order. */
 const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon];
-/** Electric border colours, cycled per card: the brand ramp, blue to magenta. */
-const GAIN_COLORS = ["#3fa9ff", "#9b5cff", "#e0218a"];
-/** Same ramp, deeper blue so it reads on the plans' light sheet. */
-const PLAN_COLORS = ["#1f3bff", "#7b2ff7", "#e0218a"];
 import { Counter, useCounters, withCounter } from "./counter";
-import { ElectricBorder } from "./electric-border";
 import { TextLoop } from "./text-loop";
 import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
@@ -533,19 +528,11 @@ function Stuck() {
           </div>
           <div className="w-stuck__viewport">
             <ol className="w-stuck__list">
-              {stuckPoints.map((point, index) => (
-                <ElectricBorder
-                  as="li"
-                  borderRadius={20}
-                  chaos={0.08}
-                  className="w-glass w-electric w-stuck__card"
-                  color={GAIN_COLORS[index % GAIN_COLORS.length]}
-                  key={point.title}
-                  speed={0.8}
-                >
+              {stuckPoints.map((point) => (
+                <li className="w-glass w-grow w-stuck__card" key={point.title}>
                   <h3>{point.title}</h3>
                   <p>{point.body}</p>
-                </ElectricBorder>
+                </li>
               ))}
             </ol>
           </div>
@@ -727,22 +714,13 @@ function Weeks() {
           {reasons.map((reason, index) => {
             const Icon = reasonIcons[index] ?? CheckIcon;
             return (
-              <ElectricBorder
-                as="li"
-                borderRadius={20}
-                chaos={0.08}
-                className="w-glass w-electric w-weeks__gain w-rise"
-                color={GAIN_COLORS[index % GAIN_COLORS.length]}
-                contentClassName="w-weeks__gain-body"
-                key={reason.title}
-                speed={0.8}
-              >
+              <li className="w-glass w-grow w-weeks__gain w-rise" key={reason.title}>
                 <span aria-hidden="true" className="w-weeks__gain-icon">
                   <Icon />
                 </span>
                 <h3>{reason.title}</h3>
                 <p>{reason.body}</p>
-              </ElectricBorder>
+              </li>
             );
           })}
         </ul>
@@ -769,15 +747,8 @@ function Plans() {
         </div>
         <div className="w-plans__viewport">
           <ul className="w-plans__grid">
-            {plans.map((plan, index) => (
-              <ElectricBorder
-                as="li"
-                borderRadius={28}
-                chaos={0.08}
-                className={`w-plan w-electric w-rise${plan.featured ? " w-plan--featured" : ""}`}
-                color={PLAN_COLORS[index % PLAN_COLORS.length]}
-                key={plan.name}
-              >
+            {plans.map((plan) => (
+              <li className={`w-plan w-grow w-rise${plan.featured ? " w-plan--featured" : ""}`} key={plan.name}>
                 {/* TODO CONFIRMAR: "Mais escolhido" precisa ser verdade (o Premium é mesmo o
                     plano que mais vende?). Se não for, trocar por "O plano de 4 semanas". */}
                 {plan.featured ? <p className="w-plan__seal">Mais escolhido</p> : null}
@@ -802,7 +773,7 @@ function Plans() {
                   <WhatsAppIcon />
                   <span>{plan.cta}</span>
                 </a>
-              </ElectricBorder>
+              </li>
             ))}
           </ul>
         </div>
