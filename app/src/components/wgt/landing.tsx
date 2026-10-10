@@ -847,8 +847,16 @@ function Plans() {
 }
 
 function Faq() {
+  const sectionRef = useRef<HTMLElement>(null);
+  // Questions come in one after another as they reach the screen.
+  useCardsReveal(sectionRef, ".w-faq__item");
   return (
-    <section aria-labelledby="duvidas-title" className="w-faq w-section" id="duvidas">
+    <section
+      aria-labelledby="duvidas-title"
+      className="w-faq w-section"
+      id="duvidas"
+      ref={sectionRef}
+    >
       <div className="w-wrap w-faq__grid">
         <div className="w-faq__head">
           <h2 className="w-h2" id="duvidas-title">

@@ -2363,11 +2363,10 @@ body {
   gap: var(--s4) var(--s3);
 }
 
+/* The head stays put at the top of its column (not sticky). */
 .w-faq__head {
   grid-column: 1 / span 4;
   align-self: start;
-  position: sticky;
-  top: 120px;
 }
 
 /* The head is a narrow column: a smaller title so long words ("FREQUENTES")
