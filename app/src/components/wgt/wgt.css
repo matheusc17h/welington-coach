@@ -2780,7 +2780,7 @@ body {
   }
 
   .w-header__pill {
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto;
     gap: 8px;
     min-height: 56px;
     padding: 6px 6px 6px 10px;
@@ -2835,8 +2835,10 @@ body {
     font-size: 0.875rem;
   }
 
+  /* Phones: the logo and the menu only; the WhatsApp button lives at the
+     bottom right and the hero has its own CTA. */
   .w-header__cta {
-    padding-inline: 14px;
+    display: none;
   }
 
   .w-hero {
@@ -2857,14 +2859,25 @@ body {
     aspect-ratio: 4 / 5;
   }
 
+  /* Down on the desk, number and label side by side, so it never sits on
+     his chest or face. */
   .w-hero__badge {
-    bottom: 24%;
-    left: -2%;
-    padding: 10px 14px;
+    bottom: 3%;
+    left: 50%;
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    white-space: nowrap;
+    translate: -50% 0;
   }
 
   .w-hero__badge strong {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+  }
+
+  .w-hero__badge span {
+    font-size: 0.75rem;
   }
 
   /* All three chips on one line: text and padding shrink with the screen. */
