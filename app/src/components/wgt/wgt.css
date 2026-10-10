@@ -1224,11 +1224,8 @@ body {
   text-transform: uppercase;
 }
 
-/* --nudge-x: the same offset, read by the card reveal (landing.tsx). */
 .w-about__card--mission {
-  --nudge-x: -18;
   background: linear-gradient(150deg, #1f3bff, #7b2ff7);
-  transform: translateX(-18%);
 }
 
 .w-about__card--method {
@@ -2963,11 +2960,6 @@ body {
     gap: var(--s2);
     min-height: 0;
     padding: var(--s3);
-  }
-
-  .w-about__card--mission {
-    --nudge-x: 0;
-    transform: none;
   }
 
   .w-about__stats {
