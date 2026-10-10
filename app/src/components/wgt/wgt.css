@@ -1096,12 +1096,40 @@ body {
   }
 }
 
-/* Marquee: social proof on a gradient wave (text-loop.tsx). The keyframes
-   below still drive the results rails. */
+/* Marquee */
 .w-marquee {
   position: relative;
   z-index: 2;
   overflow: hidden;
+  padding-block: 20px;
+  border-block: 1px solid var(--line);
+  background: linear-gradient(90deg, rgb(31 59 255 / 0.16), rgb(224 33 138 / 0.16));
+  transform: rotate(-1.5deg) scale(1.03);
+}
+
+.w-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: w-marquee 38s linear infinite;
+}
+
+.w-marquee__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  padding-right: 28px;
+  font-family: var(--display);
+  font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.w-marquee__star {
+  width: 14px;
+  height: 14px;
+  background: var(--brand);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
 }
 
 @keyframes w-marquee {
@@ -2315,7 +2343,9 @@ body {
 /* "Quem sou eu" on the light sheet: ink in the page's dark navy, the giant
    background name as a faint dark outline, the gradient cards keep white text. */
 .w-about {
-  margin-top: 16px;
+  /* The marquee above is tilted, so its low edge dips deeper on wider
+     screens: clear it by a matching amount plus a constant gap. */
+  margin-top: calc(1.6vw + 16px);
   color: var(--bg);
 }
 
@@ -3204,6 +3234,17 @@ body {
     animation-iteration-count: 1 !important;
     animation-delay: 0s !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .w-marquee__track {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    animation: none !important;
+  }
+
+  .w-marquee__item:nth-child(n + 8) {
+    display: none;
   }
 }
 
