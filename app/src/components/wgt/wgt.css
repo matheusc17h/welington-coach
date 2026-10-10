@@ -3987,3 +3987,37 @@ body {
     scale: 1.04;
   }
 }
+
+/* Phones: every section title and its text centred. Card insides (lists
+   with icons, the timeline, FAQ answers) stay left-aligned to read well. */
+@media (max-width: 860px) {
+  .w-hero__copy,
+  .w-about__intro,
+  .w-stuck__head,
+  .w-cuts__head,
+  .w-cuts__answer,
+  .w-weeks__head,
+  .w-weeks__note,
+  .w-results__head,
+  .w-plans__head,
+  .w-faq__head,
+  .w-final {
+    text-align: center;
+  }
+
+  .wgt .w-lead,
+  .w-hero__lead,
+  .w-weeks__note,
+  .w-cuts__head .w-h2 {
+    margin-inline: auto;
+  }
+
+  .w-hero__ctas,
+  .w-hero__main {
+    justify-items: center;
+  }
+
+  .w-about__stats {
+    text-align: center;
+  }
+}
