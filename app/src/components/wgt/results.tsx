@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
+import { CAROUSEL_QUERY, CarouselDots, useMedia } from "./carousel";
 import { chatPrints, prints, studentVideos, whatsapp } from "./content";
 import { ChevronIcon, CrossIcon, PlayIcon } from "./icons";
 import { PillCta } from "./pill";
@@ -7,15 +8,21 @@ import { PillCta } from "./pill";
 /**
  * Students' chats inside phone frames, scrolling sideways without end (CSS:
  * the row is doubled and slides half its width). Hover pauses it; with
- * reduced motion it becomes a plain swipe row.
+ * reduced motion it becomes a plain swipe row. On phones (`carousel`) it is
+ * one set in a swipe carousel, under the tabs.
  */
-function ChatPhones() {
-  const row = [...chatPrints, ...chatPrints];
+function ChatPhones({ carousel }: { carousel: boolean }) {
+  const row = carousel ? chatPrints : [...chatPrints, ...chatPrints];
+  const trackRef = useRef<HTMLUListElement>(null);
   return (
     <div className="w-phones">
-      <h3 className="w-h3">Direto do WhatsApp dos alunos</h3>
-      <div className="w-phones__viewport">
-        <ul aria-label="Conversas de alunos" className="w-phones__track">
+      {carousel ? null : <h3 className="w-h3">Direto do WhatsApp dos alunos</h3>}
+      <div className={carousel ? "w-phones__viewport is-carousel" : "w-phones__viewport"}>
+        <ul
+          aria-label="Conversas de alunos"
+          className={carousel ? "w-phones__track w-carousel" : "w-phones__track"}
+          ref={trackRef}
+        >
           {row.map((print, index) => {
             const copy = index >= chatPrints.length;
             return (
@@ -35,6 +42,7 @@ function ChatPhones() {
           })}
         </ul>
       </div>
+      {carousel ? <CarouselDots count={row.length} label="Conversas" track={trackRef} /> : null}
     </div>
   );
 }
@@ -45,13 +53,18 @@ function ChatPhones() {
  * screen, so one loop is the set twice; the loop is then doubled for the
  * seamless slide. Only the first set is read out.
  */
-function Prints() {
-  const row = [...prints, ...prints, ...prints, ...prints];
+function Prints({ carousel }: { carousel: boolean }) {
+  const row = carousel ? prints : [...prints, ...prints, ...prints, ...prints];
+  const trackRef = useRef<HTMLUListElement>(null);
   return (
     <div className="w-prints">
-      <h3 className="w-h3">Prints que chegam no grupo</h3>
-      <div className="w-prints__viewport">
-        <ul aria-label="Prints de resultado" className="w-prints__track">
+      {carousel ? null : <h3 className="w-h3">Prints que chegam no grupo</h3>}
+      <div className={carousel ? "w-prints__viewport is-carousel" : "w-prints__viewport"}>
+        <ul
+          aria-label="Prints de resultado"
+          className={carousel ? "w-prints__track w-carousel" : "w-prints__track"}
+          ref={trackRef}
+        >
           {row.map((print, index) => {
             const copy = index >= prints.length;
             return (
@@ -72,11 +85,13 @@ function Prints() {
           })}
         </ul>
       </div>
+      {carousel ? <CarouselDots count={row.length} label="Prints" track={trackRef} /> : null}
     </div>
   );
 }
 
-function Videos() {
+function Videos({ carousel }: { carousel: boolean }) {
+  const trackRef = useRef<HTMLUListElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [current, setCurrent] = useState<number | null>(null);
@@ -112,15 +127,18 @@ function Videos() {
   return (
     <div className="w-videos">
       <div className="w-quotes__bar">
-        <h3 className="w-h3">Alunos mostrando a evolução</h3>
+        {carousel ? null : <h3 className="w-h3">Alunos mostrando a evolução</h3>}
         <p className="w-videos__hint">Toque para assistir. Começa sem som.</p>
       </div>
       {/* Endless row moving left, like the phones (CSS). One loop is the set
           twice so it covers wide screens; the copies stay clickable but are
           hidden from screen readers and the tab order. */}
-      <div className="w-videos__viewport">
-        <ul className="w-videos__track">
-          {[0, 1, 2, 3].flatMap((round) =>
+      <div className={carousel ? "w-videos__viewport is-carousel" : "w-videos__viewport"}>
+        <ul
+          className={carousel ? "w-videos__track w-carousel" : "w-videos__track"}
+          ref={trackRef}
+        >
+          {(carousel ? [0] : [0, 1, 2, 3]).flatMap((round) =>
             studentVideos.map((video, index) => {
               const copy = round > 0;
               return (
@@ -150,6 +168,9 @@ function Videos() {
           )}
         </ul>
       </div>
+      {carousel ? (
+        <CarouselDots count={studentVideos.length} label="Vídeos" track={trackRef} />
+      ) : null}
 
       <dialog
         aria-label="Vídeo de aluno"
@@ -206,7 +227,27 @@ function Videos() {
   );
 }
 
+const galleries = [
+  { id: "whatsapp", label: "WhatsApp" },
+  { id: "prints", label: "Prints" },
+  { id: "videos", label: "Vídeos" },
+] as const;
+
+type Gallery = (typeof galleries)[number]["id"];
+
+/**
+ * Desktop: the three galleries stacked, as endless rows. Phones: tabs on top
+ * and one gallery at a time, as a swipe carousel (WhatsApp first).
+ */
 export function Results() {
+  const carousel = useMedia(CAROUSEL_QUERY);
+  const [tab, setTab] = useState<Gallery>("whatsapp");
+  const show = (id: Gallery) => !carousel || tab === id;
+  const panel = (id: Gallery) =>
+    carousel
+      ? { "aria-labelledby": `resultados-tab-${id}`, id: `resultados-${id}`, role: "tabpanel" }
+      : {};
+
   return (
     <section aria-labelledby="resultados-title" className="w-results w-section" id="resultados">
       <div aria-hidden="true" className="w-aurora w-aurora--hero" />
@@ -225,9 +266,38 @@ export function Results() {
             quitando de raiva.
           </p>
         </div>
-        <ChatPhones />
-        <Prints />
-        <Videos />
+        {carousel ? (
+          <div aria-label="Galerias de resultado" className="w-results__tabs" role="tablist">
+            {galleries.map((gallery) => (
+              <button
+                aria-controls={`resultados-${gallery.id}`}
+                aria-selected={tab === gallery.id}
+                id={`resultados-tab-${gallery.id}`}
+                key={gallery.id}
+                onClick={() => setTab(gallery.id)}
+                role="tab"
+                type="button"
+              >
+                {gallery.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        {show("whatsapp") ? (
+          <div {...panel("whatsapp")}>
+            <ChatPhones carousel={carousel} />
+          </div>
+        ) : null}
+        {show("prints") ? (
+          <div {...panel("prints")}>
+            <Prints carousel={carousel} />
+          </div>
+        ) : null}
+        {show("videos") ? (
+          <div {...panel("videos")}>
+            <Videos carousel={carousel} />
+          </div>
+        ) : null}
         <div className="w-results__cta">
           <p>O próximo print no grupo pode ser o seu.</p>
           <PillCta href={whatsapp.geral}>Quero ser o próximo a subir</PillCta>

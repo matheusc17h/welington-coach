@@ -311,6 +311,16 @@ export function ScrollScrub({
         segment.end = segment.start + rect.height;
       }
       total = Math.max(runtime.at(-1)?.end ?? viewportHeight, viewportHeight);
+      // Stacked copies live in the pinned stage, which only stays on screen
+      // for (section height - one screen) of scroll: fit every chapter into
+      // that stretch so the last one plays while the stage is still pinned.
+      if (smallViewport.matches) {
+        const fit = Math.max(total - viewportHeight, 1) / total;
+        for (const segment of runtime) {
+          segment.start *= fit;
+          segment.end *= fit;
+        }
+      }
       dirty = true;
     };
 
@@ -482,9 +492,22 @@ export function ScrollScrub({
         }
       }
 
-      const current = runtime[currentIndex];
+      // The tab follows the copy the visitor is reading. Beside the film
+      // (desktop) a chapter's copy is centred on screen half a screen before
+      // its band reaches the top, so probe at mid-screen there; stacked
+      // copies swap exactly at the band start.
+      const probe = smallViewport.matches
+        ? y
+        : clamp(rawY + 0.5 * viewportHeight, 0, total);
+      let probeIndex = 0;
+      for (const [index, segment] of runtime.entries()) {
+        if (probe >= segment.start) {
+          probeIndex = index;
+        }
+      }
+      const current = runtime[probeIndex];
       const currentLength = Math.max(current.end - current.start, 1);
-      const currentProgress = clamp((y - current.start) / currentLength);
+      const currentProgress = clamp((probe - current.start) / currentLength);
       const nextActive =
         current.kind === "connector" && currentProgress >= 0.5
           ? current.nextSectionIndex
@@ -497,7 +520,8 @@ export function ScrollScrub({
         onActiveRef.current?.(active);
       }
 
-      root.style.setProperty("--ss-progress", String(clamp(y / total)));
+      const span = Math.max(runtime.at(-1)?.end ?? total, 1);
+      root.style.setProperty("--ss-progress", String(clamp(y / span)));
 
       // Stacked slides: each chapter fades in over the start of its band and
       // out over the end, so one is fully gone before the next appears and
@@ -793,7 +817,8 @@ export function ScrollScrub({
       <div className="scroll-scrub__story">
         {segments.map((segment) => {
           const bandStyle: CSSProperties = {
-            minHeight: `${Math.max(segment.weight, 0.2) * 100}dvh`,
+            // --ss-band-scale (CSS) shortens every chapter at once on phones.
+            minHeight: `calc(var(--ss-band-scale, 1) * ${Math.max(segment.weight, 0.2) * 100}dvh)`,
           };
 
           if (segment.kind === "connector") {

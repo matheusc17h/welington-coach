@@ -104,18 +104,6 @@ export const reasons = [
     title: "Mentalidade e controle de tilt",
     body: "Como segurar a cabeça depois de um gol sofrido ou de uma sequência ruim.",
   },
-  {
-    title: "Rotina para a Weekend League",
-    body: "Blocos de jogos, pausas e aquecimento para chegar inteiro no fim de semana.",
-  },
-  {
-    title: "Acompanhamento no grupo de alunos",
-    body: "Troca diária com quem está subindo junto com você, com o coach por perto.",
-  },
-  {
-    title: "Resultado medido em divisão",
-    body: "O objetivo é concreto: subir de divisão e chegar ao Elite.",
-  },
 ];
 
 export const prints = [
@@ -157,13 +145,6 @@ export const studentVideos = Array.from({ length: 9 }, (_, index) => {
     poster: `/assets/alunos/aluno-${id}.webp`,
   };
 });
-
-export const notFor = [
-  "Quem procura \"jogada secreta\" ou fórmula mágica",
-  "Quem não aceita rever as próprias derrotas",
-  "Quem culpa só o servidor e o delay",
-  "Quem não vai treinar entre as aulas",
-];
 
 export const plans = [
   {
@@ -216,10 +197,14 @@ export const faqs = [
     a: "Call individual. O Welington analisa seu gameplay, mostra onde você está perdendo jogo e passa ajustes de defesa, ataque, time e tática para a semana seguinte.",
   },
   {
+    q: "Pra quem a aula não é indicada?",
+    a: "Aula é treino, não atalho. Não é pra quem procura \"jogada secreta\" ou fórmula mágica, não aceita rever as próprias derrotas, culpa só o servidor e o delay ou não vai treinar entre as aulas. Agora, se você topa treinar, rever seus jogos e ouvir a verdade sobre o seu gameplay, esse treino é pra você.",
+  },
+  {
     q: "Serve para quem está na 3ª/4ª divisão?",
     a: "Sim. A maioria dos alunos chega travada no meio da tabela. O método começa pela base: defesa manual e leitura de jogo.",
   },
-  // TODO CONFIRMAR: as afirmações de mecânica do FC 27 nas respostas 03 e 04.
+  // TODO CONFIRMAR: as afirmações de mecânica do FC 27 nas respostas 04 e 05.
   {
     q: "Já funciona no FC 27?",
     a: "Sim. O FC 27 tirou poder da IA (fim do bote automático, passe que segue sua mira à risca, escanteio com controle na área). Quem estuda sai na frente, e o treino já é focado nessas mudanças.",

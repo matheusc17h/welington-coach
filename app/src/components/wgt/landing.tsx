@@ -8,7 +8,6 @@ import {
   faqs,
   heroChips,
   navLinks,
-  notFor,
   plans,
   proofMarquee,
   reasons,
@@ -19,19 +18,16 @@ import {
 import {
   ArrowIcon,
   CheckIcon,
-  CrossIcon,
   GameplayIcon,
-  GroupIcon,
   MindIcon,
   PlusIcon,
-  RoutineIcon,
   TacticsIcon,
-  TrophyIcon,
   WhatsAppIcon,
 } from "./icons";
 
-/** One icon per "Por que treinar" reason, in content order. */
-const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon, RoutineIcon, GroupIcon, TrophyIcon];
+/** One icon per reason in the weeks section, in content order. */
+const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon];
+import { CAROUSEL_QUERY, CarouselDots, useMedia } from "./carousel";
 import { Counter, useCounters, withCounter } from "./counter";
 import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
@@ -675,6 +671,7 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
 
 function Weeks() {
   const sectionRef = useRef<HTMLElement>(null);
+  const gainsRef = useRef<HTMLUListElement>(null);
   useWeeksSequence(sectionRef);
 
   return (
@@ -716,206 +713,44 @@ function Weeks() {
           Tudo começa pelo diagnóstico do seu gameplay. Na primeira call você já sai sabendo onde
           perde jogo.
         </p>
+        {/* What changes when you train with a player (was its own section).
+            Phones: a swipe carousel. */}
+        <ul className="w-weeks__gains w-carousel" ref={gainsRef}>
+          {reasons.map((reason, index) => {
+            const Icon = reasonIcons[index] ?? CheckIcon;
+            return (
+              <li className="w-glass w-weeks__gain w-rise" key={reason.title}>
+                <span aria-hidden="true" className="w-weeks__gain-icon">
+                  <Icon />
+                </span>
+                <h3>{reason.title}</h3>
+                <p>{reason.body}</p>
+              </li>
+            );
+          })}
+        </ul>
+        <CarouselDots count={reasons.length} label="O que muda" track={gainsRef} />
       </div>
     </section>
   );
 }
 
-/** Bento slot of each reason card, in content order. Drives size and entrance. */
-const reasonSlots = ["lead", "tactic", "mind", "routine", "group", "goal"] as const;
-
-/**
- * Reasons bento entrance. Each card arrives its own way, all quiet:
- * lead (dark) wipes up, tactic slides from the left, mind settles from a
- * slight scale, routine rises, group comes out of a blur, goal slides from the
- * right and its tint lights last. Icons pop in just after their card.
- * Desktop plays it as one sequence when the section is ~20% in view; phones
- * play each card as it arrives (one column is too tall for a single trigger).
- * Only transform, opacity, filter and clip-path move: no layout shift.
- */
-function useReasonsReveal(sectionRef: RefObject<HTMLElement | null>) {
+/** Plans carousel (phones): opens centred on the featured plan, neighbours peeking. */
+function usePlansStart(track: RefObject<HTMLUListElement | null>, carousel: boolean) {
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) {
+    const el = track.current;
+    const featured = el?.querySelector<HTMLElement>(".w-plan--featured");
+    if (!carousel || !el || !featured) {
       return;
     }
-    let cleanup = () => {};
-    let cancelled = false;
-
-    // Timings (seconds)
-    const CARD = 0.9; // card entrance
-    const LEAD = 1.1; // dark card wipe
-    const ICON = 0.6; // icon pop
-    const ICON_DELAY = 0.25; // icon starts this long after its card
-    const STAGGER = 0.12; // gap between cards
-    const TINT = 1; // goal card gradient fade
-
-    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
-      ([{ gsap }, { ScrollTrigger }]) => {
-        if (cancelled) {
-          return;
-        }
-        gsap.registerPlugin(ScrollTrigger);
-        const mm = gsap.matchMedia();
-        const q = gsap.utils.selector(section);
-        const card = (slot: (typeof reasonSlots)[number]) =>
-          q(`.w-reasons__card--${slot}`)[0] as HTMLElement;
-
-        // Start pose of each card. `transition: none` keeps any CSS
-        // transition from smoothing every GSAP frame; it is cleared at the end.
-        const from: Record<(typeof reasonSlots)[number], gsap.TweenVars> = {
-          lead: { clipPath: "inset(100% 0% 0% 0%)" },
-          tactic: { autoAlpha: 0, x: -40 },
-          mind: { autoAlpha: 0, scale: 0.94 },
-          routine: { autoAlpha: 0, y: 40 },
-          group: { autoAlpha: 0, filter: "blur(8px)" },
-          goal: { autoAlpha: 0, x: 40 },
-        };
-        const rest = { autoAlpha: 1, x: 0, y: 0, scale: 1, filter: "blur(0px)" };
-        const clear = "transform,opacity,visibility,filter,clip-path,transition";
-
-        // Adds one card (and its icon, lead text, goal tint) to a timeline at `at`.
-        const addCard = (
-          tl: gsap.core.Timeline,
-          slot: (typeof reasonSlots)[number],
-          at: number | string,
-        ) => {
-          const el = card(slot);
-          const icon = el.querySelector(".w-reasons__check");
-          gsap.set(el, { ...from[slot], transition: "none" });
-          gsap.set(icon, { scale: 0.6, autoAlpha: 0 });
-
-          if (slot === "lead") {
-            const inner = el.querySelectorAll("h3, p");
-            gsap.set(inner, { autoAlpha: 0, y: 20 });
-            tl.to(el, { clipPath: "inset(0% 0% 0% 0%)", duration: LEAD, ease: "expo.out" }, at)
-              .to(inner, { autoAlpha: 1, y: 0, duration: CARD, ease: "power3.out", stagger: 0.08 }, "<0.35")
-              .set(inner, { clearProps: "transform,opacity,visibility" });
-          } else {
-            tl.to(el, { ...rest, duration: CARD, ease: "power3.out" }, at);
-          }
-          tl.to(
-            icon,
-            { scale: 1, autoAlpha: 1, duration: ICON, ease: "back.out(1.7)" },
-            typeof at === "number" ? at + ICON_DELAY : `<${ICON_DELAY}`,
-          );
-
-          if (slot === "goal") {
-            const tint = el.querySelector(".w-reasons__tint");
-            gsap.set(tint, { opacity: 0 });
-            tl.to(tint, { opacity: 1, duration: TINT, ease: "power2.out" }, ">-0.1");
-          }
-          tl.set([el, icon], { clearProps: clear });
-        };
-
-        // Desktop and tablet: one sequence, lead first, then the bento left to
-        // right, top to bottom.
-        mm.add("(min-width: 861px) and (prefers-reduced-motion: no-preference)", () => {
-          const tl = gsap.timeline({
-            scrollTrigger: { trigger: section, start: "top 80%", once: true },
-          });
-          addCard(tl, "lead", 0);
-          (["tactic", "mind", "routine", "group", "goal"] as const).forEach((slot, i) =>
-            addCard(tl, slot, 0.45 + i * STAGGER),
-          );
-        });
-
-        // Phones (one column): each card plays as it reaches the screen.
-        mm.add("(max-width: 860px) and (prefers-reduced-motion: no-preference)", () => {
-          for (const slot of reasonSlots) {
-            const tl = gsap.timeline({
-              scrollTrigger: { trigger: card(slot), start: "top 85%", once: true },
-            });
-            addCard(tl, slot, 0);
-          }
-        });
-        cleanup = () => mm.revert();
-      },
-    );
-
-    return () => {
-      cancelled = true;
-      cleanup();
-    };
-  }, [sectionRef]);
-}
-
-function Reasons() {
-  const sectionRef = useRef<HTMLElement>(null);
-  useReasonsReveal(sectionRef);
-  return (
-    <section
-      aria-labelledby="porque-title"
-      className="w-reasons w-section"
-      id="porque"
-      ref={sectionRef}
-    >
-      <div aria-hidden="true" className="w-aurora w-aurora--side" />
-      <div className="w-wrap w-reasons__grid">
-        <div className="w-reasons__head">
-          <h2 className="w-h2" id="porque-title">
-            O que muda quando você treina <span className="w-grad-text">com quem joga</span>
-          </h2>
-          <p className="w-lead">
-            Treino em cima das suas partidas, com uma meta que dá para medir: subir de divisão.
-          </p>
-        </div>
-        {reasons.map((reason, index) => {
-          const Icon = reasonIcons[index] ?? CheckIcon;
-          return (
-            <article
-              className={`w-glass w-reasons__card w-reasons__card--${reasonSlots[index]}${index === 0 ? " w-reasons__card--wide" : ""}`}
-              key={reason.title}
-            >
-              {index === reasons.length - 1 && (
-                <span aria-hidden="true" className="w-reasons__tint" />
-              )}
-              <span aria-hidden="true" className="w-reasons__check">
-                <Icon />
-              </span>
-              <h3>{reason.title}</h3>
-              <p>{reason.body}</p>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function NotFor() {
-  return (
-    <section aria-labelledby="naoe-title" className="w-notfor w-section" id="para-quem-nao">
-      <div className="w-wrap w-notfor__grid">
-        <div className="w-notfor__head">
-          <h2 className="w-h2" id="naoe-title">
-            Para quem <span className="w-outline w-outline--magenta">não</span> é
-          </h2>
-          <p className="w-lead">
-            Aula é treino, não atalho. Se você se encaixa em algum desses, é melhor não gastar seu
-            tempo nem o meu.
-          </p>
-        </div>
-        <ul className="w-notfor__list">
-          {notFor.map((item, index) => (
-            <li className="w-glass w-notfor__item w-rise" key={item}>
-              <span aria-hidden="true" className="w-notfor__x">
-                <CrossIcon />
-              </span>
-              {item}
-            </li>
-          ))}
-        </ul>
-        <p className="w-notfor__yes">
-          Agora, se você topa treinar, rever seus jogos e ouvir a verdade sobre o seu gameplay,{" "}
-          <span className="w-grad-text">esse treino é pra você.</span>
-        </p>
-      </div>
-    </section>
-  );
+    el.scrollLeft = featured.offsetLeft - (el.clientWidth - featured.offsetWidth) / 2;
+  }, [track, carousel]);
 }
 
 function Plans() {
+  const trackRef = useRef<HTMLUListElement>(null);
+  const carousel = useMedia(CAROUSEL_QUERY);
+  usePlansStart(trackRef, carousel);
   return (
     <section aria-labelledby="planos-title" className="w-plans w-section" id="planos">
       <div aria-hidden="true" className="w-aurora w-aurora--mid" />
@@ -932,7 +767,7 @@ function Plans() {
           </p>
         </div>
         <div className="w-plans__viewport">
-          <ul className="w-plans__grid">
+          <ul className="w-plans__grid w-carousel" ref={trackRef}>
             {plans.map((plan) => (
               <li
                 className={`w-plan w-rise${plan.featured ? " w-plan--featured" : ""}`}
@@ -965,6 +800,7 @@ function Plans() {
               </li>
             ))}
           </ul>
+          <CarouselDots align="center" count={plans.length} label="Planos" track={trackRef} />
         </div>
       </div>
     </section>
@@ -1213,9 +1049,7 @@ export function Landing() {
         <Shortcuts />
         <Film />
         <Weeks />
-        <Reasons />
         <Results />
-        <NotFor />
         <Plans />
         <Faq />
         <FinalCta />

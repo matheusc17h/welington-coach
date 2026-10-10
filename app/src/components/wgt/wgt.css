@@ -3640,3 +3640,261 @@ body {
     justify-content: space-between;
   }
 }
+
+/* Weeks: what changes when you train with a player (was the reasons
+   section), three cards under the timeline. */
+.w-weeks__gains {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s3);
+  margin-top: var(--s6);
+}
+
+.w-weeks__gain {
+  display: grid;
+  align-content: start;
+  gap: var(--s1);
+  padding: var(--s4);
+}
+
+.w-weeks__gain-icon {
+  margin-bottom: var(--s1);
+  color: var(--magenta);
+}
+
+.w-weeks__gain-icon svg {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+.w-weeks__gain h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.w-weeks__gain p {
+  color: var(--muted);
+}
+
+/* Swipe carousels (carousel.tsx): native scroll with snap, a slice of the
+   next card showing, dots under it. Phones only; desktop keeps each row's
+   own layout and never shows the dots. */
+.w-dots {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .w-carousel {
+    position: relative;
+    display: flex;
+    gap: 12px;
+    width: auto;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--gutter);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    animation: none;
+  }
+
+  .w-carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .w-carousel > * {
+    flex: 0 0 auto;
+    margin-right: 0;
+    scroll-snap-align: start;
+  }
+
+  .w-dots {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    margin-top: var(--s2);
+  }
+
+  /* 24px tap target around an 8px dot. */
+  .w-dots button {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .w-dots button::before {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    content: "";
+    background: currentColor;
+    opacity: 0.25;
+    transition:
+      width 0.3s var(--ease),
+      opacity 0.3s var(--ease);
+  }
+
+  .w-dots button[aria-current]::before {
+    width: 22px;
+    background: var(--brand-h);
+    opacity: 1;
+  }
+
+  /* Shortcuts: one card and a slice of the next. */
+  .w-cuts__grid.w-carousel {
+    display: flex;
+    margin-top: var(--s5);
+    padding-bottom: var(--s2);
+  }
+
+  .w-cuts__grid.w-carousel > .w-cut {
+    width: 82%;
+  }
+
+  /* Plans: centred cards, the neighbours peek at both edges; room above for
+     the "Mais escolhido" seal, which the scroller would clip. */
+  .w-plans__grid.w-carousel {
+    align-items: center;
+    max-width: none;
+    margin: var(--s5) calc(var(--gutter) * -1) 0;
+    padding-block: 20px var(--s2);
+  }
+
+  .w-plans__grid.w-carousel > .w-plan {
+    width: 80%;
+    scroll-snap-align: center;
+  }
+
+  /* Results: tabs, then one gallery at a time. */
+  .w-results__tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: var(--s5);
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.04);
+  }
+
+  .w-results__tabs button {
+    flex: 1;
+    min-height: 44px;
+    padding: 0 var(--s2);
+    border: 0;
+    border-radius: 999px;
+    color: var(--muted);
+    background: none;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+      color 0.3s var(--ease),
+      background 0.3s var(--ease);
+  }
+
+  .w-results__tabs button[aria-selected="true"] {
+    color: var(--white);
+    background: var(--brand-h);
+  }
+
+  .w-phones:has(.is-carousel),
+  .w-prints:has(.is-carousel),
+  .w-videos:has(.is-carousel) {
+    margin-top: var(--s3);
+  }
+
+  .w-results .is-carousel {
+    margin-inline: 0;
+    overflow: visible;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .w-phones__track.w-carousel > .w-phone {
+    width: 58%;
+  }
+
+  .w-prints__track.w-carousel > .w-print {
+    width: 70%;
+  }
+
+  .w-videos__track.w-carousel > li {
+    width: 46%;
+  }
+
+  /* Film: every chapter scrolls a shorter distance (about 2.5 screens in all). */
+  .w-film {
+    --ss-band-scale: 0.44;
+  }
+
+  /* Hero: title, lead, main button and photo within about 1.2 screens. */
+  .w-hero {
+    padding-top: 84px;
+    padding-bottom: var(--s2);
+  }
+
+  .w-hero__chips {
+    margin-bottom: var(--s2);
+  }
+
+  .w-hero__lead {
+    margin-top: var(--s2);
+    line-height: 1.5;
+  }
+
+  .w-hero__ctas {
+    gap: 4px;
+    margin-top: var(--s3);
+  }
+
+  .w-hero__quote {
+    display: none;
+  }
+
+  .w-hero__visual {
+    width: min(56vw, 300px);
+    margin-top: var(--s2);
+  }
+
+  /* Weeks: tighter timeline; the gains become a carousel. */
+  .w-weeks__line {
+    gap: var(--s4);
+    margin-top: var(--s5);
+  }
+
+  .w-weeks__note {
+    margin-top: var(--s5);
+  }
+
+  .w-weeks__gains.w-carousel {
+    margin-top: var(--s4);
+  }
+
+  .w-weeks__gains.w-carousel > .w-weeks__gain {
+    width: 82%;
+    padding: var(--s3);
+  }
+
+  /* Stuck: same content, less air between and inside the cards. */
+  .w-stuck__list {
+    gap: 12px;
+  }
+
+  .w-stuck__card {
+    padding: var(--s3);
+  }
+
+  .w-stuck__close {
+    margin-top: var(--s6);
+  }
+}
