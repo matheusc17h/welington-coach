@@ -4053,3 +4053,22 @@ body {
   margin-block: -0.22em -0.12em;
   padding-block: 0.22em 0.12em;
 }
+
+/* Desktop hero CTAs: the secondary link sits level with the main button
+   (same 64px row, text centred on it) instead of the button + microcopy
+   block, and its underline hugs the text. */
+@media (min-width: 861px) {
+  .w-hero__ctas {
+    align-items: flex-start;
+    column-gap: var(--s4);
+  }
+
+  .w-hero__secondary {
+    min-height: 64px;
+    background-position: left calc(50% + 0.85em);
+  }
+
+  .w-hero__secondary:hover {
+    background-position: right calc(50% + 0.85em);
+  }
+}
