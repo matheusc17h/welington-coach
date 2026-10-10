@@ -468,7 +468,7 @@ function useCardsReveal(sectionRef: RefObject<HTMLElement | null>, cards: string
             gsap.set(el, { autoAlpha: 0, scale: 0.96, y: (rest.get(el) ?? 0) + 56 });
           }
           const triggers = ScrollTrigger.batch(els, {
-            start: "top 88%",
+            start: "clamp(top 50%)",
             once: true,
             onEnter: (batch) =>
               gsap.to(batch, {
@@ -498,7 +498,7 @@ function useCardsReveal(sectionRef: RefObject<HTMLElement | null>, cards: string
               scale: 0.96,
               duration: 0.8,
               ease: "power3.out",
-              scrollTrigger: { trigger: card, start: "top 90%", once: true },
+              scrollTrigger: { trigger: card, start: "clamp(top 50%)", once: true },
             });
           });
         });

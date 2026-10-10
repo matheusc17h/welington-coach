@@ -4,8 +4,8 @@ import { useEffect } from "react";
  * Section copy rising in from below (GSAP), once, when its block reaches the
  * middle of the screen. Inside each block the pieces come in one after
  * another in page order (stagger), so the reading order is kept: the title
- * first (its own line-by-line reveal, animations-text, fires earlier), then
- * the text, then the button. `clamp()` keeps the trigger reachable near the
+ * first (its own line-by-line reveal, animations-text, also at 50%), then
+ * the text after a short delay, then the button. `clamp()` keeps the trigger reachable near the
  * end of the page. Visible without JS and under reduced motion.
  */
 const GROUPS: { block: string; items: string }[] = [
@@ -41,6 +41,8 @@ export function useRiseIn() {
                 duration: 0.9,
                 ease: "power3.out",
                 stagger: 0.18,
+                // After the block's title, which fires at the same point.
+                delay: 0.3,
                 scrollTrigger: { trigger: el, start: "clamp(top 50%)", once: true },
               });
             }

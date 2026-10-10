@@ -61,7 +61,8 @@ export function useTextAnimations() {
               duration: 0.7,
               ease: "power4.out",
               stagger: 0.08,
-              scrollTrigger: { trigger: el, start: "top 85%", once: true },
+              // Sections show up when they reach the middle of the screen.
+              scrollTrigger: { trigger: el, start: "clamp(top 50%)", once: true },
             }),
         });
         el.classList.remove(PENDING);
