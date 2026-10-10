@@ -4054,26 +4054,18 @@ body {
   padding-block: 0.22em 0.12em;
 }
 
-/* Desktop hero CTAs: the secondary link sits level with the main button
-   (same 64px row, text centred on it) instead of the button + microcopy
-   block, and its underline hugs the text. */
+/* Desktop hero CTAs: one centred column under the main button — the
+   button, its microcopy, then the secondary link. */
 @media (min-width: 861px) {
   .w-hero__ctas {
-    align-items: flex-start;
-    column-gap: var(--s4);
+    display: grid;
+    justify-items: center;
+    width: fit-content;
+    row-gap: 4px;
   }
 
-  .w-hero__secondary {
-    min-height: 64px;
-    background-position: left calc(50% + 0.85em);
-  }
-
-  .w-hero__secondary:hover {
-    background-position: right calc(50% + 0.85em);
-  }
-
-  /* Microcopy centred under the main button. */
   .w-hero__micro {
     text-align: center;
   }
 }
+
