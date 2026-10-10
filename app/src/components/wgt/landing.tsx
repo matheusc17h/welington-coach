@@ -27,8 +27,11 @@ import {
 
 /** One icon per reason in the weeks section, in content order. */
 const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon];
+/** Electric border per reason: the brand ramp, blue to magenta. */
+const GAIN_COLORS = ["#3fa9ff", "#9b5cff", "#e0218a"];
 import { CAROUSEL_QUERY, CarouselDots, useMedia } from "./carousel";
 import { Counter, useCounters, withCounter } from "./counter";
+import { ElectricBorder } from "./electric-border";
 import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
 import { Results } from "./results";
@@ -719,13 +722,22 @@ function Weeks() {
           {reasons.map((reason, index) => {
             const Icon = reasonIcons[index] ?? CheckIcon;
             return (
-              <li className="w-glass w-weeks__gain w-rise" key={reason.title}>
+              <ElectricBorder
+                as="li"
+                borderRadius={20}
+                chaos={0.08}
+                className="w-glass w-weeks__gain w-rise"
+                color={GAIN_COLORS[index % GAIN_COLORS.length]}
+                contentClassName="w-weeks__gain-body"
+                key={reason.title}
+                speed={0.8}
+              >
                 <span aria-hidden="true" className="w-weeks__gain-icon">
                   <Icon />
                 </span>
                 <h3>{reason.title}</h3>
                 <p>{reason.body}</p>
-              </li>
+              </ElectricBorder>
             );
           })}
         </ul>
@@ -879,7 +891,7 @@ function Footer() {
         <ul className="w-footer__links">
           <li>
             <a href="https://www.instagram.com/welingtonrodrigues04/" {...external}>
-              @welingtonrodrigues04
+              Instagram
             </a>
           </li>
           <li>
@@ -896,90 +908,21 @@ function Footer() {
   );
 }
 
-/** Things the floating button must never sit on top of. */
-const FLOAT_AVOID = "main a[href], main button, .w-about__photo, .w-footer";
-
-/**
- * Only shows once the hero (which has its own CTAs) is off screen, and steps
- * aside while a button, link, the about photo or the footer passes under it.
- */
+/** Always on, bottom right, on every screen size; fades in after mount. */
 function FloatingWhatsApp() {
-  const [visible, setVisible] = useState(false);
-  const [covering, setCovering] = useState(false);
-  const floatRef = useRef<HTMLAnchorElement>(null);
+  const [shown, setShown] = useState(false);
 
   useEffect(() => {
-    const float = floatRef.current;
-    if (!float) {
-      return;
-    }
-    let frame = 0;
-    const check = () => {
-      frame = 0;
-      // Measure the resting spot (the hidden state is only a small offset).
-      const zone = float.getBoundingClientRect();
-      const pad = 8;
-      let hit = false;
-      for (const el of document.querySelectorAll(FLOAT_AVOID)) {
-        if (el === float || el.closest("dialog")) {
-          continue;
-        }
-        const r = el.getBoundingClientRect();
-        if (
-          r.width > 0 &&
-          r.left < zone.right + pad &&
-          r.right > zone.left - pad &&
-          r.top < zone.bottom + pad &&
-          r.bottom > zone.top - pad
-        ) {
-          hit = true;
-          break;
-        }
-      }
-      setCovering(hit);
-    };
-    const schedule = () => {
-      if (!frame) {
-        frame = requestAnimationFrame(check);
-      }
-    };
-    schedule();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
-    // Horizontal rails (plans, videos) move buttons without a page scroll.
-    document.addEventListener("scroll", schedule, { capture: true, passive: true });
-    return () => {
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      document.removeEventListener("scroll", schedule, { capture: true });
-      cancelAnimationFrame(frame);
-    };
+    const frame = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
-
-  useEffect(() => {
-    const hero = document.getElementById("topo");
-    if (!hero || !("IntersectionObserver" in window)) {
-      const frame = requestAnimationFrame(() => setVisible(true));
-      return () => cancelAnimationFrame(frame);
-    }
-    const observer = new IntersectionObserver(([entry]) => setVisible(!entry.isIntersecting), {
-      rootMargin: "0px 0px -35% 0px",
-    });
-    observer.observe(hero);
-    return () => observer.disconnect();
-  }, []);
-
-  const shown = visible && !covering;
 
   return (
     <a
-      aria-hidden={shown ? undefined : true}
       aria-label="Chamar o Welington no WhatsApp"
       className="w-float"
       data-visible={shown || undefined}
       href={whatsapp.geral}
-      ref={floatRef}
-      tabIndex={shown ? undefined : -1}
       {...external}
     >
       <WhatsAppIcon />

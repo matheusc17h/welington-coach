@@ -2741,9 +2741,16 @@ body {
     width: 100%;
   }
 
-  /* The bar carries the WhatsApp CTA on phones. */
+  /* The WhatsApp button rides just above the sticky bar while it shows. */
   .w-float {
-    display: none;
+    transition:
+      opacity 0.4s var(--ease),
+      transform 0.5s var(--ease),
+      bottom 0.25s ease-out;
+  }
+
+  .wgt:has(.w-sticky[data-visible]) .w-float {
+    bottom: calc(88px + env(safe-area-inset-bottom));
   }
 }
 
@@ -3642,11 +3649,18 @@ body {
   margin-top: var(--s6);
 }
 
+/* Electric border cards: the bolt is drawn outside the box, so no clipping;
+   the faint glass line steps back for the electric one. */
 .w-weeks__gain {
+  overflow: visible;
+  padding: var(--s4);
+  border-color: transparent;
+}
+
+.w-weeks__gain-body {
   display: grid;
   align-content: start;
   gap: var(--s1);
-  padding: var(--s4);
 }
 
 .w-weeks__gain-icon {
@@ -3868,8 +3882,10 @@ body {
     margin-top: var(--s5);
   }
 
+  /* Room above and below so the scroller doesn't clip the electric border. */
   .w-weeks__gains.w-carousel {
-    margin-top: var(--s4);
+    margin-top: calc(var(--s4) - 16px);
+    padding-block: 16px;
   }
 
   .w-weeks__gains.w-carousel > .w-weeks__gain {
@@ -3888,5 +3904,63 @@ body {
 
   .w-stuck__close {
     margin-top: var(--s6);
+  }
+}
+
+/* Plans fit one desktop screen: the whole section (title, lead and the three
+   cards) sits in 100svh, spacing scaled by viewport height so a 730px-tall
+   laptop and a 1080p monitor both see it whole. */
+@media (min-width: 861px) {
+  .w-plans.w-section {
+    display: grid;
+    align-content: center;
+    min-height: 100svh;
+    padding-block: clamp(24px, 5svh, 64px);
+  }
+
+  .w-plans .w-h2 {
+    font-size: clamp(2.2rem, min(4.2vw, 7svh), 4rem);
+  }
+
+  .w-plans__head {
+    max-width: 920px;
+  }
+
+  .w-plans__head .w-lead {
+    max-width: none;
+    margin-top: clamp(8px, 1.6svh, 16px);
+  }
+
+  .w-plans__grid {
+    margin-top: clamp(28px, 5svh, 56px);
+  }
+
+  .w-plan {
+    gap: 4px;
+    padding: clamp(18px, 3svh, 32px) clamp(20px, 2vw, 32px);
+  }
+
+  .w-plan--featured {
+    padding-block: clamp(26px, 4.4svh, 44px) clamp(20px, 3svh, 32px);
+  }
+
+  .w-plan__pitch {
+    min-height: 0;
+    font-size: 0.95rem;
+  }
+
+  .w-plan__items {
+    gap: clamp(4px, 0.9svh, 10px);
+    margin-block: 4px clamp(14px, 2.2svh, 24px);
+    padding-top: clamp(10px, 1.6svh, 16px);
+  }
+
+  .w-plan__items li {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .w-plan__cta {
+    min-height: clamp(46px, 6svh, 56px);
   }
 }
