@@ -149,9 +149,11 @@ body {
   padding-inline: var(--gutter);
 }
 
+/* Fluid sizes follow the shorter of width and height, so a wide but short
+   laptop screen (1536x730 at 125%) shows a section at a glance at 100%. */
 .w-section {
   position: relative;
-  padding-block: clamp(var(--s10), 12vw, 160px);
+  padding-block: clamp(var(--s10), min(8vw, 12svh), 128px);
 }
 
 /* Grain: fixed noise over the whole page, very low contrast. */
@@ -226,7 +228,7 @@ body {
 /* Type */
 .w-h2 {
   font-family: var(--display);
-  font-size: clamp(2.6rem, 6.4vw, 5.75rem);
+  font-size: clamp(2.6rem, min(4.6vw, 9svh), 4.5rem);
   font-weight: 400;
   line-height: var(--lh-title);
   letter-spacing: 0.005em;
@@ -2155,15 +2157,15 @@ body {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   gap: var(--s3);
-  margin-top: var(--s10);
+  margin-top: var(--s6);
 }
 
 .w-plan {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--s2);
-  padding: var(--s5) var(--s4) var(--s4);
+  gap: var(--s1);
+  padding: var(--s4) var(--s4) var(--s3);
   border: 1px solid var(--line);
   border-radius: 28px;
   background: rgb(12 16 48 / 0.72);
@@ -2174,7 +2176,7 @@ body {
 
 .w-plan--featured {
   z-index: 1;
-  padding-block: var(--s8) var(--s5);
+  padding-block: var(--s6) var(--s4);
   border: 1px solid transparent;
   background:
     linear-gradient(rgb(12 16 48 / 0.96), rgb(12 16 48 / 0.96)) padding-box,
@@ -2200,14 +2202,14 @@ body {
 
 .w-plan__name {
   font-family: var(--display);
-  font-size: clamp(2.2rem, 3.4vw, 3rem);
+  font-size: clamp(2rem, min(2.6vw, 5svh), 2.6rem);
   font-weight: 400;
   line-height: var(--lh-title);
   text-transform: uppercase;
 }
 
 .w-plan--featured .w-plan__name {
-  font-size: clamp(2.6rem, 4vw, 3.6rem);
+  font-size: clamp(2.4rem, min(3.2vw, 6svh), 3rem);
 }
 
 .w-plan__pitch {
@@ -2217,9 +2219,9 @@ body {
 
 .w-plan__items {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   margin-block: var(--s1) var(--s3);
-  padding-top: var(--s3);
+  padding-top: var(--s2);
   border-top: 1px solid var(--line);
 }
 
@@ -2611,11 +2613,6 @@ body {
   height: auto;
 }
 
-.w-footer__wordmark {
-  width: 96px;
-  height: auto;
-  mix-blend-mode: screen;
-}
 
 .w-footer__links {
   display: flex;
@@ -3349,7 +3346,7 @@ body {
 /* Shortcuts ("Atalhos que não resolvem"): three things players pay for,
    each stamped out by a magenta slash when it scrolls in, then the answer. */
 .w-cuts__head {
-  max-width: 860px;
+  max-width: 1040px;
 }
 
 .w-cuts__head .w-lead {
@@ -3360,7 +3357,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--s3);
-  margin-top: var(--s8);
+  margin-top: var(--s6);
 }
 
 .w-cut {
@@ -3382,7 +3379,7 @@ body {
   position: relative;
   display: grid;
   place-items: center;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 2 / 1;
   overflow: hidden;
   background:
     radial-gradient(circle at 30% 20%, rgb(31 59 255 / 0.35), transparent 60%),

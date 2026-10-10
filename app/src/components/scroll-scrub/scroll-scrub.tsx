@@ -265,6 +265,10 @@ export function ScrollScrub({
     let destroyed = false;
     let dirty = true;
     let frame = 0;
+    let lastTime = 0;
+    // Scroll position the scrub follows: eased toward the real one so a
+    // dragged scrollbar or a wheel notch glides instead of jumping.
+    let smoothY: number | null = null;
     let rootTop = 0;
     let total = 1;
     let viewportHeight = window.innerHeight;
@@ -436,8 +440,7 @@ export function ScrollScrub({
       }
     };
 
-    const readScroll = () => {
-      const pageY = window.scrollY || window.pageYOffset;
+    const readScroll = (pageY: number) => {
       // Unclamped, for preloading: above the section y is pinned at 0, which
       // made the first clip download on page load from the very top.
       const rawY = pageY - rootTop;
@@ -472,10 +475,9 @@ export function ScrollScrub({
         segment.layer.style.opacity = String(opacity);
         segment.layer.style.zIndex = index === currentIndex ? "2" : "1";
 
-        if (
-          rawY > segment.start - 1.5 * viewportHeight &&
-          rawY < segment.end + 1.5 * viewportHeight
-        ) {
+        // All four clips load together once the section is two screens
+        // away, so a fast scrollbar drag never lands on one still loading.
+        if (rawY > -2 * viewportHeight && rawY < total + 2 * viewportHeight) {
           void loadClip(segment);
         }
       }
@@ -530,7 +532,7 @@ export function ScrollScrub({
       }
     };
 
-    const updateVideos = () => {
+    const updateVideos = (ease: number) => {
       for (const segment of runtime) {
         const { video } = segment;
         if (!video || !segment.ready || video.seeking) {
@@ -543,7 +545,7 @@ export function ScrollScrub({
           continue;
         }
 
-        segment.current += (segment.target - segment.current) * 0.2;
+        segment.current += (segment.target - segment.current) * ease;
         const targetTime =
           clamp(segment.current, 0, 0.999) * (video.duration || 1);
         const epsilon = isMobile() ? 0.02 : 0.008;
@@ -561,11 +563,31 @@ export function ScrollScrub({
       if (destroyed) {
         return;
       }
+      const now = performance.now();
+      // Same feel at 60 Hz and 120 Hz: easing per elapsed time, not per frame.
+      const dt = Math.min(now - (lastTime || now), 100);
+      lastTime = now;
+      const ease = (time: number) => 1 - Math.exp(-dt / time);
+
+      const pageY = window.scrollY || window.pageYOffset;
+      if (smoothY === null || reduceMotion) {
+        smoothY = pageY;
+      } else if (smoothY !== pageY) {
+        smoothY += (pageY - smoothY) * ease(90);
+        // Snap when close, or after a jump from far away (anchor links).
+        if (
+          Math.abs(pageY - smoothY) < 0.5 ||
+          Math.abs(pageY - smoothY) > 3 * viewportHeight
+        ) {
+          smoothY = pageY;
+        }
+        dirty = true;
+      }
       if (dirty) {
         dirty = false;
-        readScroll();
+        readScroll(smoothY);
       }
-      updateVideos();
+      updateVideos(ease(60));
       frame = window.requestAnimationFrame(tick);
     };
 

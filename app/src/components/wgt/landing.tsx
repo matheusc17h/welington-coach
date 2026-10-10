@@ -35,7 +35,6 @@ const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon, RoutineIcon, GroupIcon
 import { Counter, useCounters, withCounter } from "./counter";
 import { useTextAnimations } from "./animations-text";
 import { external, PillCta } from "./pill";
-import { ProFilm } from "./pro-film";
 import { Results } from "./results";
 import { Satin } from "./satin";
 import { Shortcuts } from "./shortcuts";
@@ -1039,14 +1038,7 @@ function Footer() {
       <div className="w-wrap w-footer__inner">
         <div className="w-footer__brand">
           <Shield className="w-footer__shield" />
-          <img
-            alt="WGT eSports"
-            className="w-footer__wordmark"
-            height={172}
-            loading="lazy"
-            src="/assets/brand/wgt-wordmark.webp"
-            width={259}
-          />
+          <span className="w-sr">WGT eSports</span>
         </div>
         <ul className="w-footer__links">
           <li>
@@ -1163,7 +1155,7 @@ function FloatingWhatsApp() {
 /** On screen, the mobile sticky bar steps aside: the hero, the final CTA,
     every section CTA (`data-cta`) and the other tappable bits it would cover
     (the student video row, the film's sound toggle). */
-const STICKY_AVOID = "#topo, #agendar, [data-cta], .w-videos__viewport, .w-pro__sound";
+const STICKY_AVOID = "#topo, #agendar, [data-cta], .w-videos__viewport";
 
 /**
  * Phones only (CSS): a bottom bar with the main CTA. It hides while the hero,
@@ -1221,7 +1213,6 @@ export function Landing() {
         <Shortcuts />
         <Film />
         <Weeks />
-        <ProFilm />
         <Reasons />
         <Results />
         <NotFor />
