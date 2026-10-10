@@ -1276,6 +1276,20 @@ body {
   margin-top: var(--s3);
 }
 
+/* Two lines everywhere: "Onde você está" / "travando?". The narrow column
+   gets a title size that keeps the first line whole. */
+.w-stuck__head .w-h2 {
+  font-size: clamp(2.4rem, min(3.9vw, 8svh), 4.5rem);
+}
+
+.w-stuck__lead-in {
+  white-space: nowrap;
+}
+
+.w-stuck__head .w-grad-text {
+  display: block;
+}
+
 .w-stuck__viewport {
   grid-column: 6 / -1;
   min-width: 0;
@@ -2625,11 +2639,6 @@ body {
   font-size: 0.82rem;
 }
 
-/* Shown only on phones (see the max-width: 860px block). */
-.w-only-phone {
-  display: none;
-}
-
 /* Floating WhatsApp */
 .w-float {
   position: fixed;
@@ -3147,13 +3156,6 @@ body {
     text-align: center;
   }
 
-  .w-stuck__head .w-grad-text {
-    display: block;
-  }
-
-  .w-only-phone {
-    display: inline;
-  }
 
   .w-stuck__head .w-lead {
     margin-inline: auto;

@@ -527,10 +527,8 @@ function Stuck() {
         <div className="w-stuck__grid">
           <div className="w-stuck__head">
             <h2 className="w-h2" id="travando-title">
-              Onde você está{" "}
-              <span className="w-grad-text">
-                travando<span className="w-only-phone">?</span>
-              </span>
+              <span className="w-stuck__lead-in">Onde você está</span>{" "}
+              <span className="w-grad-text">travando?</span>
             </h2>
             <p className="w-lead">
               Seis sinais que aparecem em quase toda call de diagnóstico. Conta quantos são seus.
