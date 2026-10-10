@@ -4071,4 +4071,9 @@ body {
   .w-hero__secondary:hover {
     background-position: right calc(50% + 0.85em);
   }
+
+  /* Microcopy centred under the main button. */
+  .w-hero__micro {
+    text-align: center;
+  }
 }
