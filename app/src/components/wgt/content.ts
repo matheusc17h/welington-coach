@@ -119,34 +119,40 @@ export const reasons = [
 ];
 
 export const prints = [
-  { src: "/assets/prints/champions.webp", alt: "Troféu do Champions com 28 de 35 pontos", label: "Champions" },
-  { src: "/assets/prints/nova-divisao.webp", alt: "Tela de nova divisão no Rivals", label: "Nova divisão" },
-  { src: "/assets/prints/estatisticas.webp", alt: "Estatísticas de partida com vitória", label: "Estatísticas" },
-  { src: "/assets/prints/divisao-rivals.webp", alt: "Tela do Division Rivals mostrando a subida", label: "Division Rivals" },
-  { src: "/assets/prints/primeira-divisao.webp", alt: "Tela de nova divisão, rumo à 1ª", label: "1ª Divisão" },
-  { src: "/assets/prints/time-montado.webp", alt: "Time montado no Ultimate Team", label: "Time ajustado" },
+  { src: "/assets/prints/champions.webp", width: 900, height: 1256, alt: "Troféu do Champions com 28 de 35 pontos", label: "Champions" },
+  { src: "/assets/prints/nova-divisao.webp", width: 900, height: 509, alt: "Tela de nova divisão no Rivals", label: "Nova divisão" },
+  { src: "/assets/prints/estatisticas.webp", width: 900, height: 524, alt: "Estatísticas de partida com vitória", label: "Estatísticas" },
+  { src: "/assets/prints/divisao-rivals.webp", width: 900, height: 1260, alt: "Tela do Division Rivals mostrando a subida", label: "Division Rivals" },
+  { src: "/assets/prints/primeira-divisao.webp", width: 900, height: 509, alt: "Tela de nova divisão, rumo à 1ª", label: "1ª Divisão" },
+  { src: "/assets/prints/time-montado.webp", width: 900, height: 485, alt: "Time montado no Ultimate Team", label: "Time ajustado" },
 ];
 
-/** Real chats students send (WhatsApp group and Instagram), shown in phones. */
+/** Real chats students send (WhatsApp group and Instagram), shown in phones.
+    All files are 460px wide; height is each file's real one (no layout jump). */
 export const chatPrints = [
-  { id: "01", alt: "Peterson no grupo: time montado e 4/1 na WL", fill: true },
-  { id: "02", alt: "Robson: do Intermediário pro Premium sem arrependimento", fill: false },
-  { id: "03", alt: "Diego: 3 contas no Elite, com 12/3, 11/4 e 12/3", fill: false },
-  { id: "04", alt: "Alessandro: top 200 e jogando presencial", fill: true },
-  { id: "05", alt: "Comentários no Instagram recomendando o Welington", fill: false },
-  { id: "06", alt: "KaiQue: com 2 aulas o Elite está perto", fill: false },
-  { id: "07", alt: "Peterson: nova divisão e adversário quitando de raiva", fill: true },
-  { id: "08", alt: "Diego e Roberto agradecendo pela defesa e pelos volantes", fill: false },
-  { id: "09", alt: "Diego mostrando a recompensa do Division Rivals", fill: false },
-  { id: "10", alt: "Comentários no Instagram: didática e evolução", fill: true },
-  { id: "11", alt: "Kassyon comemorando a 1ª divisão", fill: true },
-  { id: "12", alt: "naelson no Instagram: da segunda divisão ao Elite", fill: false },
-].map((print) => ({ ...print, src: `/assets/conversas/conversa-${print.id}.webp` }));
+  { id: "01", alt: "Peterson no grupo: time montado e 4/1 na WL", fill: true, height: 653 },
+  { id: "02", alt: "Robson: do Intermediário pro Premium sem arrependimento", fill: false, height: 528 },
+  { id: "03", alt: "Diego: 3 contas no Elite, com 12/3, 11/4 e 12/3", fill: false, height: 288 },
+  { id: "04", alt: "Alessandro: top 200 e jogando presencial", fill: true, height: 743 },
+  { id: "05", alt: "Comentários no Instagram recomendando o Welington", fill: false, height: 623 },
+  { id: "06", alt: "KaiQue: com 2 aulas o Elite está perto", fill: false, height: 533 },
+  { id: "07", alt: "Peterson: nova divisão e adversário quitando de raiva", fill: true, height: 998 },
+  { id: "08", alt: "Diego e Roberto agradecendo pela defesa e pelos volantes", fill: false, height: 403 },
+  { id: "09", alt: "Diego mostrando a recompensa do Division Rivals", fill: false, height: 639 },
+  { id: "10", alt: "Comentários no Instagram: didática e evolução", fill: true, height: 769 },
+  { id: "11", alt: "Kassyon comemorando a 1ª divisão", fill: true, height: 998 },
+  { id: "12", alt: "naelson no Instagram: da segunda divisão ao Elite", fill: false, height: 554 },
+].map((print) => ({ ...print, width: 460, src: `/assets/conversas/conversa-${print.id}.webp` }));
+
+/** Poster heights of aluno-01..09 (all 360px wide), read from the files. */
+const posterHeights = [646, 646, 636, 654, 456, 646, 646, 646, 646];
 
 export const studentVideos = Array.from({ length: 9 }, (_, index) => {
   const id = String(index + 1).padStart(2, "0");
   return {
     id,
+    posterWidth: 360,
+    posterHeight: posterHeights[index],
     src: `/assets/alunos/aluno-${id}.mp4`,
     poster: `/assets/alunos/aluno-${id}.webp`,
   };

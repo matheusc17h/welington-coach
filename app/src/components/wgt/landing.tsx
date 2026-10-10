@@ -38,7 +38,6 @@ import { external, PillCta } from "./pill";
 import { ProFilm } from "./pro-film";
 import { Results } from "./results";
 import { Satin } from "./satin";
-import { useStack } from "./stack";
 import { Shortcuts } from "./shortcuts";
 
 import "./wgt.css";
@@ -49,10 +48,10 @@ function Shield({ className, eager }: { className?: string; eager?: boolean }) {
       alt=""
       className={className}
       decoding="async"
-      height={512}
+      height={448}
       loading={eager ? "eager" : "lazy"}
       src="/assets/brand/wgt-shield.webp"
-      width={512}
+      width={448}
     />
   );
 }
@@ -1043,10 +1042,10 @@ function Footer() {
           <img
             alt="WGT eSports"
             className="w-footer__wordmark"
-            height={120}
+            height={172}
             loading="lazy"
             src="/assets/brand/wgt-wordmark.webp"
-            width={186}
+            width={259}
           />
         </div>
         <ul className="w-footer__links">
@@ -1208,7 +1207,6 @@ function StickyCta() {
 export function Landing() {
   useTextAnimations();
   useCounters();
-  useStack();
   return (
     <div className="wgt" lang="pt-BR">
       <a className="w-skip" href="#conteudo">

@@ -25,8 +25,10 @@ function ChatPhones() {
                   alt={copy ? "" : print.alt}
                   className={print.fill ? "w-phone__shot w-phone__shot--fill" : "w-phone__shot"}
                   decoding="async"
+                  height={print.height}
                   loading="lazy"
                   src={print.src}
+                  width={print.width}
                 />
               </li>
             );
@@ -58,10 +60,10 @@ function Prints() {
                   <img
                     alt={copy ? "" : print.alt}
                     decoding="async"
-                    height={600}
+                    height={print.height}
                     loading="lazy"
                     src={print.src}
-                    width={900}
+                    width={print.width}
                   />
                   <figcaption>{print.label}</figcaption>
                 </figure>
@@ -133,10 +135,10 @@ function Videos() {
                     <img
                       alt=""
                       decoding="async"
-                      height={640}
+                      height={video.posterHeight}
                       loading="lazy"
                       src={video.poster}
-                      width={360}
+                      width={video.posterWidth}
                     />
                     <span aria-hidden="true" className="w-video__play">
                       <PlayIcon />

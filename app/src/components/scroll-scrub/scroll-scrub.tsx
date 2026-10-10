@@ -107,6 +107,11 @@ const smoothstep = (value: number) => {
 const STACKED_QUERY = "(max-width: 860px)";
 /** How far (px) a stacked slide drifts while it fades. */
 const SLIDE_DRIFT = 24;
+/** Real size of the scene posters in /assets/world (first frame of each clip). */
+const POSTER_SIZE = {
+  desktop: { width: 1920, height: 1080 },
+  mobile: { width: 720, height: 1280 },
+};
 
 const lingerEase = (value: number, amount: number) => {
   const x = clamp(value);
@@ -703,10 +708,15 @@ export function ScrollScrub({
                 style={layerStyle}
               >
                 <picture className="scroll-scrub__picture">
+                  {/* The poster always fills the stage (absolute, cover), so
+                      width/height only give the ratio of the clip's first
+                      frame: 16:9 on desktop, 9:16 on phones. */}
                   {segment.mobilePoster ? (
                     <source
+                      height={POSTER_SIZE.mobile.height}
                       media="(hover: none) and (pointer: coarse), (max-width: 860px)"
                       srcSet={segment.mobilePoster}
+                      width={POSTER_SIZE.mobile.width}
                     />
                   ) : null}
                   <img
@@ -714,8 +724,10 @@ export function ScrollScrub({
                     className="scroll-scrub__poster"
                     decoding="async"
                     fetchPriority={index === 0 ? "high" : "auto"}
+                    height={POSTER_SIZE.desktop.height}
                     loading={index === 0 ? "eager" : "lazy"}
                     src={segment.poster}
+                    width={POSTER_SIZE.desktop.width}
                   />
                 </picture>
               </figure>
