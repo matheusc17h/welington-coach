@@ -962,39 +962,38 @@ function FloatingWhatsApp() {
     if (!float) {
       return;
     }
-    let frame = 0;
-    const check = () => {
-      frame = 0;
-      const zone = float.getBoundingClientRect();
-      const pad = 8;
-      let hit = false;
+    // An IntersectionObserver on a strip along the bottom of the screen (where
+    // the float lives) instead of measuring every button on each scroll
+    // frame: it only reports when a button enters or leaves that strip.
+    const hits = new Set<Element>();
+    let observer: IntersectionObserver | null = null;
+    const watch = () => {
+      observer?.disconnect();
+      hits.clear();
+      const strip = Math.max(0, window.innerHeight - 180);
+      observer = new IntersectionObserver(
+        (entries) => {
+          const left = float.getBoundingClientRect().left - 8;
+          for (const entry of entries) {
+            if (entry.isIntersecting && entry.boundingClientRect.right > left) {
+              hits.add(entry.target);
+            } else {
+              hits.delete(entry.target);
+            }
+          }
+          setCovering(hits.size > 0);
+        },
+        { rootMargin: `-${strip}px 0px 0px 0px` },
+      );
       for (const el of document.querySelectorAll(FLOAT_AVOID)) {
-        const r = el.getBoundingClientRect();
-        if (
-          r.width > 0 &&
-          r.left < zone.right + pad &&
-          r.right > zone.left - pad &&
-          r.top < zone.bottom + pad &&
-          r.bottom > zone.top - pad
-        ) {
-          hit = true;
-          break;
-        }
-      }
-      setCovering(hit);
-    };
-    const schedule = () => {
-      if (!frame) {
-        frame = requestAnimationFrame(check);
+        observer.observe(el);
       }
     };
-    schedule();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule);
+    watch();
+    window.addEventListener("resize", watch);
     return () => {
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", watch);
+      observer?.disconnect();
     };
   }, []);
 

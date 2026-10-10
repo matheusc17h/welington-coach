@@ -23,7 +23,7 @@ export function useSmoothScroll() {
             return;
           }
           gsap.registerPlugin(ScrollTrigger);
-          const lenis = new Lenis({ lerp: 0.1, anchors: { offset: -96 } });
+          const lenis = new Lenis({ lerp: 0.13, anchors: { offset: -96 } });
           const tick = (time: number) => lenis.raf(time * 1000);
           lenis.on("scroll", ScrollTrigger.update);
           gsap.ticker.add(tick);
