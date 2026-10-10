@@ -50,7 +50,7 @@ export function TextLoop({
   const measureRef = useRef<SVGTextElement>(null);
   const headRef = useRef<SVGTextPathElement>(null);
   const tailRef = useRef<SVGTextPathElement>(null);
-  const [metrics, setMetrics] = useState({ length: 0, reps: 1 });
+  const [metrics, setMetrics] = useState({ width: 0, reps: 1 });
 
   const id = useId().replace(/:/g, "");
   const pathId = `text-loop-${id}`;
@@ -75,8 +75,13 @@ export function TextLoop({
       const length = pathEl.getTotalLength();
       const unitWidth = measureEl.getComputedTextLength();
       if (!length) return;
-      const reps = unitWidth > 0 ? Math.max(1, Math.round(length / unitWidth)) : 1;
-      setMetrics((prev) => (prev.length === length && prev.reps === reps ? prev : { length, reps }));
+      if (!unitWidth) return;
+      // Enough repeats to cover the whole path; the loop then cycles over the
+      // text's own width, so no per-frame letter-spacing fit (textLength) is
+      // needed. That fit made the browser re-space every glyph each frame.
+      const reps = Math.max(1, Math.ceil(length / unitWidth));
+      const width = reps * unitWidth;
+      setMetrics((prev) => (prev.width === width && prev.reps === reps ? prev : { width, reps }));
     };
     measure();
     // Anton arrives after first paint; re-measure once it does.
@@ -87,14 +92,15 @@ export function TextLoop({
   }, [d, unit, fontSize, letterSpacing]);
 
   useEffect(() => {
-    const { length } = metrics;
+    const { width } = metrics;
     const head = headRef.current;
     const tail = tailRef.current;
-    if (!head || !tail || !length) {
+    const svg = head?.ownerSVGElement;
+    if (!head || !tail || !svg || !width) {
       return;
     }
     const apply = (offset: number) => {
-      const partner = offset >= 0 ? offset - length : offset + length;
+      const partner = offset >= 0 ? offset - width : offset + width;
       head.setAttribute("startOffset", String(offset));
       tail.setAttribute("startOffset", String(partner));
     };
@@ -105,19 +111,26 @@ export function TextLoop({
     }
     const state = { offset: 0 };
     const tween = gsap.to(state, {
-      offset: direction === "reverse" ? -length : length,
-      duration: length / speed,
+      offset: direction === "reverse" ? -width : width,
+      duration: width / speed,
       ease: "none",
       repeat: -1,
+      paused: true,
       onUpdate: () => apply(state.offset),
     });
+    // Only runs while the band is on screen.
+    const visibility = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) tween.play();
+      else tween.pause();
+    });
+    visibility.observe(svg);
     return () => {
+      visibility.disconnect();
       tween.kill();
     };
   }, [metrics, speed, direction]);
 
   const loopText = unit.repeat(metrics.reps);
-  const fitLength = metrics.length || undefined;
   const last = Math.max(1, ribbonStops.length - 1);
 
   return (
@@ -153,9 +166,7 @@ export function TextLoop({
             dominantBaseline="central"
             fill={color}
             key={index}
-            lengthAdjust="spacing"
             style={textStyle}
-            textLength={fitLength}
           >
             <textPath href={`#${pathId}`} ref={ref} startOffset={0}>
               {loopText}
