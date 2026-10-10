@@ -637,11 +637,17 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
             const reveal = (tl: gsap.core.Timeline, i: number) => {
               const dot = dots[i];
               const text = step(i).querySelectorAll(".w-weeks__week, h3, p");
-              tl.to(fill, {
-                [axis]: () => at(i),
-                duration: i === 0 ? 0.5 : 0.55,
-                ease: i === 0 ? "power2.out" : "power2.inOut",
-              });
+              // The line sets off for this week while the previous week's
+              // text is still settling (overlap), so the four flow together.
+              tl.to(
+                fill,
+                {
+                  [axis]: () => at(i),
+                  duration: i === 0 ? 0.5 : 0.55,
+                  ease: i === 0 ? "power2.out" : "power2.inOut",
+                },
+                tl.duration() > 0 ? "-=0.35" : undefined,
+              );
               if (dot) {
                 tl.fromTo(
                   dot,
@@ -683,7 +689,7 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
                 }
               });
               // Finish the line to its end after the last week.
-              tl.to(fill, { [axis]: 1, duration: 0.7, ease: "power2.inOut" });
+              tl.to(fill, { [axis]: 1, duration: 0.5, ease: "power2.inOut" }, "-=0.2");
               ScrollTrigger.create({
                 trigger: line,
                 start: "clamp(top 70%)",
