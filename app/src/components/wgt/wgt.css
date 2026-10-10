@@ -2557,7 +2557,7 @@ body {
 .w-footer {
   position: relative;
   z-index: 1;
-  padding-block: var(--s6) calc(var(--s6) + 64px);
+  padding-block: var(--s5);
   border-top: 1px solid var(--line);
   background: var(--bg);
 }
@@ -2666,11 +2666,6 @@ body {
 }
 
 @media (max-width: 768px) {
-  /* Room for the bar, so it never covers the end of the page. */
-  .wgt {
-    padding-bottom: calc(84px + env(safe-area-inset-bottom));
-  }
-
   .w-sticky {
     position: fixed;
     z-index: 56;
@@ -3075,6 +3070,11 @@ body {
 
   .w-footer__links {
     justify-content: flex-start;
+  }
+
+  /* Keep the last line clear of the round WhatsApp button. */
+  .w-footer__legal {
+    padding-right: 72px;
   }
 
   /* A compact round button: the header already carries the labelled CTA,
@@ -3710,31 +3710,6 @@ body {
     opacity: 1;
   }
 
-  /* Shortcuts: one card and a slice of the next. */
-  .w-cuts__grid.w-carousel {
-    display: flex;
-    margin-top: var(--s5);
-    padding-bottom: var(--s2);
-  }
-
-  .w-cuts__grid.w-carousel > .w-cut {
-    width: 82%;
-  }
-
-  /* Plans: centred cards, the neighbours peek at both edges; room above for
-     the "Mais escolhido" seal, which the scroller would clip. */
-  .w-plans__grid.w-carousel {
-    align-items: center;
-    max-width: none;
-    margin: var(--s5) calc(var(--gutter) * -1) 0;
-    padding-block: 20px var(--s2);
-  }
-
-  .w-plans__grid.w-carousel > .w-plan {
-    width: 80%;
-    scroll-snap-align: center;
-  }
-
   /* Results: tabs, then one gallery at a time. */
   .w-results__tabs {
     display: flex;
@@ -3837,14 +3812,13 @@ body {
     margin-top: var(--s5);
   }
 
-  /* Room above and below so the scroller doesn't clip the electric border. */
-  .w-weeks__gains.w-carousel {
-    margin-top: calc(var(--s4) - 16px);
-    padding-block: 16px;
+  /* Benefits stack in one column. */
+  .w-weeks__gains {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: var(--s4);
   }
 
-  .w-weeks__gains.w-carousel > .w-weeks__gain {
-    width: 82%;
+  .w-weeks__gain {
     padding: var(--s3);
   }
 

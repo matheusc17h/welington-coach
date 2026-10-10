@@ -31,7 +31,6 @@ const reasonIcons = [GameplayIcon, TacticsIcon, MindIcon];
 const GAIN_COLORS = ["#3fa9ff", "#9b5cff", "#e0218a"];
 /** Same ramp, deeper blue so it reads on the plans' light sheet. */
 const PLAN_COLORS = ["#1f3bff", "#7b2ff7", "#e0218a"];
-import { CAROUSEL_QUERY, CarouselDots, useMedia } from "./carousel";
 import { Counter, useCounters, withCounter } from "./counter";
 import { ElectricBorder } from "./electric-border";
 import { TextLoop } from "./text-loop";
@@ -681,7 +680,6 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
 
 function Weeks() {
   const sectionRef = useRef<HTMLElement>(null);
-  const gainsRef = useRef<HTMLUListElement>(null);
   useWeeksSequence(sectionRef);
 
   return (
@@ -724,8 +722,8 @@ function Weeks() {
           perde jogo.
         </p>
         {/* What changes when you train with a player (was its own section).
-            Phones: a swipe carousel. */}
-        <ul className="w-weeks__gains w-carousel" ref={gainsRef}>
+            Phones: stacked. */}
+        <ul className="w-weeks__gains">
           {reasons.map((reason, index) => {
             const Icon = reasonIcons[index] ?? CheckIcon;
             return (
@@ -748,28 +746,12 @@ function Weeks() {
             );
           })}
         </ul>
-        <CarouselDots count={reasons.length} label="O que muda" track={gainsRef} />
       </div>
     </section>
   );
 }
 
-/** Plans carousel (phones): opens centred on the featured plan, neighbours peeking. */
-function usePlansStart(track: RefObject<HTMLUListElement | null>, carousel: boolean) {
-  useEffect(() => {
-    const el = track.current;
-    const featured = el?.querySelector<HTMLElement>(".w-plan--featured");
-    if (!carousel || !el || !featured) {
-      return;
-    }
-    el.scrollLeft = featured.offsetLeft - (el.clientWidth - featured.offsetWidth) / 2;
-  }, [track, carousel]);
-}
-
 function Plans() {
-  const trackRef = useRef<HTMLUListElement>(null);
-  const carousel = useMedia(CAROUSEL_QUERY);
-  usePlansStart(trackRef, carousel);
   return (
     <section aria-labelledby="planos-title" className="w-plans w-section" id="planos">
       <div aria-hidden="true" className="w-aurora w-aurora--mid" />
@@ -786,7 +768,7 @@ function Plans() {
           </p>
         </div>
         <div className="w-plans__viewport">
-          <ul className="w-plans__grid w-carousel" ref={trackRef}>
+          <ul className="w-plans__grid">
             {plans.map((plan, index) => (
               <ElectricBorder
                 as="li"
@@ -823,7 +805,6 @@ function Plans() {
               </ElectricBorder>
             ))}
           </ul>
-          <CarouselDots align="center" count={plans.length} label="Planos" track={trackRef} />
         </div>
       </div>
     </section>
@@ -905,11 +886,6 @@ function Footer() {
               Instagram
             </a>
           </li>
-          <li>
-            <a href="https://linktr.ee/WGTeSports" {...external}>
-              linktr.ee/WGTeSports
-            </a>
-          </li>
         </ul>
         <p className="w-footer__legal">
           EA SPORTS FC é marca registrada da Electronic Arts. Este site não tem vínculo com a EA.
@@ -945,7 +921,7 @@ function FloatingWhatsApp() {
 /** On screen, the mobile sticky bar steps aside: the hero, the final CTA,
     every section CTA (`data-cta`) and the other tappable bits it would cover
     (the student video row, the film's sound toggle). */
-const STICKY_AVOID = "#topo, #agendar, [data-cta], .w-videos__viewport";
+const STICKY_AVOID = "#topo, #agendar, [data-cta], .w-videos__viewport, .w-footer";
 
 /**
  * Phones only (CSS): a bottom bar with the main CTA. It hides while the hero,

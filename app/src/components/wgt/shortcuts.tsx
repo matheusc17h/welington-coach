@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 
-import { CarouselDots } from "./carousel";
 import { whatsapp } from "./content";
 import { PillCta } from "./pill";
 
@@ -45,7 +44,6 @@ const shortcuts: Shortcut[] = [
  */
 export function Shortcuts() {
   const sectionRef = useRef<HTMLElement>(null);
-  const trackRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -89,8 +87,7 @@ export function Shortcuts() {
           </p>
         </div>
 
-        {/* Phones: a swipe carousel (CSS), with dots below. */}
-        <ul className="w-cuts__grid w-carousel" ref={trackRef}>
+        <ul className="w-cuts__grid">
           {shortcuts.map((item, index) => (
             <li className="w-cut" key={item.title} style={{ "--i": index } as CSSProperties}>
               <div className="w-cut__visual">
@@ -120,7 +117,6 @@ export function Shortcuts() {
             </li>
           ))}
         </ul>
-        <CarouselDots count={shortcuts.length} label="Atalhos" track={trackRef} />
 
         <div className="w-cuts__answer">
           <div>
