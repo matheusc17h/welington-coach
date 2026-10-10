@@ -1,4 +1,8 @@
 import { useEffect } from "react";
+import type Lenis from "lenis";
+
+/** The running Lenis instance (desktop only), for code that must scroll. */
+let current: Lenis | null = null;
 
 /**
  * Desktop smooth scrolling (Lenis), driven by GSAP's ticker so every
@@ -24,6 +28,7 @@ export function useSmoothScroll() {
           }
           gsap.registerPlugin(ScrollTrigger);
           const lenis = new Lenis({ lerp: 0.13, anchors: { offset: -96 } });
+          current = lenis;
           const tick = (time: number) => lenis.raf(time * 1000);
           lenis.on("scroll", ScrollTrigger.update);
           gsap.ticker.add(tick);
@@ -32,6 +37,7 @@ export function useSmoothScroll() {
             gsap.ticker.remove(tick);
             gsap.ticker.lagSmoothing(500, 33);
             lenis.destroy();
+            current = null;
             teardown = null;
           };
         },
@@ -49,6 +55,51 @@ export function useSmoothScroll() {
       cancelled = true;
       query.removeEventListener("change", onChange);
       teardown?.();
+    };
+  }, []);
+}
+
+/**
+ * Where a (re)load lands. Browser and router scroll restoration are off (see
+ * __root.tsx and router.tsx): jumping to an old offset before GSAP, the film
+ * and Lenis had laid the page out left reloads in the wrong spot. So the page
+ * starts at the top; with a #hash it waits for the page to settle (load,
+ * fonts, triggers refreshed) and then jumps straight to that section.
+ */
+export function useInitialScroll() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) {
+      return;
+    }
+    let cancelled = false;
+    const settle = async () => {
+      if (document.readyState !== "complete") {
+        await new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+      }
+      await document.fonts?.ready;
+      // Let the dynamically imported GSAP hooks and Lenis start.
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ]);
+      if (cancelled) return;
+      gsap.registerPlugin(ScrollTrigger);
+      ScrollTrigger.refresh();
+      const target = document.getElementById(id);
+      if (!target) return;
+      if (current) {
+        current.scrollTo(target, { offset: -96, immediate: true });
+      } else {
+        const top = target.getBoundingClientRect().top + window.scrollY - 96;
+        window.scrollTo({ top: Math.max(0, top), behavior: "instant" });
+      }
+    };
+    void settle();
+    return () => {
+      cancelled = true;
     };
   }, []);
 }

@@ -39,7 +39,7 @@ import { external, PillCta } from "./pill";
 import { Results } from "./results";
 import { Satin } from "./satin";
 import { Shortcuts } from "./shortcuts";
-import { useSmoothScroll } from "./smooth-scroll";
+import { useInitialScroll, useSmoothScroll } from "./smooth-scroll";
 
 import "./wgt.css";
 
@@ -1064,6 +1064,7 @@ function StickyCta() {
 }
 
 export function Landing() {
+  useInitialScroll();
   useSmoothScroll();
   useTextAnimations();
   useCounters();

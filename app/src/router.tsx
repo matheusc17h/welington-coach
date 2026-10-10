@@ -8,7 +8,10 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: { queryClient },
-    scrollRestoration: true,
+    // Off: the landing manages its own scroll on load (wgt/smooth-scroll.ts).
+    // Restoring a saved offset before GSAP, the film and Lenis have laid the
+    // page out left a reload landing in the wrong place.
+    scrollRestoration: false,
     defaultPreloadStaleTime: 0,
   });
 

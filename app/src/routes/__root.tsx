@@ -200,6 +200,13 @@ function RootShell({ children }: { children: ReactNode }) {
           toggle, or a light mode. */}
       <head>
         <HeadContent />
+        {/* Before anything paints: the browser must not jump to the old
+            scroll position on reload; the landing places the page itself. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "if('scrollRestoration' in history)history.scrollRestoration='manual'",
+          }}
+        />
       </head>
       <body className="bg-q-background-primary text-q-text-primary">
         {children}
