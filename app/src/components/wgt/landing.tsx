@@ -680,14 +680,14 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
                 autoAlpha: 1,
                 y: 0,
                 ease: "none",
-                scrollTrigger: { trigger: note, start: "top 95%", end: "top 70%", scrub: 0.6 },
+                scrollTrigger: { trigger: note, start: "top 100%", end: "top 85%", scrub: 0.6 },
               });
             }
             if (vertical) {
               for (const gain of gains) {
                 gsap.fromTo(gain, from, {
                   ...to,
-                  scrollTrigger: { trigger: gain, start: "top 98%", end: "top 65%", scrub: 0.6 },
+                  scrollTrigger: { trigger: gain, start: "top 100%", end: "top 78%", scrub: 0.6 },
                 });
               }
             } else if (gains.length) {
@@ -696,8 +696,8 @@ function useWeeksSequence(sectionRef: RefObject<HTMLElement | null>) {
                 stagger: 0.25,
                 scrollTrigger: {
                   trigger: gains[0].parentElement,
-                  start: "top 95%",
-                  end: "top 45%",
+                  start: "top 100%",
+                  end: "top 72%",
                   scrub: 0.6,
                 },
               });
